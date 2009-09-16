@@ -1,0 +1,58 @@
+<?xml version="1.0" encoding="UTF-8"?> 
+<project default="all" name="Create jRWorkspace SDK Jar">
+	
+	<target name="all" depends="jRWorkspaceSDK, jRWorkspaceSDKRaw"/>
+	
+	<property name="sdkpackagedir" value="de/varylab/jrworkspace/plugin"/>
+	<target name="jRWorkspaceSDK">
+		<mkdir dir="jar"/>
+		<jar 
+			destfile="jar/jRWorkspacePluginSDK.jar" 
+			basedir="bin"
+			includes="${sdkpackagedir}/**,
+			java/awt/**"
+			update="false"
+		>
+			<manifest>
+				<attribute name="Built-By" value="Stefan Sechelmann"/>
+				<attribute name="Implementation-Vendor" value="Stefan Sechelmann"/>
+				<attribute name="Implementation-Title" value="The jRWorkspace Plugin SDK"/>
+			</manifest>
+		</jar>
+		<jar 
+			destfile="jar/jRWorkspacePluginSDK.jar" 
+			basedir="src"
+			includes="${sdkpackagedir}/**"
+			update="true"
+		/>
+		<jar 
+			destfile="jar/jRWorkspacePluginSDK.jar" 
+			basedir="src-plugin"
+			includes="${sdkpackagedir}/**"
+			update="true"
+		/>		
+	</target>
+	
+	<target name="jRWorkspaceSDKRaw">
+		<mkdir dir="jar"/>
+		<jar 
+			destfile="../jRWorkspace/lib/jRWorkspacePluginSDKRaw.jar" 
+			basedir="bin"
+			includes="
+				${sdkpackagedir}/**"
+			excludes="
+				${sdkpackagedir}/jrdesktop/**,
+				${sdkpackagedir}/aggregators/**,
+				${sdkpackagedir}/lnfswitch/**,
+				${sdkpackagedir}/sidecontainer/**"
+			update="false"
+		>
+			<manifest>
+				<attribute name="Built-By" value="Stefan Sechelmann"/>
+				<attribute name="Implementation-Vendor" value="Stefan Sechelmann"/>
+				<attribute name="Implementation-Title" value="The jRWorkspace Plugin SDK"/>
+			</manifest>
+		</jar>
+	</target>
+
+</project>

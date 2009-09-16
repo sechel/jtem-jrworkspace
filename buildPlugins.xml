@@ -1,0 +1,104 @@
+<?xml version="1.0" encoding="UTF-8"?> 
+<project default="all" name="Create jRWorkspace Plugin Jar Files">
+
+	<target name="all" depends="SideContainerPerspective, jRDesktop, Aggregators,LookAndFeelSwitch"/>
+	<property name="vendor" value="Stefan Sechelmann" />
+	<property name="jardir" value="jar/plugins"/>
+		
+	
+	<property name="sidecontainerdir" value="de/varylab/jrworkspace/plugin/sidecontainer"/>
+	<target name="SideContainerPerspective"> 
+		<mkdir dir="${jardir}"/>
+		<jar 
+			destfile="${jardir}/SideContainerPerspective.jar" 
+			basedir="bin"
+			includes="${sidecontainerdir}/**" 
+			update="false"
+		>
+			<manifest>
+				<attribute name="Built-By" value="${vendor}"/>
+				<attribute name="Implementation-Vendor" value="${vendor}"/>
+				<attribute name="Implementation-Title" value="Side Container jRWorkspace Plugin"/>
+			</manifest>
+		</jar>
+		<jar 
+			destfile="${jardir}/SideContainerPerspective.jar" 
+			basedir="src-plugin"
+			includes="${sidecontainerdir}/**"
+			update="true"
+		/>
+	</target>	
+	
+	
+	<property name="lookandfeelswitchdir" value="de/varylab/jrworkspace/plugin/lnfswitch"/>
+	<target name="LookAndFeelSwitch"> 
+		<mkdir dir="${jardir}"/>
+		<jar 
+			destfile="${jardir}/LookAndFeelSwitch.jar" 
+			basedir="bin"
+			includes="${lookandfeelswitchdir}/**" 
+			update="false"
+		>
+			<manifest>
+				<attribute name="Built-By" value="${vendor}"/>
+				<attribute name="Implementation-Vendor" value="${vendor}"/>
+				<attribute name="Implementation-Title" value="Look And Feel Switch Plug-ins"/>
+			</manifest>
+		</jar>
+		<jar 
+			destfile="${jardir}/LookAndFeelSwitch.jar" 
+			basedir="src-plugin"
+			includes="${lookandfeelswitchdir}/**"
+			update="true"
+		/>
+	</target>	
+		
+		
+	<property name="jrdesktop" value="de/varylab/jrworkspace/plugin/jrdesktop"/>
+	<target name="jRDesktop">
+		<mkdir dir="${jardir}"/>
+		<jar 
+			destfile="${jardir}/jRDesktop.jar" 
+			basedir="bin"
+			includes="${jrdesktop}/**"
+			update="false"
+		>
+			<manifest>
+				<attribute name="Built-By" value="${vendor}"/>
+				<attribute name="Implementation-Vendor" value="${vendor}"/>
+				<attribute name="Implementation-Title" value="jRDesktop jRWorkspace Plugin"/>
+			</manifest>
+		</jar>
+		<jar
+			destfile="${jardir}/jRDesktop.jar" 
+			basedir="src-plugin"
+			includes="${jrdesktop}/**"
+			update="true"
+		/>
+	</target>
+
+
+	<property name="aggregatorsdir" value="de/varylab/jrworkspace/plugin/aggregators"/>
+	<target name="Aggregators">
+		<mkdir dir="${jardir}"/>
+		<jar 
+			destfile="${jardir}/Aggregators.jar" 
+			basedir="bin"
+			includes="${aggregatorsdir}/**" 
+			update="false"
+		>
+			<manifest>
+				<attribute name="Built-By" value="${vendor}"/>
+				<attribute name="Implementation-Vendor" value="${vendor}"/>
+				<attribute name="Implementation-Title" value="Abstract Aggregator jRWorkspace Plugins"/>
+			</manifest>
+		</jar>
+		<jar 
+			destfile="${jardir}/Aggregators.jar" 
+			basedir="src-plugin"
+			includes="${aggregatorsdir}/**"
+			update="true"
+		/>
+	</target>
+	
+</project>
