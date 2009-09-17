@@ -12,8 +12,12 @@ DOCDIR=doc
 
 #the snippets for the webpage are put here
 WEBDIR=web
-#the html page to read the websnippets of (package-summary.html) 
-PACKAGEHTML=$(DOCDIR)/de/jtem/$(NAME)/package-summary.html
+#the package summary file (source)
+PACKAGEHTML=$(word 1,$(SRCDIRS))/de/jtem/$(NAME)/plugin/package.html
+#the html page to read the websnippets of 
+#(usually the processed PACKAGEHTML: package-summary.html) 
+PACKAGESUMHTML=$(DOCDIR)/de/jtem/$(NAME)/plugin/package-summary.html
+
 #location of the web site, may be empty
 SERVER=
 #directory of the website on the server, or local if SERVER is empty
@@ -27,7 +31,7 @@ LIBDIR=lib
 RELDIR=rel
 
 #directories of the JUnit tests, all files that match Test*.java or *Test.java will be executed 
-TESTDIR=test
+TESTDIR=
 TESTBINDIR=$(TESTDIR)
 #exclude the following tests  
 EXCLTESTS=
@@ -40,12 +44,16 @@ JAVACOPTS=-target 1.5 -source 1.5
 #javadoc options
 JAVADOCOPTS= -author -protected -nodeprecated -nodeprecatedlist \
   -windowtitle 'de.jtem.$(NAME) package API documentation' \
+  -overview $(PACKAGEHTML) \
   -header '<a href="http://www.jtem.de/$(NAME)" target="_top">$(NAME)</a> by<br><a href="http://www.jtem.de" target="_top">jTEM</a>' \
   -footer '<a href="http://www.jtem.de/$(NAME)" target="_top">$(NAME)</a> by<br><a href="http://www.jtem.de" target="_top">jTEM</a>' \
   -bottom '<font size=-1><b><a href="mailto:jtem@math.tu-berlin.de?subject=$(NAME):">jTEM</a></b></font>' \
   -link http://java.sun.com/javase/6/docs/api/ \
-  $(foreach d, $(DEPNAMES), -link $(JTEMURL)/$(d)/api)
-	   
+  $(foreach d, $(DEPNAMES), -link $(JTEMURL)/$(d)/api) \
+  -d $(DOCDIR) -classpath "$(BINDIR):`find $(LIBDIR) -name '*.jar' -printf %p: 2> /dev/null `" \
+  -sourcepath `echo $(SRCDIRS) | tr \  :` \
+  $(DOCPACKAGES)
+  
 
 #things that are removed recursively by the clean target
 CLEAN=$(BINDIR) $(DOCDIR) $(WEBDIR) $(RELDIR) .testscompiled `find $(TESTDIR) -name '*.class' 2> /dev/null` \
@@ -111,7 +119,7 @@ help:
 	@echo "compiled classes (BINDIR): $(BINDIR)"
 	@echo "generated api documentation (DOCDIR): $(DOCDIR)"
 	@echo "generated snippets for the web site (WEBDIR): $(WEBDIR)"
-	@echo "package-summary.html to produce the web snipptes (PACKAGEHTML): $(PACKAGEHTML)"
+	@echo "package-summary.html to produce the web snipptes (PACKAGESUMHTML): $(PACKAGESUMHTML)"
 	@echo "server of the website - may be empty(SERVER): $(SERVER)"
 	@echo "directory of the web site on the server (SRVDIR): $(SRVDIR)"
 	@echo "directory for the dependencies - put other archives here too (LIBDIR): $(LIBDIR)"
@@ -194,10 +202,7 @@ endif
 javadoc: $(DOCDIR)
 $(DOCDIR): $(shell find $(SRCDIRS)  -path "*.svn" -prune -o -print ) | $(DEPS) 
 	@if [ ! -d $(DOCDIR) ]; then mkdir $(DOCDIR); fi
-	@javadoc $(JAVADOCOPTS) \
-		-d $(DOCDIR) -classpath "$(BINDIR):`find $(LIBDIR) -name '*.jar' -printf %p: 2> /dev/null `" \
-		-sourcepath `echo $(SRCDIRS) | tr \  :` \
-		$(DOCPACKAGES)
+	@javadoc $(JAVADOCOPTS)
 	@touch $(DOCDIR)
 
 
@@ -208,9 +213,9 @@ $(DOCDIR): $(shell find $(SRCDIRS)  -path "*.svn" -prune -o -print ) | $(DEPS)
 web: $(WEBDIR)/teaser.html $(WEBDIR)/content.html 
 	@for f in $?; do $(call copy_to_website,$$f,$(NAME)/$${f#$(WEBDIR)}); done
 	@if [ -d $(dir $(PACKAGEHTML))/doc-files ]; then $(call copy_to_website,$(dir $(PACKAGEHTML))/doc-files,$(NAME)/doc-files); fi
-	@date=$(call svndate, $(DOCDIR)/de/jtem/$(NAME)/package.html); \
-	if [ "" = "$$date" ]; then date=$(call svndate, $(DOCDIR)/de/jtem/$(NAME)/package-info.java); fi;\
+	@date=$(call svndate, $(PACKAGESUMHTML)); \
 	if [ "" = "$$date" ]; then date=$(call svndate, $(PACKAGEHTML)); fi; \
+	if [ "" = "$$date" ]; then date=$(call svndate, $(DOCDIR)/de/jtem/$(NAME)/package-info.java); fi;\
 	if [ "" = "$$date" ]; then date=`date -r $< +%F`; fi; \
 	$(call exec_on_server,touch -d $$date $(SRVDIR)/$(NAME)/content.html $(SRVDIR)/projects.html)
 	@if [ -f  releasenotes.txt ]; then $(call copy_to_website, releasenotes.txt,downloads/$(NAME)); fi
@@ -218,12 +223,12 @@ web: $(WEBDIR)/teaser.html $(WEBDIR)/content.html
 	
 $(WEBDIR)/teaser.html: $(DOCDIR)
 	@if [ ! -d $(WEBDIR) ]; then mkdir $(WEBDIR); fi
-	@sed -e '0,/teaser start/d;/teaser end/,$$d' $(PACKAGEHTML) > $(WEBDIR)/teaser.html
+	@sed -e '0,/teaser start/d;/teaser end/,$$d' $(PACKAGESUMHTML) > $(WEBDIR)/teaser.html
 $(WEBDIR)/content.html: $(DOCDIR)
 	@if [ ! -d $(WEBDIR) ]; then mkdir $(WEBDIR); fi
 	@sed -e '0,/teaser start/d; /START OF BOTTOM NAVBAR/,$$d' \
 		-e 's,\(\.\./\)\+,$(JTEMURL)/$(NAME)/api/,g' \
-		$(PACKAGEHTML) > $(WEBDIR)/content.html
+		$(PACKAGESUMHTML) > $(WEBDIR)/content.html
 
 
 # --- release ---
@@ -298,6 +303,7 @@ debug:
 	@echo TESTS=$(TESTS); echo
 	@echo JUNIT=$(JUNIT); echo
 	@echo DOCPACKAGES=$(DOCPACKAGES); echo
+	@echo PACKAGESUMHTML=$(PACKAGESUMHTML); echo
 	@echo PACKAGEHTML=$(PACKAGEHTML); echo
 	@echo DEPS=$(DEPS); echo
 
