@@ -3,7 +3,7 @@
 	
 	<target name="all" depends="jRWorkspaceSDK, jRWorkspaceSDKRaw"/>
 	
-	<property name="sdkpackagedir" value="de/varylab/jrworkspace/plugin"/>
+	<property name="sdkpackagedir" value="de/jtem/jrworkspace/plugin"/>
 	<target name="jRWorkspaceSDK">
 		<mkdir dir="jar"/>
 		<jar 

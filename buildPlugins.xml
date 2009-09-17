@@ -6,7 +6,7 @@
 	<property name="jardir" value="jar/plugins"/>
 		
 	
-	<property name="sidecontainerdir" value="de/varylab/jrworkspace/plugin/sidecontainer"/>
+	<property name="sidecontainerdir" value="de/jtem/jrworkspace/plugin/sidecontainer"/>
 	<target name="SideContainerPerspective"> 
 		<mkdir dir="${jardir}"/>
 		<jar 
@@ -30,7 +30,7 @@
 	</target>	
 	
 	
-	<property name="lookandfeelswitchdir" value="de/varylab/jrworkspace/plugin/lnfswitch"/>
+	<property name="lookandfeelswitchdir" value="de/jtem/jrworkspace/plugin/lnfswitch"/>
 	<target name="LookAndFeelSwitch"> 
 		<mkdir dir="${jardir}"/>
 		<jar 
@@ -54,7 +54,7 @@
 	</target>	
 		
 		
-	<property name="jrdesktop" value="de/varylab/jrworkspace/plugin/jrdesktop"/>
+	<property name="jrdesktop" value="de/jtem/jrworkspace/plugin/jrdesktop"/>
 	<target name="jRDesktop">
 		<mkdir dir="${jardir}"/>
 		<jar 
@@ -78,7 +78,7 @@
 	</target>
 
 
-	<property name="aggregatorsdir" value="de/varylab/jrworkspace/plugin/aggregators"/>
+	<property name="aggregatorsdir" value="de/jtem/jrworkspace/plugin/aggregators"/>
 	<target name="Aggregators">
 		<mkdir dir="${jardir}"/>
 		<jar 
