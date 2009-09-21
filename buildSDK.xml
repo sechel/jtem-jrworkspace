@@ -36,7 +36,7 @@
 	<target name="jRWorkspaceSDKRaw">
 		<mkdir dir="jar"/>
 		<jar 
-			destfile="../jRWorkspace/lib/jRWorkspacePluginSDKRaw.jar" 
+			destfile="jar/jRWorkspacePluginSDKRaw.jar" 
 			basedir="bin"
 			includes="
 				${sdkpackagedir}/**"
