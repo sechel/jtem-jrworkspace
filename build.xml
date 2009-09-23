@@ -1,7 +1,7 @@
 <?xml version="1.0" encoding="UTF-8"?> 
 <project default="all" name="Create jRWorkspace Jar">
 	
-	<target name="all" depends="jrworkspace"/>
+	<target name="all" depends="jrworkspace, jrworkspaceNaked"/>
 	
 	<property name="sdkpackagedir" value="de/jtem/jrworkspace/plugin"/>
 	<target name="jrworkspace">
@@ -32,5 +32,27 @@
 			update="true"
 		/>		
 	</target>
+	
+	<target name="jrworkspaceNaked">
+		<mkdir dir="jar"/>
+		<jar 
+			destfile="jar/jrworkspaceNaked.jar" 
+			basedir="bin"
+			includes="
+				${sdkpackagedir}/**"
+			excludes="
+				${sdkpackagedir}/jrdesktop/**,
+				${sdkpackagedir}/aggregators/**,
+				${sdkpackagedir}/lnfswitch/**,
+				${sdkpackagedir}/sidecontainer/**"
+			update="false"
+			>
+			<manifest>
+				<attribute name="Built-By" value="Stefan Sechelmann"/>
+				<attribute name="Implementation-Vendor" value="Stefan Sechelmann"/>
+				<attribute name="Implementation-Title" value="The jRWorkspace Plugin SDK"/>
+			</manifest>
+		</jar>
+	</target>	
 
 </project>
