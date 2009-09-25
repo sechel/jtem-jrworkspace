@@ -9,7 +9,9 @@ import java.lang.annotation.Target;
 @Target(ElementType.TYPE)
 public @interface Group {
 
-	String name = "Default";
-	double priority = 1.0;
+	public String 
+		name = "Default";
+	public double 
+		priority = 1.0;
 	
 }
