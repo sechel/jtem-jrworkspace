@@ -911,4 +911,23 @@ public class SimpleController implements Controller {
 		propFile = null;
 	}
 	
+	
+	/**
+	 * Sets the visibility state of the preferences windows if there is one
+	 * @param show
+	 */
+	public void setShowPreferencesWindow(boolean show) {
+		if (preferencesWindow == null) {
+			return;
+		}
+		if (preferencesWindow.isShowing()) {
+			preferencesWindow.toFront();
+			return;
+		}
+		preferencesWindow.setLocationByPlatform(true);
+		preferencesWindow.setLocationRelativeTo(preferencesWindow.getParent());
+		preferencesWindow.updateData();
+		preferencesWindow.setVisible(true);
+	}
+	
 }
