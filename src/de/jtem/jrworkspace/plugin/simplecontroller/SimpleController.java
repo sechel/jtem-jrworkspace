@@ -406,14 +406,19 @@ public class SimpleController implements Controller {
 		throw new RuntimeException("SimpleController: plug-in " + clazz.getSimpleName() + " not found.");
 	}
 
+	@SuppressWarnings("unchecked")
 	public <T> List<T> getPlugins(Class<T> clazz) {
-		List<T> result = new LinkedList<T>();
+		List<Class<T>> classList = new LinkedList<Class<T>>();
 		for (Plugin p : plugins) {
 			if (clazz.isAssignableFrom(p.getClass())) {
-				result.add(clazz.cast(p));
+				classList.add(clazz.getClass().cast(p.getClass()));
 			}
 		}	
-		return result;
+		List<T> plugins = new LinkedList<T>();
+		for (Class<T> c : classList) {
+			plugins.add((T)getPlugin((Class<? extends Plugin>)c));
+		}
+		return plugins;
 	}
 
 	
