@@ -92,7 +92,7 @@ DOWNLOADDEPS=$(JTEMURL)/downloads
 
 #function to copy to SRVDIR
 ifeq ($(strip $(SERVER)),)
-  copy_to_website=cp -a $(1) $(SRVDIR)/$(strip $(2)); echo " - copy \"$(1)\" to \" $(SRVDIR)/$(strip $(2))\" "
+  copy_to_website=cp $(1) $(SRVDIR)/$(strip $(2)); echo " - copy \"$(1)\" to \" $(SRVDIR)/$(strip $(2))\" "
 else  
   copy_to_website=scp -r $(1) $(SERVER):$(SRVDIR)/$(2)
 endif
@@ -102,10 +102,6 @@ ifeq ($(strip $(SERVER)),)
 else  
   exec_on_server=ssh $(SERVER) "$(1)"
 endif
-#function to get last change date from svn
-svndate=`( svn --xml info $(1) 2> /dev/null  | grep "<text-updated>"  \
-	|| svn --xml info $(1) 2> /dev/null  | grep "<date>" )  \
-	|  sed -e 's/.*>\(....-..-..\).*/\1/'`
 
 
 # ---Targets --
@@ -213,13 +209,8 @@ $(DOCDIR): $(shell find $(SRCDIRS)  -path "*.svn" -prune -o -print ) | $(DEPS)
 web: $(WEBDIR)/teaser.html $(WEBDIR)/content.html 
 	@for f in $?; do $(call copy_to_website,$$f,$(NAME)/$${f#$(WEBDIR)}); done
 	@if [ -d $(dir $(PACKAGEHTML))/doc-files ]; then $(call copy_to_website,$(dir $(PACKAGEHTML))/doc-files,$(NAME)/doc-files); fi
-	@date=$(call svndate, $(PACKAGESUMHTML)); \
-	if [ "" = "$$date" ]; then date=$(call svndate, $(PACKAGEHTML)); fi; \
-	if [ "" = "$$date" ]; then date=$(call svndate, $(DOCDIR)/de/jtem/$(NAME)/package-info.java); fi;\
-	if [ "" = "$$date" ]; then date=`date -r $< +%F`; fi; \
-	$(call exec_on_server,touch -d $$date $(SRVDIR)/$(NAME)/content.html $(SRVDIR)/projects.html)
 	@if [ -f  releasenotes.txt ]; then $(call copy_to_website, releasenotes.txt,downloads/$(NAME)); fi
-	@$(call exec_on_server, find $(SRVDIR) -user `whoami` | xargs chmod g+rw)
+	@-(call exec_on_server, find $(SRVDIR) -user `whoami` | xargs chmod g+rw)
 	
 $(WEBDIR)/teaser.html: $(DOCDIR)
 	@if [ ! -d $(WEBDIR) ]; then mkdir $(WEBDIR); fi
@@ -252,7 +243,7 @@ release: web test $(DOCDIR) $(RELDIR)/$(NAME).jar $(RELDIR)/$(NAME).tgz $(RELDIR
 	@$(call copy_to_website, $(DOCDIR),$(NAME)/api)
 	@$(call copy_to_website, $(RELDIR)/current.txt,downloads/$(NAME))
 	@$(call copy_to_website, releasenotes.txt,downloads/$(NAME))
-	@$(call exec_on_server, find $(SRVDIR) -user `whoami` | xargs chmod g+rw)
+	@-$(call exec_on_server, find $(SRVDIR) -user `whoami` | xargs chmod g+rw)
 	@echo " - release `cat rel/current.txt` succesfully deployed."
 
 #jar of compiled classes
