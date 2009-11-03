@@ -45,6 +45,9 @@ public abstract class ShrinkPanelPlugin extends Plugin implements UIFlavor, Help
 	
 
 	public ShrinkPanelPlugin() {
+		if (getPluginInfo() == null ) 
+			throw new NullPointerException("PluginInfo must not be null.");
+		
 		shrinkPanel = new ShrinkPanel(getPluginInfo().name);
 		shrinkPanel.setShowHelpIcon(true);
 		shrinkPanel.setHelpCalledListener(this);
