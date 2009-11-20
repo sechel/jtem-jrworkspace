@@ -96,6 +96,8 @@ public class SimpleController implements Controller {
 		installed = new HashSet<Class<? extends Plugin>>();
 	protected HashMap<String, Object>
 		properties = new HashMap<String, Object>();
+	private boolean
+		propertiesAreSafe = false;
 	protected PerspectiveFlavor 
 		perspective = null;
 	protected FlavorListener
@@ -691,6 +693,15 @@ public class SimpleController implements Controller {
 		}
 	
 		/**
+		 * Check whether the window of the controller is in 
+		 * full-screen mode
+		 */
+		public boolean isFullscreen() {
+			return fullScreenFrame != null && fullScreenFrame.isShowing();
+		}
+		
+		
+		/**
 		 * Set the menu bars visibility
 		 * @param show
 		 */
@@ -798,6 +809,7 @@ public class SimpleController implements Controller {
 	
 	@SuppressWarnings("unchecked")
 	protected void loadProperties() {
+		propertiesAreSafe = false;
 		if (propFile == null && propInputStream == null) {
 			return;
 		}
@@ -809,6 +821,7 @@ public class SimpleController implements Controller {
 				in = new FileInputStream(propFile);
 			}
 			properties = properties.getClass().cast(propertyxStream.fromXML(in));
+			propertiesAreSafe = true;
 		} catch (IOException e) {
 //			System.out.println("could not load properties file " + propFile + ": " + e.getMessage());
 		} catch (Exception e) {
@@ -821,6 +834,7 @@ public class SimpleController implements Controller {
 		
 		@Override
 		public void run() {
+			if (!propertiesAreSafe) return;
 			for (Plugin p : plugins) {
 				try {
 					p.storeStates(SimpleController.this);

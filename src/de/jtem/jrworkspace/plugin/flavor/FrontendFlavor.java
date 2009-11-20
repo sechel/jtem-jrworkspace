@@ -51,6 +51,12 @@ public interface FrontendFlavor {
 		public void setFullscreen(boolean fs);
 		
 		/**
+		 * Check whether the window of the controller is in 
+		 * full-screen mode
+		 */
+		public boolean isFullscreen();
+		
+		/**
 		 * Shows or hides the menu bar of the main window
 		 * @param show
 		 */
