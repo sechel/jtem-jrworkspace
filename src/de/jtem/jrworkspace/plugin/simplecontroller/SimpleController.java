@@ -809,10 +809,10 @@ public class SimpleController implements Controller {
 	
 	@SuppressWarnings("unchecked")
 	protected void loadProperties() {
-		propertiesAreSafe = false;
 		if (propFile == null && propInputStream == null) {
 			return;
 		}
+		propertiesAreSafe = true;
 		try {
 			InputStream in = null;
 			if (propInputStream != null) {
@@ -821,11 +821,11 @@ public class SimpleController implements Controller {
 				in = new FileInputStream(propFile);
 			}
 			properties = properties.getClass().cast(propertyxStream.fromXML(in));
-			propertiesAreSafe = true;
 		} catch (IOException e) {
 //			System.out.println("could not load properties file " + propFile + ": " + e.getMessage());
 		} catch (Exception e) {
 			System.out.println("error while loading properties file " + propFile + ": " + e.getMessage());
+			propertiesAreSafe = false;
 		}
 	}
 	
