@@ -17,7 +17,10 @@ public interface HelpFlavor {
 	public Icon getHelpIcon();
 	
 	/**
-	 * Returns a path to the help HTML file
+	 * Returns a path to the help HTML file. <br><br>
+	 * 
+	 * Note: relative backward paths (..) don't seem to work with the Web Start ClassLoader! 
+	 * 
 	 * @see {@link HelpFlavor#getHelpHandle()}
 	 * @return
 	 */
