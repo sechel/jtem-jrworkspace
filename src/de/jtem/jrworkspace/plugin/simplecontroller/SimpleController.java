@@ -26,6 +26,7 @@ import java.io.FileOutputStream;
 import java.io.IOException;
 import java.io.InputStream;
 import java.io.OutputStream;
+import java.io.OutputStreamWriter;
 import java.io.Reader;
 import java.io.Writer;
 import java.util.Collections;
@@ -847,7 +848,11 @@ public class SimpleController implements Controller {
 			}
 			try {
 				OutputStream out = new FileOutputStream(propFile);
-				propertyxStream.toXML(properties, out);
+				String xml = propertyxStream.toXML(properties);
+				OutputStreamWriter writer = new OutputStreamWriter(out);
+				writer.write(xml);
+				writer.flush();
+				out.flush();
 				out.close();
 			} catch (IOException e) {
 				System.out.println("could not write properties file " + propFile + ": " + e.getMessage());
