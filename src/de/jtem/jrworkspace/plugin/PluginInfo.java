@@ -61,5 +61,12 @@ public class PluginInfo {
 		this.vendorName = vendor;
 	}
 	
+	public static PluginInfo create(Class<?> pluginClass) {
+		PluginInfo pi = new PluginInfo(pluginClass.getSimpleName());
+		pi.isDynamic = false;
+		pi.vendorName = pluginClass.getPackage().getImplementationVendor();
+		return pi;
+	}
+	
 	
 }

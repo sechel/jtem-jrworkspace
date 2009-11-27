@@ -18,7 +18,9 @@ public abstract class Plugin {
 	 * @return plug-in information
 	 * @see {@link PluginInfo}
 	 */
-	public abstract PluginInfo getPluginInfo();
+	public PluginInfo getPluginInfo() {
+		return PluginInfo.create(getClass());
+	}
 	
 	/**
 	 * Is called if the plug-in is installed 
