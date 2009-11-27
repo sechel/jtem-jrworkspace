@@ -547,7 +547,6 @@ public class SimpleController implements Controller {
 				statusLabel.setText(status);
 				statusLabel.repaint();
 			}
-			System.out.println("\t" + status);			
 		}
 
 		/**
