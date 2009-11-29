@@ -13,10 +13,10 @@ DOCDIR=doc
 #the snippets for the webpage are put here
 WEBDIR=web
 #the package summary file (source)
-PACKAGEHTML=$(word 1,$(SRCDIRS))/de/jtem/$(NAME)/plugin/package.html
+PACKAGEHTML=src/de/jtem/jrworkspace/plugin/package.html
 #the html page to read the websnippets of 
 #(usually the processed PACKAGEHTML: package-summary.html) 
-PACKAGESUMHTML=$(DOCDIR)/de/jtem/$(NAME)/plugin/package-summary.html
+PACKAGESUMHTML=doc/de/jtem/jrworkspace/plugin/package-summary.html
 
 #location of the web site, may be empty
 SERVER=
