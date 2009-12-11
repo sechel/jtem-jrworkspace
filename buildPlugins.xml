@@ -1,7 +1,7 @@
 <?xml version="1.0" encoding="UTF-8"?> 
 <project default="all" name="Create jRWorkspace Plugin Jar Files">
 
-	<target name="all" depends="SideContainerPerspective, jRDesktop, Aggregators,LookAndFeelSwitch"/>
+	<target name="all" depends="SideContainerPerspective, jRDesktop,  Aggregators, LookAndFeelSwitch, PluginManager"/>
 	<property name="vendor" value="Stefan Sechelmann" />
 	<property name="jardir" value="jar/plugins"/>
 		
@@ -97,6 +97,29 @@
 			destfile="${jardir}/Aggregators.jar" 
 			basedir="src-plugin"
 			includes="${aggregatorsdir}/**"
+			update="true"
+		/>
+	</target>
+	
+	<property name="pluginmanagerdir" value="de/jtem/jrworkspace/plugin/pluginmanager"/>
+	<target name="PluginManager">
+		<mkdir dir="${jardir}"/>
+		<jar 
+			destfile="${jardir}/PluginManager.jar" 
+			basedir="bin"
+			includes="${pluginmanagerdir}/**" 
+			update="false"
+		>
+			<manifest>
+				<attribute name="Built-By" value="${vendor}"/>
+				<attribute name="Implementation-Vendor" value="${vendor}"/>
+				<attribute name="Implementation-Title" value="Plugin Manager jRWorkspace Plugin"/>
+			</manifest>
+		</jar>
+		<jar 
+			destfile="${jardir}/PluginManager.jar" 
+			basedir="src-plugin"
+			includes="${pluginmanagerdir}/**"
 			update="true"
 		/>
 	</target>
