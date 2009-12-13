@@ -23,7 +23,7 @@ public abstract class Plugin {
 	}
 	
 	/**
-	 * Is called if the plug-in is installed 
+	 * Is called when the plug-in is installed 
 	 * @param c the applications {@link Controller}
 	 * @throws Exception
 	 * @see {@link Controller}
