@@ -81,6 +81,7 @@ import de.jtem.jrworkspace.plugin.simplecontroller.help.HelpWindow;
 import de.jtem.jrworkspace.plugin.simplecontroller.image.ImageHook;
 import de.jtem.jrworkspace.plugin.simplecontroller.preferences.PreferencesWindow;
 import de.jtem.jrworkspace.plugin.simplecontroller.widget.AboutDialog;
+import de.jtem.jrworkspace.plugin.simplecontroller.widget.SaveOnExitDialog;
 import de.jtem.jrworkspace.plugin.simplecontroller.widget.WrappingLayout;
 
 
@@ -146,6 +147,7 @@ import de.jtem.jrworkspace.plugin.simplecontroller.widget.WrappingLayout;
  * 
  * 
  * @author Stefan Sechelmann
+ * @author Paul Peters
  * @see Plugin
  *
  */
@@ -1204,8 +1206,9 @@ public class SimpleController implements Controller {
 	public void shutdown() {
 		Runnable doSaveAndExit=new Runnable(){
 			public void run() {
-				if (savePropertiesOnExit()) //not canceled
+				if (savePropertiesOnExit()) { //not canceled
 					System.exit(0);
+				}
 			}
 		};
 		new Thread(doSaveAndExit,this.getClass()+"shutdown").run();

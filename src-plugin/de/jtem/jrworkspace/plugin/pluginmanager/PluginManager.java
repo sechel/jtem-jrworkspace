@@ -275,7 +275,8 @@ public class PluginManager extends Plugin implements PreferencesFlavor, ActionLi
 	
 	
 	public static void main(String[] args) {
-		SimpleController c = new SimpleController(new File("test.xml"));
+		SimpleController c = new SimpleController();
+		c.setPropertiesFile(new File("test.xml"));
 		c.registerPlugin(new EmptyPerspective());
 		c.registerPlugin(new PluginManager());
 		c.startup();

@@ -1,4 +1,4 @@
-package de.jtem.jrworkspace.plugin.simplecontroller;
+package de.jtem.jrworkspace.plugin.simplecontroller.widget;
 
 import java.awt.Dimension;
 import java.awt.GridBagConstraints;
@@ -22,7 +22,9 @@ import javax.swing.JOptionPane;
 import javax.swing.JTextField;
 import javax.swing.filechooser.FileFilter;
 
-class SaveOnExitDialog {
+import de.jtem.jrworkspace.plugin.simplecontroller.SimpleController;
+
+public class SaveOnExitDialog {
 	//results are saved here
 	private OutputStream out;
 
@@ -35,13 +37,12 @@ class SaveOnExitDialog {
 	final SimpleController controller;
 	final private JDialog dialog;
 	
-	SaveOnExitDialog(File file, JFrame mainWindow, SimpleController controller) {
+	public SaveOnExitDialog(File file, JFrame mainWindow, SimpleController controller) {
 		if (controller == null) 
 			throw new NullPointerException();
 		this.controller=controller;
 		
 		dialog=new JDialog(mainWindow, "Save properties?", true);
-
 		final JFileChooser fileChooser=new JFileChooser();
 
 		if (file != null) 
@@ -57,7 +58,6 @@ class SaveOnExitDialog {
 				return f.isDirectory() || f.getName().toLowerCase().endsWith(".xml");
 			}
 		});
-		dialog.setLocationRelativeTo(mainWindow);
 
 		//dialog elements
 		final JLabel question= new JLabel("Do you want to save the properties?");
@@ -65,7 +65,7 @@ class SaveOnExitDialog {
 		filenameTF.setText(file==null?"":file.getAbsolutePath());
 		filenameTF.setMinimumSize(new Dimension(200,10));
 		int width=filenameTF.getPreferredSize().width;
-		filenameTF.setPreferredSize(new Dimension(width>200?width:200,10));
+		filenameTF.setPreferredSize(new Dimension(width>200?width:200,15));
 		final JButton chooseButton=new JButton("Choose...");
 		chooseButton.setMargin(new Insets(0, 20, 0, 20));
 		rememberCB.setSelected(!controller.isAskBeforeSaveOnExit());
@@ -140,13 +140,15 @@ class SaveOnExitDialog {
 	/**
 	 * @return false, when the user canceled the dialog.
 	 */
-	boolean show() {
+	public boolean show() {
 		yesNoCanceled[0]=yesNoCanceled[1]=false; yesNoCanceled[2]=true; 
 		dialog.pack();
-
+		dialog.setResizable(false);
 		//see what we have got, ask again till we get a writable file or cancel.
 		out=null;
 		while (out == null) {
+			dialog.setLocationByPlatform(true);
+			dialog.setLocationRelativeTo(dialog.getParent());
 			dialog.setVisible(true);
 			if (yesNoCanceled[2])
 				return false; // cancel pressed
@@ -176,7 +178,7 @@ class SaveOnExitDialog {
 				out=new FileOutputStream(file);
 			} catch (Exception e) {
 				out=null;
-				JOptionPane.showMessageDialog(dialog, "Can not write to file: "+file, "", JOptionPane.ERROR_MESSAGE);
+				JOptionPane.showMessageDialog(dialog.getParent(), "Can not write to file: "+file, "", JOptionPane.ERROR_MESSAGE);
 			}	
 			yesNoCanceled[0]=yesNoCanceled[1]=false; yesNoCanceled[2]=true; 
 		}
@@ -184,7 +186,7 @@ class SaveOnExitDialog {
 	}
 
 
-	OutputStream getOutputStream() {
+	public OutputStream getOutputStream() {
 		return out;
 	}
 
