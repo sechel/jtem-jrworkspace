@@ -48,16 +48,7 @@ public class SaveOnExitDialog {
 		if (file != null) 
 			fileChooser.setSelectedFile(file.getAbsoluteFile());
 		fileChooser.setFileHidingEnabled(false);
-		fileChooser.setFileFilter(new FileFilter() {
-			@Override
-			public String getDescription() {
-				return ".xml";
-			}
-			@Override
-			public boolean accept(File f) {
-				return f.isDirectory() || f.getName().toLowerCase().endsWith(".xml");
-			}
-		});
+		fileChooser.setFileFilter(new PropertiesFileFilter());
 
 		//dialog elements
 		final JLabel question= new JLabel("Do you want to save the properties?");
@@ -188,6 +179,23 @@ public class SaveOnExitDialog {
 
 	public OutputStream getOutputStream() {
 		return out;
+	}
+
+	public static class PropertiesFileFilter extends FileFilter {
+		@Override
+		public boolean accept(File f) {
+			if (f.isDirectory()) {
+				return true;
+			}
+			String name = f.getName().toLowerCase();
+			return name.endsWith(".xml") || name.endsWith(".jrw");
+		}
+
+		@Override
+		public String getDescription() {
+			return "Property Files (*.xml, *.jrw)";
+		}
+		
 	}
 
 }
