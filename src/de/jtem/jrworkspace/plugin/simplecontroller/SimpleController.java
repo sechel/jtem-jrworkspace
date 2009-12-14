@@ -7,8 +7,6 @@ import static java.awt.BorderLayout.CENTER;
 import static java.awt.BorderLayout.NORTH;
 import static java.awt.BorderLayout.SOUTH;
 import static java.awt.FlowLayout.LEADING;
-import static java.lang.Runtime.getRuntime;
-import static javax.swing.JFrame.EXIT_ON_CLOSE;
 import static javax.swing.SwingUtilities.invokeAndWait;
 import static javax.swing.SwingUtilities.invokeLater;
 import static javax.swing.SwingUtilities.isEventDispatchThread;
@@ -20,6 +18,8 @@ import java.awt.Dimension;
 import java.awt.Frame;
 import java.awt.GraphicsDevice;
 import java.awt.GridLayout;
+import java.awt.event.WindowAdapter;
+import java.awt.event.WindowEvent;
 import java.io.File;
 import java.io.FileInputStream;
 import java.io.FileOutputStream;
@@ -29,6 +29,7 @@ import java.io.OutputStream;
 import java.io.OutputStreamWriter;
 import java.io.Reader;
 import java.io.Writer;
+import java.net.URL;
 import java.util.Collections;
 import java.util.Comparator;
 import java.util.HashMap;
@@ -38,6 +39,8 @@ import java.util.List;
 import java.util.Set;
 import java.util.Stack;
 import java.util.TreeSet;
+import java.util.prefs.BackingStoreException;
+import java.util.prefs.Preferences;
 
 import javax.swing.JFrame;
 import javax.swing.JLabel;
@@ -48,6 +51,7 @@ import javax.swing.JPopupMenu;
 import javax.swing.JRootPane;
 import javax.swing.SwingUtilities;
 import javax.swing.UIManager;
+import javax.swing.WindowConstants;
 
 import com.thoughtworks.xstream.XStream;
 import com.thoughtworks.xstream.converters.reflection.PureJavaReflectionProvider;
@@ -61,12 +65,14 @@ import de.jtem.jrworkspace.plugin.flavor.MenuFlavor;
 import de.jtem.jrworkspace.plugin.flavor.PerspectiveFlavor;
 import de.jtem.jrworkspace.plugin.flavor.PreferencesFlavor;
 import de.jtem.jrworkspace.plugin.flavor.PropertiesFlavor;
+import de.jtem.jrworkspace.plugin.flavor.ShutdownFlavor;
 import de.jtem.jrworkspace.plugin.flavor.StatusFlavor;
 import de.jtem.jrworkspace.plugin.flavor.ToolBarFlavor;
 import de.jtem.jrworkspace.plugin.flavor.UIFlavor;
 import de.jtem.jrworkspace.plugin.flavor.FrontendFlavor.FrontendListener;
 import de.jtem.jrworkspace.plugin.flavor.HelpFlavor.HelpListener;
 import de.jtem.jrworkspace.plugin.flavor.PropertiesFlavor.PropertiesListener;
+import de.jtem.jrworkspace.plugin.flavor.ShutdownFlavor.ShutdownListener;
 import de.jtem.jrworkspace.plugin.flavor.StatusFlavor.StatusChangedListener;
 import de.jtem.jrworkspace.plugin.simplecontroller.action.AboutAction;
 import de.jtem.jrworkspace.plugin.simplecontroller.action.HelpWindowAction;
@@ -81,10 +87,66 @@ import de.jtem.jrworkspace.plugin.simplecontroller.widget.WrappingLayout;
 /**
  * A simple implementation of the {@link Controller} interface. 
  * It creates a JFrame if a plug-in  with {@link PerspectiveFlavor}
- * is registered.
- * First call the registerPlugin method to insert a plug-in. Then call
- * a startup method to initialize the application.
+ * is registered. First call {@link #registerPlugin(Plugin)} to insert a plug-in. Then call
+ * {@link #startup()} to initialize the application.
+ * 
+ * <h4>Plugin properties</h4>
+ * The SimpleController allows {@link Plugin}s to read and save properties. These properties 
+ * are read from and saved to a file 
+ * at startup and shutdown via <a href="http://xstream.codehaus.org/">XStream</a>.
+ * 
+ * <p>When {@link #shutdown()} is called (from the main windows closing method or from a plugin that implements 
+ * {@link ShutdownFlavor}) the user gets the chance to decide where the properties are saved. 
+ * The decisions are saved
+ * via the java preferences API (see {@link #setPropertiesResource(Class, String)}. If nothing
+ * else is specified the <code>SimpleController</code> tries to read the plugin properties from
+ * <pre> 
+ * 		System.getProperty("user.home") + "/.jrworkspace/default_simple.xml"
+ * </pre>
+ * and saves the user decisions in the preferences node of the package of the SimpleController.
+ *  
+ * <p> Besides the name (and path) of the properties file the user may choose
+ * <ul>
+ * 	<li> whether to load properties from the file at startup (default: <code>true</code>), </li>
+ *  <li> whether to save the properties file,</li>
+ *  <li> whether to remember the users decisions, which disables the dialog next time (so the 
+ *  user should get the chance to revise this decision via a plugin that implements {@link PropertiesFlavor}).</li>
+ * </ul>
+ * The user may cancel the dialog, which also cancels the shutdown process.
+ *
+ * <p>It is recommended that applications call
+ * <pre>
+ * 		setPropertiesResource(MyClass.class,"propertiesFileName")
+ * </pre>
+ * before calling {@link #startup()}. Then the controller loads the plugin properties from this resource. After deployment this 
+ * resource may most likely only be opened for reading, which has the effect that it will only be used
+ * to call {@link #setPropertiesInputStream(InputStream)} and the properties file will retain its default 
+ * value or whatever it is set to via {@link #setPropertiesFile(File)}.
+ * 
+ * <p>When loading properties the availability of a properties file is checked in the following order
+ * <ol>
+ * <li> the user properties file (from the java preferences), when loadFromUserPropertyFile is <code>true</code></li>
+ * <li> the propertiesInputStream</li>
+ * <li> the propertiesFile</li>
+ * </ol>
+ * When saving properties the availability of a properties file for output is checked in the following order
+ * <ol>
+ * <li> the user properties file (from the java preferences)</li>
+ * <li> the propertiesFile</li>
+ * </ol>
+ * The user is prompted when askBeforeSaveOnExit is <code>true</code> or both files above can't be opened for writing.
+ * 
+ * <p>Note to Eclipse developers: if you change  the path of the file to save the properties into
+ * in the dialog at shutdown 
+ * to point to the source folder  and DISABLE the load from this file check box, then the resource will be accessed
+ * to load the properties (and the situation after deployment is always tested) and the source folder file 
+ * is used to save (which then may be included in version control). 
+ * In order to trigger copying of the source folder file to the bin folder one may add a do nothing builder which has 
+ * "Refresh resources upon completion" enabled and make sure that the "Filtered resources" do not filter this file. 
+ * 
+ * 
  * @author Stefan Sechelmann
+ * @see Plugin
  *
  */
 public class SimpleController implements Controller {
@@ -132,16 +194,27 @@ public class SimpleController implements Controller {
 	protected Status
 		status = Status.PreStartup;
 
-	protected static File
-		defaultPropFile = null;
-	protected ShutdownHook
-		shutdownHook = new ShutdownHook();
 	protected XStream 
 		propertyxStream = new XStream(new PureJavaReflectionProvider());
 	protected File 
 		propFile = null;
 	protected InputStream
 		propInputStream = null;
+	protected Preferences 
+		userPreferences=null;
+	
+	protected static boolean 
+		DEFAULT_SAVE_ON_EXIT=true,
+		DEFAULT_ASK_BEFORE_SAVE_ON_EXIT=true,
+		DEFAULT_LOAD_FROM_USER_PROPERTY_FILE=true;
+	protected static String 
+		DEFAULT_USER_PROPERTY_FILE=null;
+
+	private boolean 
+		saveOnExit=DEFAULT_SAVE_ON_EXIT,
+		askBeforeSaveOnExit=DEFAULT_ASK_BEFORE_SAVE_ON_EXIT,
+		loadFromUserPropertyFile=DEFAULT_LOAD_FROM_USER_PROPERTY_FILE;
+	private String userPropertyFile=DEFAULT_USER_PROPERTY_FILE;
 	
 	public static enum Status {
 		PreStartup,
@@ -150,47 +223,24 @@ public class SimpleController implements Controller {
 	}
 	
 	
-	// get the default properties file
-	static {
-		try {
-			String userHome = System.getProperty("user.home");
-			File rcDir = new File(userHome + "/.jrworkspace");
-			if (!rcDir.exists()) {
-				rcDir.mkdirs();
-			}
-			defaultPropFile = new File(userHome + "/.jrworkspace/default_simple.xml");
-		} catch (SecurityException se) {}
-	}
-	
-	
 	/**
-	 * Construct a SimpleController which uses the properties file
-	 * System.getProperty("user.home") + "/.jrworkspace/default_simple.xml
-	 * which will be written on shutdown.
+	 * Construct a SimpleController. Initialize the properties file to 
+	 * System.getProperty("user.home") + "/.jrworkspace/default_simple.xml".
+	 * This will be written on {@link #shutdown()}.
 	 */
 	public SimpleController() {
-		setPropertiesFile(defaultPropFile);
-		getRuntime().addShutdownHook(shutdownHook);
+		// get the default properties file path if the security manager allows
+		String filename=null;
+		try {
+			String userHome = System.getProperty("user.home");
+			filename = userHome + "/.jrworkspace/default_simple.xml";
+		} catch (SecurityException se) {}
+		setPropertiesFile(filename == null? null : new File(filename));
+	
+		//init with user preferences associated with the controllers class, may be overridden by package specific properties
+		userPreferences=Preferences.userNodeForPackage(this.getClass());
 	}
 	
-	/**
-	 * Construct a SimpleController and uses the given properties file
-	 * @param propertiesFile the properties file
-	 */
-	public SimpleController(File propertiesFile) {
-		setPropertiesFile(propertiesFile);
-		getRuntime().addShutdownHook(shutdownHook);
-	}
-	
-	/**
-	 * Uses the given stream as property source. Use this constructor 
-	 * for webstart applications
-	 * @param propsInput The stream to read the properties
-	 */
-	public SimpleController(InputStream propsInput) {
-		setPropertiesInputStream(propsInput);
-		getRuntime().addShutdownHook(shutdownHook);
-	}
 	
 	/**
 	 * Registers a plug-in with this SimpleController
@@ -201,11 +251,13 @@ public class SimpleController implements Controller {
 	}
 	
 	/**
-	 * Installs all registered plug-ins and opens the main window if there
+	 * Installs all registered plug-ins, reads user preferences, restores plugin properties, and 
+	 * opens the main window if there
 	 * is a plug-in implementing {@link PerspectiveFlavor}
 	 */
 	public void startup() {
 		status = Status.Starting;
+		readUserPreferences();
 		loadProperties();
 		Runnable r = new Runnable() {
 			public void run() {
@@ -248,7 +300,7 @@ public class SimpleController implements Controller {
 			e.printStackTrace();
 		}
 	}
-	
+
 	
 	/**
 	 * Starts this SimpleController but does not open the main window
@@ -300,9 +352,15 @@ public class SimpleController implements Controller {
 		}
 		if (hasMainWindow && mainWindow == null) {
 			mainWindow = new JFrame();
-			mainWindow.setDefaultCloseOperation(EXIT_ON_CLOSE);
+			mainWindow.setDefaultCloseOperation(WindowConstants.DO_NOTHING_ON_CLOSE);
 			mainWindow.setLayout(new BorderLayout());
 			mainWindow.add(centerPanel, CENTER);
+			mainWindow.addWindowListener(new WindowAdapter() {
+				@Override
+				public void windowClosing(WindowEvent e) {
+					shutdown();
+				}
+			});
 		}
 		if (hasHelpMenu && helpWindow == null) {
 			helpWindow = new HelpWindow(mainWindow);
@@ -348,6 +406,9 @@ public class SimpleController implements Controller {
 		}
 		if (p instanceof PropertiesFlavor) {
 			((PropertiesFlavor)p).setPropertiesListener(flavorListener);
+		}
+		if (p instanceof ShutdownFlavor) {
+			((ShutdownFlavor)p).setShutdownListener(flavorListener);
 		}
 		try {
 			p.install(this);
@@ -535,7 +596,8 @@ public class SimpleController implements Controller {
 	 * 
 	 * @author Stefan Sechelmann
 	 */ 
-	protected class FlavorListener implements StatusChangedListener, FrontendListener, HelpListener, PropertiesListener {
+	protected class FlavorListener implements 
+		StatusChangedListener, FrontendListener, HelpListener, PropertiesListener, ShutdownListener {
 
 		/**
 		 * Notifies this controller that the status 
@@ -791,6 +853,42 @@ public class SimpleController implements Controller {
 			}
 		}
 
+		public String getUserPropertyFile() {
+			return SimpleController.this.getUserPropertyFile();
+		}
+
+		public boolean isAskBeforeSaveOnExit() {
+			return SimpleController.this.isAskBeforeSaveOnExit();
+		}
+
+		public boolean isLoadFromUserPropertyFile() {
+			return SimpleController.this.isLoadFromUserPropertyFile();
+		}
+
+		public boolean isSaveOnExit() {
+			return SimpleController.this.isSaveOnExit();
+		}
+
+		public void setAskBeforeSaveOnExit(boolean askBeforeSaveOnExit) {
+			SimpleController.this.setAskBeforeSaveOnExit(askBeforeSaveOnExit);
+		}
+
+		public void setLoadFromUserPropertyFile(boolean loadFromUserPropertyFile) {
+			SimpleController.this.setLoadFromUserPropertyFile(loadFromUserPropertyFile);
+		}
+
+		public void setSaveOnExit(boolean saveOnExit) {
+			SimpleController.this.setSaveOnExit(saveOnExit);
+		}
+
+		public void setUserPropertyFile(String userPropertyFile) {
+			SimpleController.this.setUserPropertyFile(userPropertyFile);
+		}
+
+		public void shutdown() {
+			SimpleController.this.shutdown();
+		}
+
 	}
 	
 	
@@ -806,47 +904,100 @@ public class SimpleController implements Controller {
 		}
 	}
 	
+
+	protected void readUserPreferences() {
+		saveOnExit = userPreferences.getBoolean("saveOnExit",DEFAULT_SAVE_ON_EXIT);
+		askBeforeSaveOnExit = userPreferences.getBoolean("askBeforeSaveOnExit",DEFAULT_ASK_BEFORE_SAVE_ON_EXIT);
+		loadFromUserPropertyFile = userPreferences.getBoolean("loadFromUserPropertyFile",DEFAULT_LOAD_FROM_USER_PROPERTY_FILE) ;
+		userPropertyFile=userPreferences.get("userPropertyFile", DEFAULT_USER_PROPERTY_FILE);
+	}
+	
+	
+	protected void writeUserPreferences() {
+		userPreferences.putBoolean("saveOnExit",saveOnExit);
+		userPreferences.putBoolean("askBeforeSaveOnExit",askBeforeSaveOnExit);
+		userPreferences.putBoolean("loadFromUserPropertyFile",loadFromUserPropertyFile);
+		userPreferences.put("userPropertyFile", userPropertyFile==null ? "" : userPropertyFile);
+	}
 	
 	@SuppressWarnings("unchecked")
 	protected void loadProperties() {
-		if (propFile == null && propInputStream == null) {
-			return;
-		}
 		propertiesAreSafe = true;
-		try {
-			InputStream in = null;
-			if (propInputStream != null) {
-				in = propInputStream;
-			} else {
-				in = new FileInputStream(propFile);
+
+		InputStream in = null;
+		if (loadFromUserPropertyFile) {
+			try {
+				in = new FileInputStream(userPropertyFile);
+			} catch (Exception e) {
+				// just fall through
 			}
-			properties = properties.getClass().cast(propertyxStream.fromXML(in));
-		} catch (IOException e) {
-//			System.out.println("could not load properties file " + propFile + ": " + e.getMessage());
+		}
+		if (in == null) {
+			in = propInputStream;
+		}
+		
+		if (in == null && propFile != null) {
+			try {
+				in = new FileInputStream(propFile);
 		} catch (Exception e) {
-			System.out.println("error while loading properties file " + propFile + ": " + e.getMessage());
+				// ok thats also not accessible  
+			}
+		}
+		
+		if (in == null ) return; // no accessible properties File/Stream found
+		
+		try {
+			properties = properties.getClass().cast(propertyxStream.fromXML(in));
+		} catch (Exception e) {
+			System.err.println("error while loading properties: " + e.getMessage());
 			propertiesAreSafe = false;
 		}
 	}
 	
-	
-	protected class ShutdownHook extends Thread {
+	/**
+	 * @return false when the shutdown was canceled by the user
+	 */
+	protected boolean savePropertiesOnExit() {
+		if (!propertiesAreSafe || (!askBeforeSaveOnExit && !saveOnExit)) return true; 
 		
-		@Override
-		public void run() {
-			if (!propertiesAreSafe) return;
-			for (Plugin p : plugins) {
-				try {
-					p.storeStates(SimpleController.this);
-				} catch (Exception e) {
-					System.out.println("could not store states of plugin " + p + ": " + e.getMessage());
-				}
-			}
-			if (propFile == null) {
-				return;
-			}
+		for (Plugin p : plugins) {
 			try {
-				OutputStream out = new FileOutputStream(propFile);
+				p.storeStates(SimpleController.this);
+			} catch (Exception e) {
+				System.out.println("could not store states of plugin " + p + ": " + e.getMessage());
+			}
+		}
+		
+		File file=null;
+		if (userPropertyFile != null) {
+			file=new File(userPropertyFile);
+		}
+		if (file == null){
+			file = propFile;
+		}
+
+		SaveOnExitDialog dialog = new SaveOnExitDialog(file, mainWindow, this);
+		OutputStream out;
+		if (askBeforeSaveOnExit){
+			boolean canceled=!dialog.show();
+			if (canceled) return false;
+			out=dialog.getOutputStream();
+		} else {
+			try {
+				if (file != null && file.getParentFile()!=null && !file.getParentFile().exists()) {
+					file.getParentFile().mkdirs();
+				}
+				out = new FileOutputStream(file);
+			} catch (Exception e) {
+				assert saveOnExit;
+				boolean canceled= !dialog.show();
+				if (canceled) return false;
+				out = dialog.getOutputStream();
+			}
+		}
+		
+		if (out != null) {
+			try {
 				String xml = propertyxStream.toXML(properties);
 				OutputStreamWriter writer = new OutputStreamWriter(out);
 				writer.write(xml);
@@ -854,13 +1005,21 @@ public class SimpleController implements Controller {
 				out.flush();
 				out.close();
 			} catch (IOException e) {
-				System.out.println("could not write properties file " + propFile + ": " + e.getMessage());
+				System.out.println("could not write properties: " + e.getMessage());
 			}
 		}
 		
+		try {
+			userPreferences.flush();
+		} catch (BackingStoreException e) {
+			System.err.println("could not persist user preferences: "+e.getMessage());
+		}
+		
+		return true;
 	}
 	
 	
+
 	/**
 	 * The SimpleController manages the swing look and feel if this flag is set
 	 * @param manageLookAndFeel
@@ -914,24 +1073,59 @@ public class SimpleController implements Controller {
 		} catch (Exception e) { }
 	}
 	
+	/** The provided resource serves 2 purposes: 
+	 * <ol>
+	 * <li>to set the properties <code>File</code> and <code>InputStream</code> via {@link #setPropertiesFile(File)} 
+	 * (if this resource allows write access) and {@link #setPropertiesInputStream(InputStream)} 
+	 * (if this resource allows read access),</li>
+	 * <li>to save and read user decisions about the reading and loading of the property file in a package specific node, via
+	 * the <a href="http://java.sun.com/javase/6/docs/technotes/guides/preferences/index.html">Java Preferences API</a>.  
+	 * </li>
+	 * </ol> 
+	 * 
+	 * @param clazz the class from which the resource may be obtained, the the 
+	 * properties node of package of this class is used to save the user decisions. 
+	 * @param propertiesFileName name of the resource that contains the plugin properties. This argument may 
+	 * be null, then only the second purpose is served and the properties <code>File</code> and 
+	 * <code>InputStream</code> are NOT set to null and may be set independently.
+	 */
+	public void setPropertiesResource(Class<?> clazz, String propertiesFileName) {
+		if (propertiesFileName != null) {
+			URL url=clazz.getResource(propertiesFileName);
+			if (url != null) {
+				File file = new File(url.getFile());
+				if (file.canWrite())
+					setPropertiesFile(file);
+				try {
+					setPropertiesInputStream(url.openStream());
+				} catch (IOException e) { //just fail quietly 
+				}
+			}
+		}
+	
+		userPreferences=Preferences.userNodeForPackage(clazz);
+		readUserPreferences();
+	}
+ 
 	/**
-	 * Sets the properties File of this SimpleController. If a
-	 * properties InputStream was set before this is set to null.
-	 * @param propertiesFile A file or null
+	 * Sets the properties File of this SimpleController. This does not overwrite a file chosen by the the user
+	 * and persisted as user properties.
+	 * @param propertiesFile a file or null
+	 * @see #setPropertiesResource(Class, String)
 	 */
 	public void setPropertiesFile(File propertiesFile) {
 		this.propFile = propertiesFile;
-		propInputStream = null;
 	}
 	
 	/**
-	 * Sets the properties InputStream of this SimpleController. If a 
-	 * properties File was set before this is set to null.
-	 * @param in An InputStream or null
+	 * Sets the properties InputStream of this SimpleController. If also a properties <code>File</code> is provided
+	 * the <code>InputStream</code> is used for reading the properties.
+	 * 
+	 * @param in an InputStream or null
+	 * @see #setPropertiesResource(Class, String)
 	 */
 	public void setPropertiesInputStream(InputStream in) {
 		this.propInputStream = in;
-		propFile = null;
 	}
 	
 	
@@ -952,5 +1146,69 @@ public class SimpleController implements Controller {
 		preferencesWindow.updateData();
 		preferencesWindow.setVisible(true);
 	}
+
+
+	public boolean isSaveOnExit() {
+		return saveOnExit;
+	}
+
+
+	public void setSaveOnExit(boolean saveOnExit) {
+		this.saveOnExit = saveOnExit;
+		writeUserPreferences();
+	}
+
+
+	public boolean isAskBeforeSaveOnExit() {
+		return askBeforeSaveOnExit;
+	}
+
+
+	public void setAskBeforeSaveOnExit(boolean askBeforeSaveOnExit) {
+		this.askBeforeSaveOnExit = askBeforeSaveOnExit;
+		writeUserPreferences();
+	}
+
+
+	public boolean isLoadFromUserPropertyFile() {
+		return loadFromUserPropertyFile;
+	}
+
+
+	public void setLoadFromUserPropertyFile(boolean loadFromUserPropertyFile) {
+		this.loadFromUserPropertyFile = loadFromUserPropertyFile;
+		writeUserPreferences();
+	}
+
+
+	public String getUserPropertyFile() {
+		return userPropertyFile;
+	}
+
+
+	/** Overwrite or initialize the file chosen by the user for reading and writing of properties.
+	 * 
+	 * @param userPropertyFile
+	 */
+	public void setUserPropertyFile(String userPropertyFile) {
+		this.userPropertyFile = userPropertyFile;
+		writeUserPreferences();
+	}
 	
+	/** Call this method to save the properties and exit the application. This is done in a newly 
+	 * created thread to allow user interaction during saving. The user is allowed to cancel that process.
+	 * 	 
+	 * @see #setPropertiesResource(Class, String)
+	 * 
+	 */
+	public void shutdown() {
+		Runnable doSaveAndExit=new Runnable(){
+			public void run() {
+				if (savePropertiesOnExit()) //not canceled
+					System.exit(0);
+			}
+		};
+		new Thread(doSaveAndExit,this.getClass()+"shutdown").run();
+	}
+			
 }
