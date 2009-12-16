@@ -52,8 +52,8 @@ JAVADOCOPTS= -author -protected -nodeprecated -nodeprecatedlist \
   $(foreach d, $(DEPNAMES), -link $(JTEMURL)/$(d)/api) \
   -d $(DOCDIR) -classpath "$(BINDIR):`find $(LIBDIR) -name '*.jar' -printf %p: 2> /dev/null `" \
   -sourcepath `echo $(SRCDIRS) | tr \  :` \
-  $(DOCPACKAGES)
-  
+   $(DOCPACKAGES)
+	   
 
 #things that are removed recursively by the clean target
 CLEAN=$(BINDIR) $(DOCDIR) $(WEBDIR) $(RELDIR) .testscompiled `find $(TESTDIR) -name '*.class' 2> /dev/null` \
@@ -92,9 +92,9 @@ DOWNLOADDEPS=$(JTEMURL)/downloads
 
 #function to copy to SRVDIR
 ifeq ($(strip $(SERVER)),)
-  copy_to_website=cp -R $(1) $(SRVDIR)/$(strip $(2)); echo " - copy \"$(1)\" to \" $(SRVDIR)/$(strip $(2))\" "
+  copy_to_website=cp -R $(1) $(SRVDIR)/$(strip $(2)) && echo " - copy \"$(1)\" to \" $(SRVDIR)/$(strip $(2))\" "
 else  
-  copy_to_website=scp -r $(1) $(SERVER):$(SRVDIR)/$(2)
+  copy_to_website=scp -r $(1) $(SERVER):$(SRVDIR)/$(strip $(2)) && echo " - copy \"$(1)\" to \" $(SERVER):$(SRVDIR)/$(strip $(2))\" "
 endif
 #function to execute on SERVER 
 ifeq ($(strip $(SERVER)),)
@@ -111,10 +111,10 @@ help:
 	@cat README.txt
 	@echo "CURRENT VALUES OF SOME VARIABLES"; echo "================================"; echo
 	@echo "project name (NAME): $(NAME)"
-	@echo "sources (SRCDIRS): $(SRCDIRS)"
-	@echo "compiled classes (BINDIR): $(BINDIR)"
-	@echo "generated api documentation (DOCDIR): $(DOCDIR)"
-	@echo "generated snippets for the web site (WEBDIR): $(WEBDIR)"
+	@echo "find sources in (SRCDIRS): $(SRCDIRS)"
+	@echo "compiled classes in (BINDIR): $(BINDIR)"
+	@echo "generat api documentation in (DOCDIR): $(DOCDIR)"
+	@echo "generat snippets for the web site in (WEBDIR): $(WEBDIR)"
 	@echo "package-summary.html to produce the web snipptes (PACKAGESUMHTML): $(PACKAGESUMHTML)"
 	@echo "server of the website - may be empty(SERVER): $(SERVER)"
 	@echo "directory of the web site on the server (SRVDIR): $(SRVDIR)"
@@ -210,7 +210,7 @@ web: $(WEBDIR)/teaser.html $(WEBDIR)/content.html
 	@for f in $?; do $(call copy_to_website,$$f,$(NAME)/$${f#$(WEBDIR)}); done
 	@if [ -d $(dir $(PACKAGEHTML))/doc-files ]; then $(call copy_to_website,$(dir $(PACKAGEHTML))/doc-files,$(NAME)/doc-files); fi
 	@if [ -f  releasenotes.txt ]; then $(call copy_to_website, releasenotes.txt,downloads/$(NAME)); fi
-	@-(call exec_on_server, find $(SRVDIR) -user `whoami` | xargs chmod g+rw)
+	@-$(call exec_on_server, find $(SRVDIR) -user `whoami` | xargs chmod g+rw)
 	
 $(WEBDIR)/teaser.html: $(DOCDIR)
 	@if [ ! -d $(WEBDIR) ]; then mkdir $(WEBDIR); fi
