@@ -9,6 +9,7 @@ import javax.swing.SwingUtilities;
 
 import de.jtem.jrworkspace.plugin.Controller;
 import de.jtem.jrworkspace.plugin.Plugin;
+import de.jtem.jrworkspace.plugin.PluginInfo;
 import de.jtem.jrworkspace.plugin.flavor.HelpFlavor;
 import de.jtem.jrworkspace.plugin.flavor.UIFlavor;
 import de.jtem.jrworkspace.plugin.sidecontainer.SideContainerPerspective;
@@ -16,6 +17,23 @@ import de.jtem.jrworkspace.plugin.sidecontainer.image.ImageHook;
 import de.jtem.jrworkspace.plugin.sidecontainer.widget.ShrinkPanel;
 import de.jtem.jrworkspace.plugin.sidecontainer.widget.ShrinkPanel.HelpCalledListener;
 
+/** Extend this class to get a shrink panel {@link Plugin} which will show up in the {@link SideContainerPerspective} 
+ * returned by your implementation of {@link #getPerspectivePluginClass()}.
+ * 
+ * <h4>PluginInfo<h4>
+ * It is strongly recommended that you override {@link #getPluginInfo()} to return a 
+ * descriptive {@link PluginInfo}. This method is called in the constructor of this class and must not
+ * return <code>null</code>.
+ * 
+ * <h4>Attach online help</h4> 
+ * If a file "<code>clazz.getSimpleName()</code>.html" is found as a resource of <code>clazz</code>, then this is
+ * attached as the help file of this plugin, where <code>clazz</code> is the top level 
+ * enclosing class of the runtime class of this object. Note that in Eclipse you probably need to 
+ * remove *.html from "Filtered resources".
+ * 
+ * <p>To turn this off override {@link #getHelpDocument()}, {@link #getHelpPath()}, and {@link #getHelpHandle()}.
+ *
+ */
 public abstract class ShrinkPanelPlugin extends Plugin implements UIFlavor, HelpFlavor, HelpCalledListener {
 
 	private SideContainerPerspective
@@ -35,6 +53,10 @@ public abstract class ShrinkPanelPlugin extends Plugin implements UIFlavor, Help
 	private HelpListener
 		helpListener = null;
 	
+	private String helpDocument;
+	private String helpPath;
+	private Class<?> helpHandle;
+	private boolean helpResourceChecked=false;	
 	
 	public static final int
 		SHRINKER_LEFT = 1,
@@ -42,7 +64,9 @@ public abstract class ShrinkPanelPlugin extends Plugin implements UIFlavor, Help
 		SHRINKER_BOTTOM = 3,
 		SHRINKER_TOP = 4,
 		SHRINKER_DEFAULT = 5;
-	
+
+
+	public abstract Class<? extends SideContainerPerspective> getPerspectivePluginClass(); 
 
 	public ShrinkPanelPlugin() {
 		if (getPluginInfo() == null ) {
@@ -62,6 +86,7 @@ public abstract class ShrinkPanelPlugin extends Plugin implements UIFlavor, Help
 		menuItem = new JCheckBoxMenuItem(getPluginInfo().name, smallIcon);
 		menuItem.addActionListener(new ShowPanelListener());
 	}
+	
 	
 	/**
 	 * Set the initial position of this panel plug-in
@@ -170,8 +195,6 @@ public abstract class ShrinkPanelPlugin extends Plugin implements UIFlavor, Help
 	}
 	
 	
-	public abstract Class<? extends SideContainerPerspective> getPerspectivePluginClass(); 
-	
 	
 	private class ShowPanelListener implements ActionListener {
 
@@ -201,17 +224,37 @@ public abstract class ShrinkPanelPlugin extends Plugin implements UIFlavor, Help
 		return getPluginInfo().icon;
 	}
 	
-	public String getHelpPath() {
-		return "help/";
-	}
-	
-	public Class<?> getHelpHandle() {
-		return ShrinkPanelPlugin.class;
-	}
-	
 	public String getHelpDocument() {
-		return "default.html";
+		checkHelpResource();
+		return helpDocument==null ? "default.html" : helpDocument;
 	}
+
+	public String getHelpPath() {
+		checkHelpResource();
+		return helpPath==null ? "help" : helpPath;
+	}
+
+	public Class<?> getHelpHandle() {
+		checkHelpResource();
+		return helpHandle==null ? ShrinkPanelPlugin.class : helpHandle;
+	}
+	
+	
+	private void checkHelpResource() {
+		if (helpResourceChecked) return;
+		Class<?> clazz = getClass();
+		while (null != clazz.getEnclosingClass()) {
+			clazz = clazz.getEnclosingClass();
+		}
+		String filename = clazz.getSimpleName()+".html";
+		if (null!=clazz.getResource(filename)) {
+			helpDocument=filename;
+			helpPath="";
+			helpHandle=clazz;
+		}
+		helpResourceChecked=true;
+	}
+	
 	
 	public String getHelpStyleSheet() {
 		return null;
