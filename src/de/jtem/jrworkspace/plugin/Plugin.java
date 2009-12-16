@@ -9,6 +9,11 @@ package de.jtem.jrworkspace.plugin;
  * 3. - uninstall(Controller c)
  * 4. - storeStates(Controller c)
  * 
+ * <h4>PluginInfo<h4>
+ * It is strongly recommended that you override {@link #getPluginInfo()} to return a 
+ * descriptive {@link PluginInfo}. This method is called in the constructor of this class and must not
+ * return <code>null</code>.
+ *
  * @author Stefan Sechelmann
  */
 public abstract class Plugin {
