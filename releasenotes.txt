@@ -1,4 +1,4 @@
-2009-12-16_rev591
+2009-12-16_rev594
 	- saving of plugin properties now allows user interaction, and persists user decisions 
 		(which file to choose, whether to ask before saving on exit, whether to load from this file) 
 		in an application specific java preference
