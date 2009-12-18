@@ -209,8 +209,8 @@ $(DOCDIR): $(shell find $(SRCDIRS)  -path "*.svn" -prune -o -print ) | $(DEPS)
 web: $(WEBDIR)/teaser.html $(WEBDIR)/content.html 
 	@for f in $?; do $(call copy_to_website,$$f,$(NAME)/$${f#$(WEBDIR)}); done
 	@if [ -d $(dir $(PACKAGEHTML))/doc-files ]; then $(call copy_to_website,$(dir $(PACKAGEHTML))/doc-files,$(NAME)/doc-files); fi
-	@if [ -f  releasenotes.txt ]; then $(call copy_to_website, releasenotes.txt,downloads/$(NAME)); fi
-	@-$(call exec_on_server, find $(SRVDIR) -user `whoami` | xargs chmod ug+rw)
+	if [ -f  releasenotes.txt ]; then $(call copy_to_website, releasenotes.txt,downloads/$(NAME)); fi
+	-$(call exec_on_server, find $(SRVDIR) -user `whoami` | xargs chmod ug+rw 2> /dev/null)
 	
 $(WEBDIR)/teaser.html: $(DOCDIR)
 	@if [ ! -d $(WEBDIR) ]; then mkdir $(WEBDIR); fi
@@ -243,7 +243,7 @@ release: web test $(DOCDIR) $(RELDIR)/$(NAME).jar $(RELDIR)/$(NAME).tgz $(RELDIR
 	@$(call copy_to_website, $(DOCDIR),$(NAME)/api)
 	@$(call copy_to_website, $(RELDIR)/current.txt,downloads/$(NAME))
 	@$(call copy_to_website, releasenotes.txt,downloads/$(NAME))
-	@-$(call exec_on_server, find $(SRVDIR) -user `whoami` | xargs chmod ug+rw)
+	@-$(call exec_on_server, find $(SRVDIR) -user `whoami` | xargs chmod ug+rw 2> /dev/null)
 	@echo " - release `cat rel/current.txt` succesfully deployed."
 
 #jar of compiled classes
