@@ -40,7 +40,7 @@ package de.jtem.jrworkspace.plugin;
  * 3. - uninstall(Controller c)
  * 4. - storeStates(Controller c)
  * 
- * <h4>PluginInfo<h4>
+ * <h4>PluginInfo</h4>
  * It is strongly recommended that you override {@link #getPluginInfo()} to return a 
  * descriptive {@link PluginInfo}. This method is called in the constructor of this class and must not
  * return <code>null</code>.
@@ -79,7 +79,9 @@ public abstract class Plugin {
 	
 
 	/**
-	 * Is called before the installation of this plug-in. 
+	 * Is called before the installation of this plug-in. The recommended way to read properties
+	 * is to call {@link Controller#getProperty(Class, String, Object)} on the controller provided
+	 * as argument.
 	 * @param c this applications {@link Controller}
 	 * @throws Exception
 	 * @see {@link Controller}
@@ -88,7 +90,9 @@ public abstract class Plugin {
 	}
 	
 	/**
-	 * Is called after this plug-in has been uninstalled.
+	 * Is called after this plug-in has been uninstalled. The recommended way to save properties
+	 * is to call {@link Controller#storeProperty(Class, String, Object)} on the controller provided
+	 * as argument.
 	 * @param cthis applications {@link Controller}
 	 * @throws Exception
 	 * @see {@link Controller}
