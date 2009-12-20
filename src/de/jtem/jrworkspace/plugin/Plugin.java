@@ -35,10 +35,10 @@ package de.jtem.jrworkspace.plugin;
 /**
  * The base class for all plug-ins of the jRWorkspace plug-in mechanism.
  * The order of calls in the life cycle of a plug-in is
- * 1. - restoreStates(Controller c)
- * 2. - install(Controller c)
- * 3. - uninstall(Controller c)
- * 4. - storeStates(Controller c)
+ * 1. - {@link #restoreStates(Controller)}
+ * 2. - {@link #install(Controller)}
+ * 3. - {@link #uninstall(Controller)}
+ * 4. - {@link #storeStates(Controller)}
  * 
  * <h4>PluginInfo</h4>
  * It is strongly recommended that you override {@link #getPluginInfo()} to return a 
