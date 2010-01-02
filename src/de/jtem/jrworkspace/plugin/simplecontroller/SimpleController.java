@@ -942,7 +942,7 @@ public class SimpleController implements Controller {
 		saveOnExit = userPreferences.getBoolean("saveOnExit",DEFAULT_SAVE_ON_EXIT);
 		askBeforeSaveOnExit = userPreferences.getBoolean("askBeforeSaveOnExit",DEFAULT_ASK_BEFORE_SAVE_ON_EXIT);
 		loadFromUserPropertyFile = userPreferences.getBoolean("loadFromUserPropertyFile",DEFAULT_LOAD_FROM_USER_PROPERTY_FILE) ;
-		userPropertyFile=userPreferences.get("userPropertyFile", DEFAULT_USER_PROPERTY_FILE);
+		userPropertyFile=userPreferences.get("userPropertyFile", propFile == null ? DEFAULT_USER_PROPERTY_FILE : propFile.getAbsolutePath());
 	}
 	
 	
