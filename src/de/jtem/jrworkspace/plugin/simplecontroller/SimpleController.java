@@ -53,11 +53,9 @@ import java.awt.event.WindowAdapter;
 import java.awt.event.WindowEvent;
 import java.io.File;
 import java.io.FileInputStream;
-import java.io.FileOutputStream;
+import java.io.FileWriter;
 import java.io.IOException;
 import java.io.InputStream;
-import java.io.OutputStream;
-import java.io.OutputStreamWriter;
 import java.io.Reader;
 import java.io.Writer;
 import java.net.URL;
@@ -1010,33 +1008,30 @@ public class SimpleController implements Controller {
 		}
 
 		SaveOnExitDialog dialog = new SaveOnExitDialog(file, mainWindow, this);
-		OutputStream out;
 		if (askBeforeSaveOnExit){
 			boolean canceled=!dialog.show();
 			if (canceled) return false;
-			out=dialog.getOutputStream();
+			file = dialog.getFile();
 		} else {
 			try {
 				if (file != null && file.getParentFile()!=null && !file.getParentFile().exists()) {
 					file.getParentFile().mkdirs();
 				}
-				out = new FileOutputStream(file);
 			} catch (Exception e) {
 				assert saveOnExit;
 				boolean canceled= !dialog.show();
 				if (canceled) return false;
-				out = dialog.getOutputStream();
+				file = dialog.getFile();
 			}
 		}
 		
-		if (out != null) {
+		if (file != null) {
 			try {
 				String xml = propertyxStream.toXML(properties);
-				OutputStreamWriter writer = new OutputStreamWriter(out);
+				FileWriter writer = new FileWriter(file);
 				writer.write(xml);
 				writer.flush();
-				out.flush();
-				out.close();
+				writer.close();
 			} catch (IOException e) {
 				System.out.println("could not write properties: " + e.getMessage());
 			}
@@ -1238,6 +1233,12 @@ public class SimpleController implements Controller {
 		Runnable doSaveAndExit=new Runnable(){
 			public void run() {
 				if (savePropertiesOnExit()) { //not canceled
+					if (mainWindow != null) {
+						mainWindow.dispose();
+					}
+					if (fullScreenFrame != null) {
+						fullScreenFrame.dispose();
+					}
 					System.exit(0);
 				}
 			}

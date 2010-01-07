@@ -38,8 +38,6 @@ import java.awt.Insets;
 import java.awt.event.ActionEvent;
 import java.awt.event.ActionListener;
 import java.io.File;
-import java.io.FileOutputStream;
-import java.io.OutputStream;
 
 import javax.swing.BorderFactory;
 import javax.swing.Box;
@@ -57,7 +55,8 @@ import de.jtem.jrworkspace.plugin.simplecontroller.SimpleController;
 
 public class SaveOnExitDialog {
 	//results are saved here
-	private OutputStream out;
+	private File
+		file = null;
 
 	//gui values and actions results that are used later
 	final private boolean[] yesNoCanceled=new boolean[] {false,false,true}; 
@@ -167,8 +166,8 @@ public class SaveOnExitDialog {
 		dialog.pack();
 		dialog.setResizable(false);
 		//see what we have got, ask again till we get a writable file or cancel.
-		out=null;
-		while (out == null) {
+		file = null;
+		while (file == null) {
 			dialog.setLocationByPlatform(true);
 			dialog.setLocationRelativeTo(dialog.getParent());
 			dialog.setVisible(true);
@@ -192,14 +191,13 @@ public class SaveOnExitDialog {
 				controller.setSaveOnExit(true);
 			}
 
-			File file = new File(filenameTF.getText());
+			file = new File(filenameTF.getText());
 			try {
 				if (file != null && file.getParentFile()!=null && !file.getParentFile().exists()) {
 					file.getParentFile().mkdirs();
 				}
-				out=new FileOutputStream(file);
 			} catch (Exception e) {
-				out=null;
+				file = null;
 				JOptionPane.showMessageDialog(dialog.getParent(), "Can not write to file: "+file, "", JOptionPane.ERROR_MESSAGE);
 			}	
 			yesNoCanceled[0]=yesNoCanceled[1]=false; yesNoCanceled[2]=true; 
@@ -208,10 +206,11 @@ public class SaveOnExitDialog {
 	}
 
 
-	public OutputStream getOutputStream() {
-		return out;
+	public File getFile() {
+		return file;
 	}
-
+	
+	
 	public static class PropertiesFileFilter extends FileFilter {
 		@Override
 		public boolean accept(File f) {
