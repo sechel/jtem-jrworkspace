@@ -1129,6 +1129,9 @@ public class SimpleController implements Controller {
 				} catch (IOException e) { //just fail quietly 
 				}
 			}
+			if (propFile == null) {
+				propFile = new File(propertiesFileName);
+			}
 		}
 	
 		userPreferences=Preferences.userNodeForPackage(clazz);
