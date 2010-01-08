@@ -593,6 +593,8 @@ public class SimpleController implements Controller {
 		helpMenu.add(new JPopupMenu.Separator());
 		helpMenu.add(new AboutAction(aboutDialog));
 		mBar.add(helpMenu);
+		JMenuBar oldBar = mainWindow.getJMenuBar();
+		if (oldBar != null) mBar.setPreferredSize(oldBar.getPreferredSize());
 		mainWindow.setJMenuBar(mBar);
 	}
 	
