@@ -1133,7 +1133,6 @@ public class SimpleController implements Controller {
 				propFile = new File(propertiesFileName);
 			}
 		}
-	
 		userPreferences=Preferences.userNodeForPackage(clazz);
 		readUserPreferences();
 	}
