@@ -1,3 +1,4 @@
+2010-01-20_rev624
 2010-01-04_rev605
 2009-12-16_rev595
 	- saving of plugin properties now allows user interaction, and persists user decisions 
