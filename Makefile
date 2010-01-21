@@ -249,6 +249,10 @@ release: web test $(DOCDIR) $(RELDIR)/$(NAME).jar $(RELDIR)/$(NAME).tgz $(RELDIR
 #jar of compiled classes
 $(RELDIR)/$(NAME).jar: $(BINDIR) $(RELDIR)/manifest.txt
 	@if [ ! -d $(RELDIR) ]; then mkdir $(RELDIR); fi
+	@$(foreach dir, $(SRCDIRS), for subdir in `find $(dir) -name .svn -prune -o -type d -print `; \
+		do if [ ! -d $(BINDIR)$${subdir#$(dir)} ]; then mkdir $(BINDIR)$${subdir#$(dir)}; fi; done;)
+	@$(foreach dir, $(SRCDIRS), for file in `find $(dir) -name .svn -prune -o -type f -print `; \
+		do cp -u $${file} $(BINDIR)$${file#$(dir)};  done;)
 	@jar cmf $(RELDIR)/manifest.txt $(RELDIR)/$(NAME).jar -C $(BINDIR) .
 
 #archive of source and jars of all dependencies
