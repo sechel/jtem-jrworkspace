@@ -93,9 +93,16 @@ public class PluginInfo {
 	}
 	
 	public static PluginInfo create(Class<?> pluginClass) {
-		PluginInfo pi = new PluginInfo(pluginClass.getSimpleName());
+		PluginInfo pi;
+		if (pluginClass == null) {
+			pi = new PluginInfo();
+		} else {
+			pi = new PluginInfo(pluginClass.getSimpleName());
+		}
 		pi.isDynamic = false;
-		pi.vendorName = pluginClass.getPackage().getImplementationVendor();
+		if (pluginClass != null &&  pluginClass.getPackage() != null) {
+			pi.vendorName = pluginClass.getPackage().getImplementationVendor();
+		}
 		return pi;
 	}
 	
