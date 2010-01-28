@@ -113,7 +113,9 @@ public class PluginManager extends Plugin implements PreferencesFlavor, ActionLi
 		scroller.setPreferredSize(new Dimension(10, 200));
 		panel.add(scroller, gbc);
 		
+		File userDir = new File(System.getProperty("user.dir"));
 		chooser.setDialogTitle("Choose Plugin Jar-File");
+		chooser.setCurrentDirectory(userDir);
 		chooser.setDialogType(JFileChooser.OPEN_DIALOG);
 		chooser.setAcceptAllFileFilterUsed(false);
 		chooser.setFileSelectionMode(JFileChooser.FILES_ONLY);
