@@ -45,6 +45,7 @@ import java.io.File;
 import java.io.IOException;
 import java.lang.reflect.Modifier;
 import java.net.MalformedURLException;
+import java.net.URI;
 import java.net.URL;
 import java.net.URLClassLoader;
 import java.nio.charset.Charset;
@@ -94,6 +95,8 @@ public class PluginManager extends Plugin implements PreferencesFlavor, ActionLi
 		chooser = new JFileChooser();
 	private EclipseFileManager 
 		fm = new EclipseFileManager(Locale.ROOT, Charset.defaultCharset());
+	private URI
+		userDir = new File(System.getProperty("user.dir")).toURI();
 	
 	public PluginManager() {
 		panel.setLayout(new GridBagLayout());
@@ -114,16 +117,16 @@ public class PluginManager extends Plugin implements PreferencesFlavor, ActionLi
 		panel.add(scroller, gbc);
 		
 		File userDir = new File(System.getProperty("user.dir"));
-		chooser.setDialogTitle("Choose Plugin Jar-File");
+		chooser.setDialogTitle("Choose Plugin Location");
 		chooser.setCurrentDirectory(userDir);
 		chooser.setDialogType(JFileChooser.OPEN_DIALOG);
 		chooser.setAcceptAllFileFilterUsed(false);
-		chooser.setFileSelectionMode(JFileChooser.FILES_ONLY);
+		chooser.setFileSelectionMode(JFileChooser.FILES_AND_DIRECTORIES);
 		chooser.setMultiSelectionEnabled(true);
 		chooser.setFileFilter(new FileFilter() {
 			@Override
 			public String getDescription() {
-				return "Plugin Jar-Files (*.jar)";
+				return "Plugin Location (*.jar | Directory)";
 			}
 			@Override
 			public boolean accept(File f) {
@@ -144,7 +147,9 @@ public class PluginManager extends Plugin implements PreferencesFlavor, ActionLi
 				return;
 			}
 			for (File f : chooser.getSelectedFiles()) {
-				pluginList.add(f.getAbsolutePath());
+				URI pluginURI = f.toURI();
+				pluginURI = userDir.relativize(pluginURI);
+				pluginList.add(pluginURI.getPath());
 			}
 			Collections.sort(pluginList);
 		}
@@ -177,6 +182,11 @@ public class PluginManager extends Plugin implements PreferencesFlavor, ActionLi
 		public Object getValueAt(int row, int column) {
 			String name = pluginList.get(row);
 			return name;
+		}
+		
+		@Override
+		public boolean isCellEditable(int row, int column) {
+			return false;
 		}
 		
 	}
