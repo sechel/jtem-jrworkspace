@@ -939,6 +939,7 @@ public class SimpleController implements Controller {
 	
 
 	protected void readUserPreferences() {
+		if (userPreferences == null) return;
 		saveOnExit = userPreferences.getBoolean("saveOnExit",DEFAULT_SAVE_ON_EXIT);
 		askBeforeSaveOnExit = userPreferences.getBoolean("askBeforeSaveOnExit",DEFAULT_ASK_BEFORE_SAVE_ON_EXIT);
 		loadFromUserPropertyFile = userPreferences.getBoolean("loadFromUserPropertyFile",DEFAULT_LOAD_FROM_USER_PROPERTY_FILE) ;
@@ -947,6 +948,7 @@ public class SimpleController implements Controller {
 	
 	
 	protected void writeUserPreferences() {
+		if (userPreferences == null) return;
 		userPreferences.putBoolean("saveOnExit",saveOnExit);
 		userPreferences.putBoolean("askBeforeSaveOnExit",askBeforeSaveOnExit);
 		userPreferences.putBoolean("loadFromUserPropertyFile",loadFromUserPropertyFile);
@@ -1040,7 +1042,9 @@ public class SimpleController implements Controller {
 		}
 		
 		try {
-			userPreferences.flush();
+			if (userPreferences != null) {
+				userPreferences.flush();
+			}
 		} catch (BackingStoreException e) {
 			System.err.println("could not persist user preferences: "+e.getMessage());
 		}
@@ -1132,7 +1136,11 @@ public class SimpleController implements Controller {
 				}
 			}
 		}
-		userPreferences=Preferences.userNodeForPackage(clazz);
+		if (clazz != null) {
+			userPreferences=Preferences.userNodeForPackage(clazz);
+		} else {
+			userPreferences = null;
+		}
 		readUserPreferences();
 	}
  
