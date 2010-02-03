@@ -43,6 +43,7 @@ import java.awt.event.ActionEvent;
 import java.awt.event.ActionListener;
 import java.io.File;
 import java.io.IOException;
+import java.lang.reflect.Method;
 import java.lang.reflect.Modifier;
 import java.net.MalformedURLException;
 import java.net.URI;
@@ -198,7 +199,17 @@ public class PluginManager extends Plugin implements PreferencesFlavor, ActionLi
 	}
 	
 	
-	private void retrievePlugins(File pluginFile, Controller c) throws IOException {
+	private void addURLToSystemClassLoader(URL url) throws Exception {
+		URLClassLoader sysLoader = (URLClassLoader)ClassLoader.getSystemClassLoader();
+		Method addURLMethod = URLClassLoader.class.getDeclaredMethod("addURL", URL.class);
+		addURLMethod.setAccessible(true);
+		addURLMethod.invoke(sysLoader, url);
+		addURLMethod.setAccessible(false);
+	}
+	
+	
+	
+	private void retrievePlugins(File pluginFile, Controller c) throws Exception {
 		URL url = null;
 		try {
 			url = pluginFile.toURI().toURL();
@@ -206,10 +217,9 @@ public class PluginManager extends Plugin implements PreferencesFlavor, ActionLi
 			e.printStackTrace();
 			return;
 		}
-		URL[] urls = new URL[]{url};
-		URLClassLoader loader = new URLClassLoader(urls);
+		addURLToSystemClassLoader(url);
 		Location location = getLocation(pluginFile);
-		List<Plugin> plugins = getPlugins(location, loader);
+		List<Plugin> plugins = getPlugins(location, ClassLoader.getSystemClassLoader());
 		for (Plugin p : plugins) {
 			c.getPlugin(p.getClass());
 		}
