@@ -39,7 +39,6 @@ import static java.awt.BorderLayout.NORTH;
 import static java.awt.BorderLayout.SOUTH;
 import static java.awt.FlowLayout.LEADING;
 import static javax.swing.SwingUtilities.invokeAndWait;
-import static javax.swing.SwingUtilities.invokeLater;
 import static javax.swing.SwingUtilities.isEventDispatchThread;
 
 import java.awt.BorderLayout;
@@ -323,7 +322,7 @@ public class SimpleController implements Controller {
 		};
 		try {
 			if (isEventDispatchThread()) {
-				invokeLater(r);
+				r.run();
 			} else {
 				invokeAndWait(r);
 			}
