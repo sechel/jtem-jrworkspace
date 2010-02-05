@@ -90,8 +90,8 @@ public class PluginManager extends Plugin implements PreferencesFlavor, ActionLi
 	private JScrollPane
 		scroller = new JScrollPane(pluginTable);
 	private JButton
-		addButton = new JButton(ImageHook.getIcon("add.png")),
-		removeButton = new JButton(ImageHook.getIcon("delete.png"));
+		addButton = new JButton(ImageHook.getIcon("plugin_add.png")),
+		removeButton = new JButton(ImageHook.getIcon("plugin_delete.png"));
 	private JFileChooser
 		chooser = new JFileChooser();
 	private EclipseFileManager 

@@ -75,10 +75,10 @@ public class PreferencesWindow extends JDialog implements TreeSelectionListener 
 	private JPanel
 		pagePanel = new JPanel();	
 	private JScrollPane
-		nacScroller = new JScrollPane(navTree),
+		navScroller = new JScrollPane(navTree),
 		pageScroller = new JScrollPane(pagePanel);
 	private JSplitPane
-		splitter = new JSplitPane(HORIZONTAL_SPLIT, nacScroller, pageScroller);
+		splitter = new JSplitPane(HORIZONTAL_SPLIT, navScroller, pageScroller);
 	private Icon
 		defaultIcon = ImageHook.getIcon("prefs.png");
 
