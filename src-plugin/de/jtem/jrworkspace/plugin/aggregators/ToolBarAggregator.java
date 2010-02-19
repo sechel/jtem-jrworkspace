@@ -73,7 +73,26 @@ public abstract class ToolBarAggregator extends Plugin implements ToolBarFlavor 
 		}
 
 		public int compareTo(ToolBarItem o) {
+			if (priority == o.priority) {
+				return getName().compareTo(o.getName());
+			}
 			return priority < o.priority ? -1 : 1;
+		}
+		
+		public String getName() {
+			if (item instanceof Action) {
+				Action a = (Action)item;
+				return (String)a.getValue(Action.NAME);
+			}
+			if (item instanceof Component) {
+				Component c = (Component)item;
+				if (c.getName() != null) {
+					return c.getName();
+				} else {
+					return "";
+				}
+			}
+			return "";
 		}
 		
 	}
