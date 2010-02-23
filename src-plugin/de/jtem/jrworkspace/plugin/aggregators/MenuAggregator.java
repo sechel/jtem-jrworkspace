@@ -161,7 +161,17 @@ public abstract class MenuAggregator extends Plugin implements MenuFlavor, Front
 		public int compareTo(MenuNode o) {
 			double p1 = entry == null ? Double.MAX_VALUE : entry.priority;
 			double p2 = o.entry == null ? Double.MAX_VALUE : o.entry.priority;
-			return p1 < p2 ? -1 : 1;
+			if (p1 == p2 && entry != null && o.entry != null) {
+				if (entry.item instanceof JMenuItem && o.entry.item instanceof JMenuItem) {
+					JMenuItem m1 = (JMenuItem)entry.item;
+					JMenuItem m2 = (JMenuItem)o.entry.item;
+					return m1.getText().compareTo(m2.getText());
+				} else {
+					return 0;
+				}
+			} else {
+				return p1 < p2 ? -1 : 1;
+			}
 		}
 		
 		@Override
