@@ -30,13 +30,13 @@ LIBDIR=lib
 #web site
 RELDIR=rel
 
-#directories of the JUnit tests, all classe whose source files match Test*.java or *Test.java will be executed 
-TESTDIR=
+#directories of the JUnit tests, all classes whose source files match Test*.java or *Test.java will be executed 
+TESTDIR=test
 TESTBINDIR=$(TESTDIR)
 #exclude the following tests  
 EXCLTESTS=
 #where to find junit.jar
-JUNIT=$(shell locate junit.jar |  grep '/junit.jar' | tail --lines=1)
+JUNIT=junit.jar
 
 #compile options
 JAVACOPTS=-target 1.5 -source 1.5
@@ -83,6 +83,8 @@ else
   et_=$(addprefix %,$(EXCLTESTS:.java=))
   TESTS=$(filter-out $(et_), $(ALLTESTS))
   ext_=$(filter $(et_), $(ALLTESTS))
+  #choose junit test runner class
+  junit_test_runner_class=`(java -cp $(JUNIT) org.junit.runner.JUnitCore 1>/dev/null 2>&1 && echo org.junit.runner.JUnitCore) || echo junit.textui.TestRunner`  
 endif
   
 DEPNAMES=$(shell cat dependencies.txt 2> /dev/null | grep -v '^\#' )
@@ -97,12 +99,14 @@ ifeq ($(strip $(SERVER)),)
 else  
   copy_to_website=scp -r $(1) $(SERVER):$(SRVDIR)/$(strip $(2)) && echo " - copy \"$(1)\" to \" $(SERVER):$(SRVDIR)/$(strip $(2))\" "
 endif
+
 #function to execute on SERVER 
 ifeq ($(strip $(SERVER)),)
   exec_on_server=$(1) 
 else  
   exec_on_server=ssh $(SERVER) "$(1)"
 endif
+
 
 
 # ---Targets --
@@ -161,12 +165,11 @@ $(BINDIR): $(SOURCEFILES) | $(DEPS)
 		$(SOURCEFILES) \
 		|| { rm -rf $(BINDIR); echo "ERROR: compilation failed, folder \"$(BINDIR)\" removed"; exit 1; }
 	@touch $(BINDIR)
-	@echo " - compilation of sources in \"$(SRCDIRS)\" successfull, class files in \"$(BINDIR)\" "
+	@echo " - compilation of sources in \"$(SRCDIRS)\" successful, class files in \"$(BINDIR)\" "
 	
 
 # --- test ---
 #compile and run JUnit tests form TESTDIR	
-
 .PHONY: test
 test: .testscompiled
 #only runs tests if $(TESTDIR) is non empty
@@ -176,7 +179,7 @@ else
 	@for test in $(TESTS); do \
 		echo "- JUnitTest: $$test"; \
 		java -ea -classpath "`find $(LIBDIR) -name '*.jar' -printf %p: 2> /dev/null`$(JUNIT):$(BINDIR):$(TESTBINDIR)" \
-			junit.textui.TestRunner $$test || { echo "JUnit Test failed!" ; exit 1; } \
+			$(junit_test_runner_class) $$test || { echo "JUnit Test failed!" ; exit 1; } \
 		done;
 	@if [ -n "$(ext_)" ]; then echo "WARNING: some tests where exluded, see variable EXCLTESTS"; fi
 endif
@@ -190,7 +193,7 @@ ifneq ($(strip $(TESTDIR)),)
 		-d $(TESTBINDIR)/ \
 		$(TESTSOURCEFILES)
 	@touch .testscompiled 
-	@echo " - compilation of test in \"$(TESTDIR)\" successfull, class files in \"$(TESTBINDIR)\" "
+	@echo " - compilation of test in \"$(TESTDIR)\" successful, class files in \"$(TESTBINDIR)\" "
 endif
 
 
@@ -304,6 +307,7 @@ debug:
 	@echo PACKAGESUMHTML=$(PACKAGESUMHTML); echo
 	@echo PACKAGEHTML=$(PACKAGEHTML); echo
 	@echo DEPS=$(DEPS); echo
+	@echo junit_test_runner_class=$(junit_test_runner_class); echo
 
 .PHONY: clean
 clean:
