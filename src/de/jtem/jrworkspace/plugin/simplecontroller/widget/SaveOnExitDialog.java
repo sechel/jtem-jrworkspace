@@ -31,6 +31,8 @@ OF SUCH DAMAGE.
 
 package de.jtem.jrworkspace.plugin.simplecontroller.widget;
 
+import static de.jtem.jrworkspace.logging.LoggingSystem.LOGGER;
+
 import java.awt.Dimension;
 import java.awt.GridBagConstraints;
 import java.awt.GridBagLayout;
@@ -162,6 +164,8 @@ public class SaveOnExitDialog {
 	 * @return false, when the user canceled the dialog.
 	 */
 	public boolean show() {
+		LOGGER.entering(SaveOnExitDialog.class.getName(), "show");
+		
 		yesNoCanceled[0]=yesNoCanceled[1]=false; yesNoCanceled[2]=true; 
 		dialog.pack();
 		dialog.setResizable(false);
@@ -171,8 +175,10 @@ public class SaveOnExitDialog {
 			dialog.setLocationByPlatform(true);
 			dialog.setLocationRelativeTo(dialog.getParent());
 			dialog.setVisible(true);
-			if (yesNoCanceled[2])
+			if (yesNoCanceled[2]) {
+				LOGGER.exiting(SaveOnExitDialog.class.getName(), "show", false);
 				return false; // cancel pressed
+			}
 			if (yesNoCanceled[1]) { // No pressed
 				controller.setAskBeforeSaveOnExit(!rememberCB.isSelected());
 				controller.setUserPropertyFile(filenameTF.getText());
@@ -202,6 +208,8 @@ public class SaveOnExitDialog {
 			}	
 			yesNoCanceled[0]=yesNoCanceled[1]=false; yesNoCanceled[2]=true; 
 		}
+		
+		LOGGER.exiting(SaveOnExitDialog.class.getName(), "show", true);
 		return true;
 	}
 

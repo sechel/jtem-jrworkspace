@@ -7,6 +7,7 @@ import java.io.FileReader;
 import java.io.IOException;
 import java.io.PrintStream;
 import java.util.logging.Level;
+import java.util.logging.Logger;
 
 import org.junit.AfterClass;
 import org.junit.Assert;
@@ -102,6 +103,16 @@ public class LoggingSystemTest {
 		}
 
 		Assert.assertTrue("Log file does not contain \"" + message + "\"", found);
+	}
+	
+	@Test
+	public void testWrongLogLevelNameInSystemProperty() {
+		System.setProperty("de.jtem.jrworkspace.loglevel", "Servere");
+		Assert.assertEquals(Logger.getLogger("de.jtem.jrworkspace").getLevel(),
+				LoggingSystem.tryToGetLoglevel());
+		System.setProperty("de.jtem.jrworkspace.loglevel", "SEVERE");
+		Assert.assertEquals(Level.SEVERE, 
+				LoggingSystem.tryToGetLoglevel());
 	}
 	
 	private static File tryCreateTmpFile() {

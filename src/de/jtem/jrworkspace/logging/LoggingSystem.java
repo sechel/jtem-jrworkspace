@@ -42,13 +42,19 @@ public class LoggingSystem {
         tryToInitFileHandler();
 	}
 
-	private static Level tryToGetLoglevel() {
+	static Level tryToGetLoglevel() {
 		Level level = null;
+		String levelName = null;
 		try {
-			level = Level.parse(System.getProperty("de.jtem.jrworkspace.loglevel"));
+			levelName = System.getProperty("de.jtem.jrworkspace.loglevel");
 		} catch (SecurityException se) {
 			LOGGER.config("No permission to read system property: " + se.getMessage());
-		} 
+		}
+		try {
+			level = levelName == null ? null : Level.parse(levelName);
+		} catch (IllegalArgumentException e) {
+			LOGGER.config("Could not parse the value of the system property de.jtem.jrworkspace.loglevel \"" + levelName +"\" to a logging level:");  
+		}
 		if (level == null) {
 			level = Logger.getLogger("de.jtem.jrworkspace").getLevel();
 		}

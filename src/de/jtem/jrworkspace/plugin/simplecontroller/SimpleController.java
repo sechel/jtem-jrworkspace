@@ -31,6 +31,7 @@ OF SUCH DAMAGE.
 
 package de.jtem.jrworkspace.plugin.simplecontroller;
 
+import static de.jtem.jrworkspace.logging.LoggingSystem.LOGGER;
 import static de.jtem.jrworkspace.plugin.simplecontroller.SimpleController.Status.Started;
 import static de.jtem.jrworkspace.plugin.simplecontroller.SimpleController.Status.Starting;
 import static de.jtem.jrworkspace.plugin.simplecontroller.image.ImageHook.setIconImage;
@@ -55,7 +56,9 @@ import java.io.FileInputStream;
 import java.io.FileWriter;
 import java.io.IOException;
 import java.io.InputStream;
+import java.io.PrintWriter;
 import java.io.Reader;
+import java.io.StringWriter;
 import java.io.Writer;
 import java.net.URL;
 import java.util.Collections;
@@ -259,6 +262,8 @@ public class SimpleController implements Controller {
 	 * This will be written on {@link #shutdown()}.
 	 */
 	public SimpleController() {
+		LOGGER.entering(SimpleController.class.getName(), "SimpleController");
+		
 		// get the default properties file path if the security manager allows
 		String filename=null;
 		try {
@@ -266,9 +271,11 @@ public class SimpleController implements Controller {
 			filename = userHome + "/.jrworkspace/default_simple.xml";
 		} catch (SecurityException se) {}
 		setPropertiesFile(filename == null? null : new File(filename));
-	
+		
 		//init with user preferences associated with the controllers class, may be overridden by package specific properties
 		userPreferences=Preferences.userNodeForPackage(this.getClass());
+		
+		LOGGER.exiting(SimpleController.class.getName(), "SimpleController");
 	}
 	
 	
@@ -286,6 +293,8 @@ public class SimpleController implements Controller {
 	 * is a plug-in implementing {@link PerspectiveFlavor}
 	 */
 	public void startup() {
+		LOGGER.entering(SimpleController.class.getName(), "startup");
+		
 		status = Status.Starting;
 		readUserPreferences();
 		loadProperties();
@@ -298,7 +307,7 @@ public class SimpleController implements Controller {
 				status = Status.Started;
 				if (hasToolBar || hasMenuBar) {
 					if (perspective == null) {
-						System.err.println("SimpleController: No main perspective flavor found. Exit.");
+						LOGGER.severe("SimpleController: No main perspective flavor found. Exit.");
 						System.exit(-1);
 					}
 				}
@@ -306,6 +315,7 @@ public class SimpleController implements Controller {
 					if (!localStartup) {
 						mainWindow.setSize(perspective.getCenterComponent().getPreferredSize());
 						mainWindow.setVisible(true);
+						LOGGER.finer("mainWindow visible");
 					}
 					if (manageLookAndFeel) {
 						try {
@@ -314,7 +324,7 @@ public class SimpleController implements Controller {
 							flavorListener.installLookAndFeel(lnfClass);
 							flavorListener.updateFrontendUI();
 						} catch (Exception e) {
-							System.err.println("Could not load look and feel.");
+							LOGGER.config("Could not load look and feel.");
 						}
 					}
 				}
@@ -322,13 +332,19 @@ public class SimpleController implements Controller {
 		};
 		try {
 			if (isEventDispatchThread()) {
+				LOGGER.finer("startup directly on the event dispatch thread");
 				r.run();
 			} else {
+				LOGGER.finer("startup on the event dispatch thread via invoke and wait");
 				invokeAndWait(r);
 			}
 		} catch (Exception e) {
-			e.printStackTrace();
+			StringWriter stackTrace = new StringWriter();
+			e.printStackTrace(new PrintWriter(stackTrace));
+			LOGGER.severe(stackTrace.toString());
 		}
+		
+		LOGGER.exiting(SimpleController.class.getName(), "startup");
 	}
 
 	
@@ -340,18 +356,25 @@ public class SimpleController implements Controller {
 	 * an empty Container else
 	 */
 	public JRootPane startupLocal() {
+		LOGGER.entering(SimpleController.class.getName(), "startupLocal");
+		
 		localStartup = true;
 		startup();
 		if (mainWindow != null) {
+			LOGGER.exiting(SimpleController.class.getName(), "startupLocal", mainWindow.getRootPane());
 			return mainWindow.getRootPane();
 		} else {
+			LOGGER.exiting(SimpleController.class.getName(), "startupLocal", "a brand new JRootPane");
 			return new JRootPane();
 		}
+		
 	}
 	
 	
 	
 	protected void initializeComponents() {
+		LOGGER.entering(SimpleController.class.getName(), "initializeComponents");
+		
 		for (Plugin p : plugins) {
 			if (p instanceof PerspectiveFlavor) { 
 				perspective = (PerspectiveFlavor)p;
@@ -410,10 +433,14 @@ public class SimpleController implements Controller {
 			mainWindow.remove(statusLabel);
 			mainWindow.add(statusLabel, SOUTH);				
 		}
+		
+		LOGGER.exiting(SimpleController.class.getName(), "initializeComponents");
 	}
 
 	
 	protected void activatePlugin(Plugin p) {
+		LOGGER.entering(SimpleController.class.getName(), "activatePlugin", new Object[]{p});
+		
 		if (isActive(p)) {
 			return;
 		} else {
@@ -464,6 +491,8 @@ public class SimpleController implements Controller {
 		if (p instanceof MenuFlavor) {
 			updateMenuBarInternal();
 		}
+		
+		LOGGER.exiting(SimpleController.class.getName(), "activatePlugin");
 	}
 
 	
@@ -474,7 +503,7 @@ public class SimpleController implements Controller {
 					try {
 						activatePlugin(p);
 					} catch (Exception e) {
-						System.err.println("could not install dependent plug-in: " + p);
+						LOGGER.info("could not install dependent plug-in: " + p);
 					}
 				}
 				return clazz.cast(p);
@@ -485,7 +514,7 @@ public class SimpleController implements Controller {
 			try {
 				p = clazz.newInstance();
 			} catch (Exception e) {
-				System.err.println("could not instantiate dependent plug-in: " + clazz.getSimpleName() + ": " + e.getClass().getSimpleName());
+				LOGGER.info("could not instantiate dependent plug-in: " + clazz.getSimpleName() + ": " + e.getClass().getSimpleName());
 				return null;
 			}
 			registerPlugin(p);
@@ -493,7 +522,7 @@ public class SimpleController implements Controller {
 			try {
 				activatePlugin(p);
 			} catch (Exception e) {
-				System.err.println("could not install dependent plug-in: " + p + ": " + e.getClass().getSimpleName());
+				LOGGER.info("could not install dependent plug-in \"" + p + "\" exceptiion: " + e.getClass().getSimpleName());
 			}
 			return clazz.cast(p);
 		}
@@ -938,116 +967,167 @@ public class SimpleController implements Controller {
 	
 
 	protected void readUserPreferences() {
+		LOGGER.entering(SimpleController.class.getName(), "readUserPreferences");
+
 		if (userPreferences == null) return;
+		
 		saveOnExit = userPreferences.getBoolean("saveOnExit",DEFAULT_SAVE_ON_EXIT);
 		askBeforeSaveOnExit = userPreferences.getBoolean("askBeforeSaveOnExit",DEFAULT_ASK_BEFORE_SAVE_ON_EXIT);
 		loadFromUserPropertyFile = userPreferences.getBoolean("loadFromUserPropertyFile",DEFAULT_LOAD_FROM_USER_PROPERTY_FILE) ;
 		userPropertyFile=userPreferences.get("userPropertyFile", DEFAULT_USER_PROPERTY_FILE);
+
+		LOGGER.finer("saveOnExit: " + saveOnExit);
+		LOGGER.finer("askBeforeSaveOnExit: " + askBeforeSaveOnExit);
+		LOGGER.finer("loadFromUserPropertyFile: " + loadFromUserPropertyFile);
+		LOGGER.finer("userPropertyFile: " + userPropertyFile);
+		LOGGER.exiting(SimpleController.class.getName(), "readUserPreferences");
 	}
 	
 	
 	protected void writeUserPreferences() {
+		LOGGER.entering(SimpleController.class.getName(), "writeUserPreferences");
+		
 		if (userPreferences == null) return;
+		
 		userPreferences.putBoolean("saveOnExit",saveOnExit);
 		userPreferences.putBoolean("askBeforeSaveOnExit",askBeforeSaveOnExit);
 		userPreferences.putBoolean("loadFromUserPropertyFile",loadFromUserPropertyFile);
 		userPreferences.put("userPropertyFile", userPropertyFile==null ? "" : userPropertyFile);
+		
+		LOGGER.exiting(SimpleController.class.getName(), "writeUserPreferences");
 	}
 	
 	@SuppressWarnings("unchecked")
 	protected void loadProperties() {
+		LOGGER.entering(SimpleController.class.getName(), "loadProperties");
+		
 		propertiesAreSafe = true;
 
 		InputStream in = null;
 		if (loadFromUserPropertyFile) {
 			try {
 				in = new FileInputStream(userPropertyFile);
+				LOGGER.finer("userPropertyFile \"" + userPropertyFile + "\" used to set input stream");
 			} catch (Exception e) {
 				// just fall through
 			}
 		}
 		if (in == null) {
 			in = propInputStream;
+			LOGGER.finer("property input stream used as input stream");
 		}
 		
 		if (in == null && propFile != null) {
 			try {
 				in = new FileInputStream(propFile);
-		} catch (Exception e) {
+				LOGGER.finer("propFile \"" + propFile + "\" used as input stream");
+			} catch (Exception e) {
 				// ok thats also not accessible  
 			}
 		}
 		
-		if (in == null ) return; // no accessible properties File/Stream found
+		if (in == null ) {
+			LOGGER.finer("no accessible properties File or input stream found");
+			return;
+		}
 		
 		try {
 			properties = properties.getClass().cast(propertyxStream.fromXML(in));
 		} catch (Exception e) {
-			System.err.println("error while loading properties: " + e.getMessage());
+			LOGGER.info("error while loading properties: " + e.getMessage());
 			propertiesAreSafe = false;
 		}
+		
+		LOGGER.finer("propertiesAreSafe" + propertiesAreSafe);
+		LOGGER.exiting(SimpleController.class.getName(), "loadProperties");
 	}
 	
 	/**
 	 * @return false when the shutdown was canceled by the user
 	 */
 	protected boolean savePropertiesOnExit() {
-		if (!propertiesAreSafe || (!askBeforeSaveOnExit && !saveOnExit)) return true; 
+		LOGGER.entering(SimpleController.class.getName(), "savePropertiesOnExit");
+		LOGGER.finer("propertiesAreSafe: " + propertiesAreSafe);
+		LOGGER.finer("askBeforeSaveOnExit: " + askBeforeSaveOnExit);
+		LOGGER.finer("saveOnExit: " + saveOnExit);
+		
+		if (!propertiesAreSafe || (!askBeforeSaveOnExit && !saveOnExit)) {
+			LOGGER.exiting(SimpleController.class.getName(), "savePropertiesOnExit", true);
+			return true; 
+		}
 		
 		for (Plugin p : plugins) {
 			try {
 				p.storeStates(SimpleController.this);
 			} catch (Exception e) {
-				System.out.println("could not store states of plugin " + p + ": " + e.getMessage());
+				LOGGER.info("could not store states of plugin \"" + p + "\": " + e.getMessage());
 			}
 		}
 		
 		File file=null;
 		if (userPropertyFile != null) {
 			file=new File(userPropertyFile);
+			LOGGER.finer("userPropertyFile: " + userPropertyFile);
 		}
 		if (file == null){
 			file = propFile;
+			LOGGER.finer("propFile: " + (propFile == null ? "null" : propFile.getAbsolutePath()));
 		}
 
 		SaveOnExitDialog dialog = new SaveOnExitDialog(file, mainWindow, this);
 		if (askBeforeSaveOnExit){
 			boolean canceled=!dialog.show();
-			if (canceled) return false;
+			if (canceled) {
+				LOGGER.exiting(SimpleController.class.getName(), "savePropertiesOnExit (property file saving dialog canceled)", false);
+				return false;
+			}
 			file = dialog.getFile();
+			LOGGER.finer("file obtained from dialog: " + (file == null ? "null" : file.getAbsolutePath()));
 		} else {
 			try {
 				if (file != null && file.getParentFile()!=null && !file.getParentFile().exists()) {
+					LOGGER.finer("try to make dirs: " + file.getParentFile());
 					file.getParentFile().mkdirs();
+					LOGGER.finer("dirs successfully made");
 				}
 			} catch (Exception e) {
 				assert saveOnExit;
-				boolean canceled= !dialog.show();
-				if (canceled) return false;
+				LOGGER.finer("Although we should not ask the user, we do now, because save on exit was true and we could not save to the given file.");
+				boolean canceled = !dialog.show();
+				if (canceled) {
+					LOGGER.finer("property file saving dialog canceled");
+					LOGGER.exiting(SimpleController.class.getName(), "savePropertiesOnExit (property file saving dialog canceled)", false);
+					return false;
+				}
 				file = dialog.getFile();
+				LOGGER.finer("file obtained from dialog: " + (file == null ? "null" : file.getAbsolutePath()));
 			}
 		}
 		
 		if (file != null) {
 			try {
+				LOGGER.finer("try to write properties to file: " + file);
 				String xml = propertyxStream.toXML(properties);
+				LOGGER.finest("properties: " + properties);
 				FileWriter writer = new FileWriter(file);
 				writer.write(xml);
 				writer.flush();
 				writer.close();
 			} catch (IOException e) {
-				System.out.println("could not write properties: " + e.getMessage());
+				LOGGER.info("writing properties failed: " + e.getMessage());
 			}
 		}
 		
 		try {
 			if (userPreferences != null) {
+				LOGGER.finer("flush the user preferences");
 				userPreferences.flush();
 			}
 		} catch (BackingStoreException e) {
-			System.err.println("could not persist user preferences: "+e.getMessage());
+			LOGGER.info("could not persist user preferences: " + e.getMessage());
 		}
 		
+		LOGGER.exiting(SimpleController.class.getName(), "savePropertiesOnExit", true);
 		return true;
 	}
 	
@@ -1124,12 +1204,18 @@ public class SimpleController implements Controller {
 	 * <code>InputStream</code> are NOT set to null and may be set independently.
 	 */
 	public void setPropertiesResource(Class<?> clazz, String propertiesFileName) {
+		LOGGER.entering(SimpleController.class.getName(), "setPropertiesResource", new Object[]{clazz, propertiesFileName});
+		
 		if (propertiesFileName != null) {
 			URL url=clazz.getResource(propertiesFileName);
+			LOGGER.finer("url: " + url);
 			if (url != null) {
 				File file = new File(url.getFile());
-				if (file.canWrite())
+				LOGGER.finer("file: " + file);
+				if (file.canWrite()) {
+					LOGGER.finer("can write to file: " + file);
 					setPropertiesFile(file);
+				}
 				try {
 					setPropertiesInputStream(url.openStream());
 				} catch (IOException e) { //just fail quietly 
@@ -1138,10 +1224,13 @@ public class SimpleController implements Controller {
 		}
 		if (clazz != null) {
 			userPreferences=Preferences.userNodeForPackage(clazz);
+			LOGGER.finer("userPreferences: " + userPreferences);
 		} else {
 			userPreferences = null;
+			LOGGER.finer("user preferences set to null");
 		}
 		readUserPreferences();
+		LOGGER.exiting(SimpleController.class.getName(), "setPropertiesResource");
 	}
  
 	/**
@@ -1151,7 +1240,9 @@ public class SimpleController implements Controller {
 	 * @see #setPropertiesResource(Class, String)
 	 */
 	public void setPropertiesFile(File propertiesFile) {
+		LOGGER.entering(SimpleController.class.getName(), "setPropertiesFile", new Object[]{propertiesFile});
 		this.propFile = propertiesFile;
+		LOGGER.exiting(SimpleController.class.getName(), "setPropertiesFile");
 	}
 	
 	/**
@@ -1162,7 +1253,9 @@ public class SimpleController implements Controller {
 	 * @see #setPropertiesResource(Class, String)
 	 */
 	public void setPropertiesInputStream(InputStream in) {
+		LOGGER.entering(SimpleController.class.getName(), "setPropertiesInputStream");
 		this.propInputStream = in;
+		LOGGER.exiting(SimpleController.class.getName(), "setPropertiesInputStream");
 	}
 	
 	
@@ -1239,20 +1332,29 @@ public class SimpleController implements Controller {
 	 * 
 	 */
 	public void shutdown() {
+		LOGGER.entering(SimpleController.class.getName(), "shutdown", new Object[]{});
+		
 		Runnable doSaveAndExit=new Runnable(){
 			public void run() {
+				LOGGER.entering("doSaveAndExit Runnable", "run (do the save and exit stuff)", new Object[]{});
 				if (savePropertiesOnExit()) { //not canceled
 					if (mainWindow != null) {
+						LOGGER.finer("dispose main window");
 						mainWindow.dispose();
 					}
 					if (fullScreenFrame != null) {
+						LOGGER.finer("dispose full screen");
 						fullScreenFrame.dispose();
 					}
+					LOGGER.finer("system exit");
 					System.exit(0);
 				}
 			}
 		};
+		LOGGER.finer("start a new thread to do save on exit");
 		new Thread(doSaveAndExit,this.getClass()+"shutdown").run();
+		
+		LOGGER.exiting(SimpleController.class.getName(), "shutdown");
 	}
 			
 }
