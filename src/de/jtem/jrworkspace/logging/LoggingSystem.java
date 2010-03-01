@@ -56,7 +56,7 @@ public class LoggingSystem {
 			LOGGER.config("Could not parse the value of the system property de.jtem.jrworkspace.loglevel \"" + levelName +"\" to a logging level:");  
 		}
 		if (level == null) {
-			level = Logger.getLogger("de.jtem.jrworkspace").getLevel();
+			level = Logger.getLogger("").getLevel();
 		}
 		return level;
 	}
@@ -95,7 +95,7 @@ public class LoggingSystem {
 	}
 
 	private static void initFileHandler(String filename) throws IOException {
-		Handler handler = new FileHandler(filename);
+		Handler handler = new FileHandler(filename, true);
 		handler.setLevel(Level.ALL);
 		LOGGER.addHandler(handler);
 	}
