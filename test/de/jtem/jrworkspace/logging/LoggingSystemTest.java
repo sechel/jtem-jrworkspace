@@ -6,6 +6,7 @@ import java.io.File;
 import java.io.FileReader;
 import java.io.IOException;
 import java.io.PrintStream;
+import java.io.Reader;
 import java.util.logging.Level;
 import java.util.logging.Logger;
 
@@ -95,21 +96,17 @@ public class LoggingSystemTest {
 		String message = LoggingSystemTest.message + " test file logging";
 		LoggingSystem.LOGGER.log(Level.INFO, message);
 		
-		BufferedReader reader = new BufferedReader(new FileReader(tmpLogFile));
-		boolean found = false;
-		String line;
-		while (!found && null != (line =reader.readLine())) {
-			found = line.contains(message);
-		}
-
+		boolean found = doesTmpLogFileContain(message);
 		Assert.assertTrue("Log file does not contain \"" + message + "\"", found);
 	}
 	
 	@Test
 	public void testWrongLogLevelNameInSystemProperty() {
 		System.setProperty("de.jtem.jrworkspace.loglevel", "Servere");
-		Assert.assertEquals(Logger.getLogger("de.jtem.jrworkspace").getLevel(),
+		Assert.assertEquals(Logger.getLogger("").getLevel(),
 				LoggingSystem.tryToGetLoglevel());
+		Assert.assertThat(stdErrForThisTest.toString(), JUnitMatchers.containsString("Could not parse the value of the system property"));
+		
 		System.setProperty("de.jtem.jrworkspace.loglevel", "SEVERE");
 		Assert.assertEquals(Level.SEVERE, 
 				LoggingSystem.tryToGetLoglevel());
@@ -123,5 +120,21 @@ public class LoggingSystemTest {
 			e.printStackTrace();
 		}
 		return file;
+	}
+	
+	private static boolean doesTmpLogFileContain(String string) throws IOException {
+		Reader reader = new FileReader(tmpLogFile);
+		return doesReaderContain(reader, string);
+	}
+
+	private static boolean doesReaderContain(Reader reader, String string) throws IOException {
+		BufferedReader bReader = new BufferedReader(reader);
+		String line;
+		while (null != (line = bReader.readLine())) {
+			if (line.contains(message)) {
+				return true;
+			}
+		}
+		return false;
 	}
 }
