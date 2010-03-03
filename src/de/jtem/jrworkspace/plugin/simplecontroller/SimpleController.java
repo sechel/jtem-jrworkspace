@@ -1038,7 +1038,7 @@ public class SimpleController implements Controller {
 			propertiesAreSafe = false;
 		}
 		
-		LOGGER.finer("propertiesAreSafe" + propertiesAreSafe);
+		LOGGER.finer("propertiesAreSafe: " + propertiesAreSafe);
 		LOGGER.exiting(SimpleController.class.getName(), "loadProperties");
 	}
 	
