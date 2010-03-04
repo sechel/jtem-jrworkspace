@@ -1026,6 +1026,14 @@ public class SimpleController implements Controller {
 			LOGGER.finer("property input stream used as input stream");
 		}
 		
+		try {
+			if (in.available() == 0) {
+				in = null;
+			}
+		} catch (IOException e) {
+			in = null;
+		}
+		
 		if (in == null && propFile != null) {
 			try {
 				in = new FileInputStream(propFile);
@@ -1045,6 +1053,11 @@ public class SimpleController implements Controller {
 		} catch (Exception e) {
 			LOGGER.info("error while loading properties: " + e.getMessage());
 			propertiesAreSafe = false;
+		} finally {
+			try {
+				in.close();
+			} catch (IOException e) {
+			}
 		}
 		
 		LOGGER.finer("propertiesAreSafe: " + propertiesAreSafe);
@@ -1262,7 +1275,7 @@ public class SimpleController implements Controller {
 	 * @see #setPropertiesResource(Class, String)
 	 */
 	public void setPropertiesInputStream(InputStream in) {
-		LOGGER.entering(SimpleController.class.getName(), "setPropertiesInputStream");
+		LOGGER.entering(SimpleController.class.getName(), "setPropertiesInputStream: " + in);
 		this.propInputStream = in;
 		LOGGER.exiting(SimpleController.class.getName(), "setPropertiesInputStream");
 	}
