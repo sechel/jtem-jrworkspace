@@ -235,6 +235,7 @@ public class SimpleController implements Controller {
 		propInputStream = null;
 	protected Preferences 
 		userPreferences=null;
+	protected final Thread shutdownHook = new ShutDownHook();
 	
 	protected static boolean 
 		DEFAULT_SAVE_ON_EXIT=true,
@@ -254,6 +255,12 @@ public class SimpleController implements Controller {
 		Starting,
 		Started
 	}
+	
+	protected class ShutDownHook extends Thread{
+		public void run() {
+			LOGGER.info("Unexpacted shutdown, no properties saved.");
+		}
+	};
 	
 	
 	/**
@@ -275,10 +282,12 @@ public class SimpleController implements Controller {
 		//init with user preferences associated with the controllers class, may be overridden by package specific properties
 		userPreferences=Preferences.userNodeForPackage(this.getClass());
 		
+		Runtime.getRuntime().addShutdownHook(shutdownHook);
+		
 		LOGGER.exiting(SimpleController.class.getName(), "SimpleController");
 	}
 	
-	
+
 	/**
 	 * Registers a plug-in with this SimpleController
 	 * @param p the plug-in to register
@@ -1326,7 +1335,8 @@ public class SimpleController implements Controller {
 	}
 	
 	/** Call this method to save the properties and exit the application. This is done in a newly 
-	 * created thread to allow user interaction during saving. The user is allowed to cancel that process.
+	 * created thread to allow user interaction during saving. The user is allowed to cancel that process,
+	 * in which case the application is not finished.
 	 * 	 
 	 * @see #setPropertiesResource(Class, String)
 	 * 
@@ -1347,6 +1357,7 @@ public class SimpleController implements Controller {
 						fullScreenFrame.dispose();
 					}
 					LOGGER.finer("system exit");
+					Runtime.getRuntime().removeShutdownHook(shutdownHook);
 					System.exit(0);
 				}
 			}
