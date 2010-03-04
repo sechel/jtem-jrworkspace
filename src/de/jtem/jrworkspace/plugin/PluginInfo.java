@@ -99,7 +99,6 @@ public class PluginInfo {
 		} else {
 			pi = new PluginInfo(pluginClass.getSimpleName());
 		}
-		pi.isDynamic = false;
 		if (pluginClass != null &&  pluginClass.getPackage() != null) {
 			pi.vendorName = pluginClass.getPackage().getImplementationVendor();
 		}
