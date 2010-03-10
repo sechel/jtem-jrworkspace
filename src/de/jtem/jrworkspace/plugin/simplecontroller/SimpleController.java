@@ -1027,7 +1027,7 @@ public class SimpleController implements Controller {
 		}
 		
 		try {
-			if (in.available() == 0) {
+			if (in != null && in.available() == 0) {
 				in = null;
 			}
 		} catch (IOException e) {
