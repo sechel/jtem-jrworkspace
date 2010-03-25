@@ -5,12 +5,13 @@ import java.io.ByteArrayOutputStream;
 import java.io.File;
 import java.io.FileReader;
 import java.io.IOException;
-import java.io.PrintStream;
 import java.io.Reader;
 import java.util.logging.Level;
+import java.util.logging.LogRecord;
 import java.util.logging.Logger;
+import java.util.logging.SimpleFormatter;
+import java.util.logging.StreamHandler;
 
-import org.junit.AfterClass;
 import org.junit.Assert;
 import org.junit.Before;
 import org.junit.BeforeClass;
@@ -22,16 +23,24 @@ public class LoggingSystemTest {
 	private Level[] levels = new Level[] { 
 			Level.ALL, Level.FINEST, Level.FINER, Level.FINE,
 			Level.CONFIG, Level.INFO, Level.WARNING, Level.SEVERE, Level.OFF };
-	private static final ByteArrayOutputStream stdErrForThisTest = new ByteArrayOutputStream();
-	private static final PrintStream stdErr = System.err;
+	private static final ByteArrayOutputStream logStream = new ByteArrayOutputStream();
+	private static StreamHandler testHandler;
 	private static final String message = "Test Message";
 	private static File tmpLogFile = tryCreateTmpFile();
 	private static Level defaultLogLevel = Level.CONFIG;
 
 	@BeforeClass
-	public static void redirectStdErr() {
-		System.setErr(new PrintStream(stdErrForThisTest, true));
+	public static void initTestHandler() {
+		testHandler = new StreamHandler(logStream, new SimpleFormatter()) {
+			@Override
+			public synchronized void publish(LogRecord record) {
+					super.publish(record);
+					flush();
+			}
+		};
+		testHandler.setLevel(Level.ALL);
 	}
+
 	
 	@BeforeClass
 	public static void initFileHandler() {
@@ -52,43 +61,38 @@ public class LoggingSystemTest {
 	}
 	
 	@Before
-	public void resetStdErrorForThisTest(){
-		stdErrForThisTest.reset();
-	}
-	
-	@AfterClass
-	public static void resetStdErr() {
-		System.setErr(stdErr);
+	public void setTestHandler(){
+		LoggingSystem.LOGGER.addHandler(testHandler);
+		logStream.reset();
 	}
 	
 	
 	@Test
-	public void writeLogMessagesToConsole() {
+	public void writeLogMessages() {
 		for (Level level : levels) {
 			LoggingSystem.LOGGER.log(level, message);
 			if (level.intValue() >= defaultLogLevel.intValue()) { 
 				Assert.assertThat("logLevel: " + level,
-					stdErrForThisTest.toString(), JUnitMatchers.containsString(message));
+					logStream.toString(), JUnitMatchers.containsString(message));
 			} else {
 				Assert.assertEquals("logLevel: " + level +", Message size ",
-						0, stdErrForThisTest.size());
+						0, logStream.size());
 			}
-			stdErrForThisTest.reset();
 		}
 	}
 	
 	@Test
 	public void changeLoggersLogLevel() {
 		LoggingSystem.LOGGER.log(Level.FINEST, message);
-		Assert.assertEquals("Message size ", 0, stdErrForThisTest.size());
+		Assert.assertEquals("Message size ", 0, logStream.size());
 		
 		LoggingSystem.LOGGER.setLevel(Level.FINEST);
 		LoggingSystem.LOGGER.log(Level.FINEST, message);
-		Assert.assertThat(stdErrForThisTest.toString(), JUnitMatchers.containsString(message));
+		Assert.assertThat(logStream.toString(), JUnitMatchers.containsString(message));
 
-		stdErrForThisTest.reset();
+		logStream.reset();
 		LoggingSystem.LOGGER.log(Level.ALL, message);
-		Assert.assertEquals("Message size ", 0, stdErrForThisTest.size());
+		Assert.assertEquals("Message size ", 0, logStream.size());
 	}
 	
 	@Test
@@ -105,7 +109,7 @@ public class LoggingSystemTest {
 		System.setProperty("de.jtem.jrworkspace.loglevel", "Servere");
 		Assert.assertEquals(Logger.getLogger("").getLevel(),
 				LoggingSystem.tryToGetLoglevel());
-		Assert.assertThat(stdErrForThisTest.toString(), JUnitMatchers.containsString("Could not parse the value of the system property"));
+		Assert.assertThat(logStream.toString(), JUnitMatchers.containsString("Could not parse the value of the system property"));
 		
 		System.setProperty("de.jtem.jrworkspace.loglevel", "SEVERE");
 		Assert.assertEquals(Level.SEVERE, 

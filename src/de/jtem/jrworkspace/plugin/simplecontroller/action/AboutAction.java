@@ -54,13 +54,7 @@ public class AboutAction extends AbstractAction {
 	
 	
 	public void actionPerformed(ActionEvent e) {
-		if (dialog.isShowing()) {
-			dialog.toFront();
-			return;
-		}
-		dialog.setLocationByPlatform(true);
-		dialog.setLocationRelativeTo(dialog.getParent());
-		dialog.setVisible(true);
+		dialog.showWindow();
 	}
 
 }

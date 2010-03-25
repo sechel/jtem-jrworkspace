@@ -93,6 +93,8 @@ import de.jtem.jrworkspace.plugin.PluginNameComparator;
 import de.jtem.jrworkspace.plugin.flavor.FrontendFlavor;
 import de.jtem.jrworkspace.plugin.flavor.HelpFlavor;
 import de.jtem.jrworkspace.plugin.flavor.MenuFlavor;
+import de.jtem.jrworkspace.plugin.flavor.OpenAboutFlavor;
+import de.jtem.jrworkspace.plugin.flavor.OpenPreferencesFlavor;
 import de.jtem.jrworkspace.plugin.flavor.PerspectiveFlavor;
 import de.jtem.jrworkspace.plugin.flavor.PreferencesFlavor;
 import de.jtem.jrworkspace.plugin.flavor.PropertiesFlavor;
@@ -102,6 +104,8 @@ import de.jtem.jrworkspace.plugin.flavor.ToolBarFlavor;
 import de.jtem.jrworkspace.plugin.flavor.UIFlavor;
 import de.jtem.jrworkspace.plugin.flavor.FrontendFlavor.FrontendListener;
 import de.jtem.jrworkspace.plugin.flavor.HelpFlavor.HelpListener;
+import de.jtem.jrworkspace.plugin.flavor.OpenAboutFlavor.OpenAboutListener;
+import de.jtem.jrworkspace.plugin.flavor.OpenPreferencesFlavor.OpenPreferencesListener;
 import de.jtem.jrworkspace.plugin.flavor.PropertiesFlavor.PropertiesListener;
 import de.jtem.jrworkspace.plugin.flavor.ShutdownFlavor.ShutdownListener;
 import de.jtem.jrworkspace.plugin.flavor.StatusFlavor.StatusChangedListener;
@@ -476,6 +480,12 @@ public class SimpleController implements Controller {
 		if (p instanceof ShutdownFlavor) {
 			((ShutdownFlavor)p).setShutdownListener(flavorListener);
 		}
+		if (p instanceof OpenAboutFlavor) {
+			((OpenAboutFlavor)p).setOpenAboutListener(flavorListener);
+		}
+		if (p instanceof OpenPreferencesFlavor) {
+			((OpenPreferencesFlavor)p).setOpenPreferencesListener(flavorListener);
+		}
 		try {
 			p.install(this);
 		} catch (Exception e) {
@@ -667,7 +677,7 @@ public class SimpleController implements Controller {
 	 * @author Stefan Sechelmann
 	 */ 
 	protected class FlavorListener implements 
-		StatusChangedListener, FrontendListener, HelpListener, PropertiesListener, ShutdownListener {
+		StatusChangedListener, FrontendListener, HelpListener, PropertiesListener, ShutdownListener, OpenPreferencesListener, OpenAboutListener {
 
 		/**
 		 * Notifies this controller that the status 
@@ -959,6 +969,13 @@ public class SimpleController implements Controller {
 			SimpleController.this.shutdown();
 		}
 
+		public void openAboutWindow() {
+			aboutDialog.showWindow();
+		}
+
+		public void openPreferencesWindow() {
+			preferencesWindow.showWindow();
+		}
 	}
 	
 	

@@ -112,7 +112,17 @@ public class PreferencesWindow extends JDialog implements TreeSelectionListener 
 			navTree.expandRow(count);
 		}
 	}
-	
+
+	public void showWindow() {
+		if (isShowing()) {
+			toFront();
+			return;
+		}
+		setLocationByPlatform(true);
+		setLocationRelativeTo(getParent());
+		updateData();
+		setVisible(true);
+	}
 	
 	private static class PageTreeRow {
 		

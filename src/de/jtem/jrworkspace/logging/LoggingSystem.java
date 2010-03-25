@@ -19,7 +19,7 @@ import java.util.logging.Logger;
  * 		-Dde.jtem.jrworkspace.logfile="mylogfile"
  * </code></blockquote>
  * 
- * Both handlers are set to handle ALL logs. The logger uses the default loglevel, but
+ * Both handlers are set to handle ALL logs. The logger uses the default log level, but
  * you may change the log {@link Level} by <code>LoggingSystem.LOGGER.setLevel</code> or
  * set the the system property
  * <blockquote><code>

@@ -115,5 +115,15 @@ public class AboutDialog extends JDialog{
 			repaint();
 		}
 	}
-	
+
+
+	public void showWindow() {
+		if (isShowing()) {
+			toFront();
+			return;
+		}
+		setLocationByPlatform(true);
+		setLocationRelativeTo(getParent());
+		setVisible(true);
+	}
 }
