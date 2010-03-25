@@ -47,6 +47,7 @@ public class AppleApplicationPlugin extends Plugin
 			instanciateAppleApplication(appleApplication);
 			registerApplicationListener(appleApplication);
 			addMenuItems(appleApplication);
+			LOGGER.config("Seems we are running in an Apple JRE. Handling of Apple events enabled.");
 		}
 	}
 	
@@ -79,7 +80,7 @@ public class AppleApplicationPlugin extends Plugin
 
 	private class AppleApplicationListener implements InvocationHandler {
 		public Object invoke(Object proxy, Method method, Object[] args) throws Throwable {
-			LOGGER.info(method.getName());
+			LOGGER.finer(method.getName());
 			if (method.getName() == "handleQuit" && shutdownListener != null) {
 				shutdownListener.shutdown();
 			}
