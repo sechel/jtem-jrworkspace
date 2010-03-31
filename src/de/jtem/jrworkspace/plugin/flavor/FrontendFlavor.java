@@ -105,6 +105,12 @@ public interface FrontendFlavor {
 		 */
 		public void setShowStatusBar(boolean show);
 		
+		/**
+		 * Set the application title
+		 * @param title
+		 */
+		public void setTitle(String title);
+		
 	}
 
 	/**

@@ -3,14 +3,15 @@
 	
 	<target name="all" depends="jrworkspace, jrworkspaceNaked"/>
 	
-	<property name="sdkpackagedir" value="de/jtem/jrworkspace/plugin"/>
 	<target name="jrworkspace">
 		<mkdir dir="jar"/>
 		<jar 
 			destfile="jar/jrworkspace.jar" 
 			basedir="bin"
-			includes="${sdkpackagedir}/**,
-			java/awt/**"
+			includes="
+				de/jtem/jrworkspace/plugin/**,
+				de/jtem/jrworkspace/logging/**,
+				java/awt/**,"
 			update="false"
 		>
 			<manifest>
@@ -38,13 +39,15 @@
 		<jar 
 			destfile="jar/jrworkspaceNaked.jar" 
 			basedir="bin"
-			includes="
-				${sdkpackagedir}/**"
+			includes="				
+				de/jtem/jrworkspace/plugin/**,
+				de/jtem/jrworkspace/logging/**,"
 			excludes="
-				${sdkpackagedir}/jrdesktop/**,
-				${sdkpackagedir}/aggregators/**,
-				${sdkpackagedir}/lnfswitch/**,
-				${sdkpackagedir}/sidecontainer/**"
+				de/jtem/jrworkspace/plugin/jrdesktop/**,
+				de/jtem/jrworkspace/plugin/aggregators/**,
+				de/jtem/jrworkspace/plugin/lnfswitch/**,
+				de/jtem/jrworkspace/plugin/pluginmanager/**,
+				de/jtem/jrworkspace/plugin/sidecontainer/**"
 			update="false"
 			>
 			<manifest>

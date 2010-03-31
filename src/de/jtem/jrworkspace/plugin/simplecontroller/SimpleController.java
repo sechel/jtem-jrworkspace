@@ -883,6 +883,12 @@ public class SimpleController implements Controller {
 			});
 		}
 		
+		public void setTitle(String title) {
+			if (mainWindow != null) {
+				mainWindow.setTitle(title);
+			}
+		}
+		
 		/**
 		 * Displays the help page of the given plug-in
 		 * @param hf the help flavor plug-in to show 
