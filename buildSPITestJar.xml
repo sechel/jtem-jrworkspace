@@ -1,0 +1,16 @@
+<project default="makejar">
+
+	<target name="makejar">
+		<jar destfile="jar/SPIPluginTest.jar"
+			basedir="bin"
+			includes="de/jtem/jrworkspace/plugin/widget/SPIPluginTest.class"
+			update="false"
+		>
+		<service 
+			type="de.jtem.jrworkspace.plugin.Plugin"
+			provider="de.jtem.jrworkspace.plugin.widget.SPIPluginTest"
+		/>
+		</jar>
+	</target>
+
+</project>

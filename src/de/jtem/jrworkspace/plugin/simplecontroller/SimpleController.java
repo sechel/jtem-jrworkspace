@@ -67,6 +67,7 @@ import java.util.HashMap;
 import java.util.HashSet;
 import java.util.LinkedList;
 import java.util.List;
+import java.util.ServiceLoader;
 import java.util.Set;
 import java.util.Stack;
 import java.util.TreeSet;
@@ -227,6 +228,7 @@ public class SimpleController implements Controller {
 		hasHelpMenu = false,
 		hasPreferencesMenu = false,
 		localStartup = false,
+		registerSPIPlugins = true,
 		manageLookAndFeel = true;
 	protected Status
 		status = Status.PreStartup;
@@ -307,8 +309,8 @@ public class SimpleController implements Controller {
 	 */
 	public void startup() {
 		LOGGER.entering(SimpleController.class.getName(), "startup");
-		
 		status = Status.Starting;
+		registerSPIPlugins();
 		readUserPreferences();
 		loadProperties();
 		Runnable r = new Runnable() {
@@ -383,6 +385,14 @@ public class SimpleController implements Controller {
 		
 	}
 	
+	
+	private void registerSPIPlugins() {
+		if (!registerSPIPlugins) return;
+		ServiceLoader<Plugin> loader = ServiceLoader.load(Plugin.class);
+		for (Plugin p : loader) {
+           registerPlugin(p);
+		}
+	}
 	
 	
 	protected void initializeComponents() {
@@ -1360,7 +1370,6 @@ public class SimpleController implements Controller {
 		return userPropertyFile;
 	}
 
-
 	/** Overwrite or initialize the file chosen by the user for reading and writing of properties.
 	 * 
 	 * @param userPropertyFile
@@ -1368,6 +1377,13 @@ public class SimpleController implements Controller {
 	public void setUserPropertyFile(String userPropertyFile) {
 		this.userPropertyFile = userPropertyFile;
 		writeUserPreferences();
+	}
+	
+	public boolean isRegisterSPIPlugins() {
+		return registerSPIPlugins;
+	}
+	public void setRegisterSPIPlugins(boolean loadSPIPlugins) {
+		this.registerSPIPlugins = loadSPIPlugins;
 	}
 	
 	/** Call this method to save the properties and exit the application. This is done in a newly 
