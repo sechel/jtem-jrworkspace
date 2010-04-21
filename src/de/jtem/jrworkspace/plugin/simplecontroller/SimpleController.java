@@ -1400,16 +1400,8 @@ public class SimpleController implements Controller {
 			public void run() {
 				LOGGER.entering("doSaveAndExit Runnable", "run (do the save and exit stuff)", new Object[]{});
 				if (savePropertiesOnExit()) { //not canceled
-					if (mainWindow != null) {
-						LOGGER.finer("dispose main window");
-						mainWindow.dispose();
-					}
-					if (fullScreenFrame != null) {
-						LOGGER.finer("dispose full screen");
-						fullScreenFrame.dispose();
-					}
+					dispose();
 					LOGGER.finer("system exit");
-					Runtime.getRuntime().removeShutdownHook(shutdownHook);
 					System.exit(0);
 				}
 			}
@@ -1418,6 +1410,36 @@ public class SimpleController implements Controller {
 		new Thread(doSaveAndExit,this.getClass()+"shutdown").run();
 		
 		LOGGER.exiting(SimpleController.class.getName(), "shutdown");
+	}
+	
+	
+	public void dispose() {
+		if (mainWindow != null) {
+			LOGGER.finer("dispose main window");
+			mainWindow.dispose();
+			mainWindow = null;
+		}
+		if (fullScreenFrame != null) {
+			LOGGER.finer("dispose full screen");
+			fullScreenFrame.dispose();
+			fullScreenFrame = null;
+		}
+		if (helpWindow != null) {
+			LOGGER.finer("dispose help window");
+			helpWindow.dispose();
+			helpWindow = null;
+		}
+		if (aboutDialog != null) {
+			LOGGER.finer("dispose about dialog");
+			aboutDialog.dispose();
+			aboutDialog = null;
+		}
+		if (preferencesWindow != null) {
+			LOGGER.finer("dispose preferences window");
+			preferencesWindow.dispose();
+			preferencesWindow = null;
+		}
+		Runtime.getRuntime().removeShutdownHook(shutdownHook);
 	}
 			
 }
