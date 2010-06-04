@@ -177,9 +177,8 @@ import de.jtem.jrworkspace.plugin.simplecontroller.widget.WrappingLayout;
  * in the dialog at shutdown 
  * to point to the source folder  and DISABLE the load from this file check box, then the resource will be accessed
  * to load the properties (and the situation after deployment is always tested) and the source folder file 
- * is used to save (which then may be included in version control). 
- * In order to trigger copying of the source folder file to the bin folder one may add a do nothing builder which has 
- * "Refresh resources upon completion" enabled and make sure that the "Filtered resources" do not filter this file. 
+ * is used to save (which then may be included in version control). Copying of the properties xml file to the bin folder
+ * needs to be triggered manually by refreshing the source folder
  * 
  * 
  * @author Stefan Sechelmann
@@ -286,7 +285,7 @@ public class SimpleController implements Controller {
 		setPropertiesFile(filename == null? null : new File(filename));
 		
 		//init with user preferences associated with the controllers class, may be overridden by package specific properties
-		userPreferences=Preferences.userNodeForPackage(this.getClass());
+		userPreferences = Preferences.userNodeForPackage(this.getClass());
 		
 		Runtime.getRuntime().addShutdownHook(shutdownHook);
 		
@@ -1251,8 +1250,8 @@ public class SimpleController implements Controller {
 	 * </li>
 	 * </ol> 
 	 * 
-	 * @param clazz the class from which the resource may be obtained, the the 
-	 * properties node of package of this class is used to save the user decisions. 
+	 * @param clazz the class from which the resource may be obtained. The 
+	 * properties node of the package of this class is used to save the user decisions. 
 	 * Can be null, then the user preferences are disabled and only static property files are used.
 	 * @param propertiesFileName name of the resource that contains the plug-in properties. This argument may 
 	 * be null, then only the second purpose is served and the properties <code>File</code> and 
@@ -1260,29 +1259,34 @@ public class SimpleController implements Controller {
 	 */
 	public void setPropertiesResource(Class<?> clazz, String propertiesFileName) {
 		LOGGER.entering(SimpleController.class.getName(), "setPropertiesResource", new Object[]{clazz, propertiesFileName});
+		boolean propertiesFileSet = false;
 		
-		if (propertiesFileName != null) {
+		if (clazz != null && propertiesFileName != null) {
 			URL url=clazz.getResource(propertiesFileName);
-			LOGGER.finer("url: " + url);
+			LOGGER.fine("url: " + url);
 			if (url != null) {
 				File file = new File(url.getFile());
-				LOGGER.finer("file: " + file);
+				LOGGER.fine("file: " + file);
 				if (file.canWrite()) {
-					LOGGER.finer("can write to file: " + file);
+					LOGGER.fine("can write to file: " + file);
 					setPropertiesFile(file);
+					propertiesFileSet = true;
 				}
 				try {
 					setPropertiesInputStream(url.openStream());
-				} catch (IOException e) { //just fail quietly 
+					
+				} catch (IOException e) { 
+					LOGGER.config("Can not access property resource "+ propertiesFileName + " of " + clazz);
 				}
 			}
 		}
+
 		if (clazz != null) {
-			userPreferences=Preferences.userNodeForPackage(clazz);
-			LOGGER.finer("userPreferences: " + userPreferences);
+			userPreferences = Preferences.userNodeForPackage(clazz);
+			LOGGER.fine("userPreferences: " + userPreferences);
 		} else {
 			userPreferences = null;
-			LOGGER.finer("user preferences set to null");
+			LOGGER.finer("user preferences set to null (disabled)");
 		}
 		readUserPreferences();
 		LOGGER.exiting(SimpleController.class.getName(), "setPropertiesResource");
