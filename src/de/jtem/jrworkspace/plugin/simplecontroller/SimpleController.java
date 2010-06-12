@@ -341,6 +341,7 @@ public class SimpleController implements Controller {
 							LOGGER.config("Could not load look and feel.");
 						}
 					}
+					SwingUtilities.updateComponentTreeUI(mainWindow);
 				}
 			}
 		};
@@ -387,6 +388,11 @@ public class SimpleController implements Controller {
 	
 	private void registerSPIPlugins() {
 		if (!registerSPIPlugins) return;
+		try {
+			Class.forName("java.util.ServiceLoader");
+		} catch (ClassNotFoundException e) {
+			return; // we are java 5 and have no service loader
+		}
 		ServiceLoader<Plugin> loader = ServiceLoader.load(Plugin.class);
 		for (Plugin p : loader) {
            registerPlugin(p);
@@ -1259,8 +1265,7 @@ public class SimpleController implements Controller {
 	 */
 	public void setPropertiesResource(Class<?> clazz, String propertiesFileName) {
 		LOGGER.entering(SimpleController.class.getName(), "setPropertiesResource", new Object[]{clazz, propertiesFileName});
-		boolean propertiesFileSet = false;
-		
+//		boolean propertiesFileSet = false;
 		if (clazz != null && propertiesFileName != null) {
 			URL url=clazz.getResource(propertiesFileName);
 			LOGGER.fine("url: " + url);
@@ -1270,7 +1275,7 @@ public class SimpleController implements Controller {
 				if (file.canWrite()) {
 					LOGGER.fine("can write to file: " + file);
 					setPropertiesFile(file);
-					propertiesFileSet = true;
+//					propertiesFileSet = true;
 				}
 				try {
 					setPropertiesInputStream(url.openStream());
