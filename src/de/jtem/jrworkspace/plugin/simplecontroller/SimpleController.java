@@ -60,6 +60,7 @@ import java.io.PrintWriter;
 import java.io.Reader;
 import java.io.StringWriter;
 import java.io.Writer;
+import java.lang.reflect.Method;
 import java.net.URL;
 import java.util.Collections;
 import java.util.Comparator;
@@ -67,7 +68,6 @@ import java.util.HashMap;
 import java.util.HashSet;
 import java.util.LinkedList;
 import java.util.List;
-import java.util.ServiceLoader;
 import java.util.Set;
 import java.util.Stack;
 import java.util.TreeSet;
@@ -386,16 +386,23 @@ public class SimpleController implements Controller {
 	}
 	
 	
+	@SuppressWarnings("unchecked")
 	private void registerSPIPlugins() {
 		if (!registerSPIPlugins) return;
+		Class<?> slClass = null;
 		try {
-			Class.forName("java.util.ServiceLoader");
+			slClass = Class.forName("java.util.ServiceLoader");
 		} catch (ClassNotFoundException e) {
 			return; // we are java 5 and have no service loader
 		}
-		ServiceLoader<Plugin> loader = ServiceLoader.load(Plugin.class);
-		for (Plugin p : loader) {
-           registerPlugin(p);
+		try {
+			Method loadMethod = slClass.getMethod("load", Class.class);
+			Iterable<Plugin> loader = (Iterable<Plugin>)loadMethod.invoke(slClass, Plugin.class);
+			for (Plugin p : loader) {
+	           registerPlugin(p);
+			}
+		} catch (Exception e) {
+			System.out.println("Error while loading SPI plugins: " + e.getLocalizedMessage());
 		}
 	}
 	
