@@ -297,7 +297,23 @@ public class SimpleController implements Controller {
 	 * Registers a plug-in with this SimpleController
 	 * @param p the plug-in to register
 	 */
+	@Deprecated
 	public void registerPlugin(Plugin p) {
+		plugins.add(p);
+	}
+	
+	/**
+	 * Registers a plug-in with this SimpleController
+	 * @param pClass the plug-in class
+	 */
+	public void registerPlugin(Class<? extends Plugin> pClass) {
+		Plugin p = null;
+		try {
+			p = pClass.newInstance();
+		} catch (Exception e) {
+			LOGGER.severe(e.toString());
+			throw new RuntimeException("Plugin class " + pClass + " is missing default constructor");
+		}
 		plugins.add(p);
 	}
 	
