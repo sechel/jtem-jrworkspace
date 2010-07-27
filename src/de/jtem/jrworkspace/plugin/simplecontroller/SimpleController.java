@@ -92,24 +92,24 @@ import de.jtem.jrworkspace.plugin.Controller;
 import de.jtem.jrworkspace.plugin.Plugin;
 import de.jtem.jrworkspace.plugin.PluginNameComparator;
 import de.jtem.jrworkspace.plugin.flavor.FrontendFlavor;
+import de.jtem.jrworkspace.plugin.flavor.FrontendFlavor.FrontendListener;
 import de.jtem.jrworkspace.plugin.flavor.HelpFlavor;
+import de.jtem.jrworkspace.plugin.flavor.HelpFlavor.HelpListener;
 import de.jtem.jrworkspace.plugin.flavor.MenuFlavor;
 import de.jtem.jrworkspace.plugin.flavor.OpenAboutFlavor;
+import de.jtem.jrworkspace.plugin.flavor.OpenAboutFlavor.OpenAboutListener;
 import de.jtem.jrworkspace.plugin.flavor.OpenPreferencesFlavor;
+import de.jtem.jrworkspace.plugin.flavor.OpenPreferencesFlavor.OpenPreferencesListener;
 import de.jtem.jrworkspace.plugin.flavor.PerspectiveFlavor;
 import de.jtem.jrworkspace.plugin.flavor.PreferencesFlavor;
 import de.jtem.jrworkspace.plugin.flavor.PropertiesFlavor;
+import de.jtem.jrworkspace.plugin.flavor.PropertiesFlavor.PropertiesListener;
 import de.jtem.jrworkspace.plugin.flavor.ShutdownFlavor;
+import de.jtem.jrworkspace.plugin.flavor.ShutdownFlavor.ShutdownListener;
 import de.jtem.jrworkspace.plugin.flavor.StatusFlavor;
+import de.jtem.jrworkspace.plugin.flavor.StatusFlavor.StatusChangedListener;
 import de.jtem.jrworkspace.plugin.flavor.ToolBarFlavor;
 import de.jtem.jrworkspace.plugin.flavor.UIFlavor;
-import de.jtem.jrworkspace.plugin.flavor.FrontendFlavor.FrontendListener;
-import de.jtem.jrworkspace.plugin.flavor.HelpFlavor.HelpListener;
-import de.jtem.jrworkspace.plugin.flavor.OpenAboutFlavor.OpenAboutListener;
-import de.jtem.jrworkspace.plugin.flavor.OpenPreferencesFlavor.OpenPreferencesListener;
-import de.jtem.jrworkspace.plugin.flavor.PropertiesFlavor.PropertiesListener;
-import de.jtem.jrworkspace.plugin.flavor.ShutdownFlavor.ShutdownListener;
-import de.jtem.jrworkspace.plugin.flavor.StatusFlavor.StatusChangedListener;
 import de.jtem.jrworkspace.plugin.simplecontroller.action.AboutAction;
 import de.jtem.jrworkspace.plugin.simplecontroller.action.HelpWindowAction;
 import de.jtem.jrworkspace.plugin.simplecontroller.action.PreferencesWindowAction;
@@ -118,7 +118,7 @@ import de.jtem.jrworkspace.plugin.simplecontroller.image.ImageHook;
 import de.jtem.jrworkspace.plugin.simplecontroller.preferences.PreferencesWindow;
 import de.jtem.jrworkspace.plugin.simplecontroller.widget.AboutDialog;
 import de.jtem.jrworkspace.plugin.simplecontroller.widget.SaveOnExitDialog;
-import de.jtem.jrworkspace.plugin.simplecontroller.widget.WrappingLayout;
+import de.jtem.jrworkspace.plugin.simplecontroller.widget.WrapLayout;
 
 
 /**
@@ -312,7 +312,6 @@ public class SimpleController implements Controller {
 			p = pClass.newInstance();
 		} catch (Exception e) {
 			LOGGER.severe(e.toString());
-			throw new RuntimeException("Plugin class " + pClass + " is missing default constructor");
 		}
 		plugins.add(p);
 	}
@@ -476,7 +475,7 @@ public class SimpleController implements Controller {
 			preferencesWindow.setLocationByPlatform(true);
 		}
 		if (hasToolBar && mainWindow != null) {
-			toolBarPanel.setLayout(new WrappingLayout(LEADING, 0, 0));
+			toolBarPanel.setLayout(new WrapLayout(LEADING, 0, 0));
 			mainWindow.remove(toolBarPanel);
 			mainWindow.add(toolBarPanel, NORTH);
 		}
@@ -684,15 +683,17 @@ public class SimpleController implements Controller {
 	}
 	
 	
+	@SuppressWarnings("unchecked")
 	protected void updateToolBar() {
 		if (!hasToolBar) {
 			return;
 		}
 		toolBarPanel.removeAll();
 		List<ToolBarFlavor> toolList = new LinkedList<ToolBarFlavor>();
-		for (Plugin p : plugins) {
+		for (Plugin p : new LinkedList<Plugin>(plugins)) {
 			if (isActive(p) && p instanceof ToolBarFlavor) {
 				ToolBarFlavor tbf = (ToolBarFlavor)p;
+				getPlugin((Class<? extends Plugin>)tbf.getPerspective());
 				if (tbf.getPerspective().equals(perspective.getClass())) {
 					toolList.add(tbf);
 				}
