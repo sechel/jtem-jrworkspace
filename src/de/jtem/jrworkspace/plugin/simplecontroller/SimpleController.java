@@ -297,7 +297,6 @@ public class SimpleController implements Controller {
 	 * Registers a plug-in with this SimpleController
 	 * @param p the plug-in to register
 	 */
-	@Deprecated
 	public void registerPlugin(Plugin p) {
 		plugins.add(p);
 	}
