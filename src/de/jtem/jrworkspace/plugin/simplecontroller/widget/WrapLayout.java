@@ -178,13 +178,11 @@ public class WrapLayout extends FlowLayout
    			int num = target.getComponentCount();
    			for (int i = 0; i < num; i++) {
    				Component c = target.getComponent(i);
-   				System.out.println("y" + c.getBounds().y);
    				if (i == num - 1 || Math.abs(target.getComponent(i + 1).getBounds().y - c.getBounds().y) > 5) {
    					Rectangle bounds = c.getBounds();
    					int width = targetWidth - bounds.x - getHgap();
    					bounds.width = width;
    					c.setBounds(bounds);
-   					System.out.println("i" + i);
    				}
    			}
    		}
