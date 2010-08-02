@@ -263,7 +263,7 @@ public class SimpleController implements Controller {
 	
 	protected class ShutDownHook extends Thread{
 		public void run() {
-			LOGGER.info("Unexpacted shutdown, no properties saved.");
+			LOGGER.info("Unexpected shutdown, no properties saved.");
 		}
 	};
 	
