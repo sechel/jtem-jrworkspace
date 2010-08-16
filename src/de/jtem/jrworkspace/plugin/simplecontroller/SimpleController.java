@@ -74,6 +74,7 @@ import java.util.TreeSet;
 import java.util.prefs.BackingStoreException;
 import java.util.prefs.Preferences;
 
+import javax.swing.Box;
 import javax.swing.JFrame;
 import javax.swing.JLabel;
 import javax.swing.JMenu;
@@ -642,14 +643,16 @@ public class SimpleController implements Controller {
 	}
 	
 	
+	@SuppressWarnings("unchecked")
 	protected void updateMenuBarInternal() {
 		if (!hasMenuBar) {
 			return;
 		}
 		List<MenuFlavor> menuList = new LinkedList<MenuFlavor>();
-		for (Plugin mp : plugins) {
+		for (Plugin mp : new LinkedList<Plugin>(plugins)) {
 			if (mp instanceof MenuFlavor) {
 				MenuFlavor mf = (MenuFlavor)mp;
+				getPlugin((Class<Plugin>)mf.getPerspective());
 				if (mf.getPerspective().equals(perspective.getClass())) {
 					menuList.add(mf);
 				}
@@ -675,6 +678,7 @@ public class SimpleController implements Controller {
 		}
 		helpMenu.add(new JPopupMenu.Separator());
 		helpMenu.add(new AboutAction(aboutDialog));
+		mBar.add(Box.createHorizontalGlue());
 		mBar.add(helpMenu);
 		JMenuBar oldBar = mainWindow.getJMenuBar();
 		if (oldBar != null) mBar.setPreferredSize(oldBar.getPreferredSize());
