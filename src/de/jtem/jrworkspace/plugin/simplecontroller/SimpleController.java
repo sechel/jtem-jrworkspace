@@ -249,13 +249,19 @@ public class SimpleController implements Controller {
 		DEFAULT_LOAD_FROM_USER_PROPERTY_FILE=true;
 	protected static String 
 		DEFAULT_USER_PROPERTY_FILE=null;
+	protected static int
+		DEFAULT_NB_OF_PROPERY_FILE_BACKUPS = 1;
 
 	private boolean 
 		saveOnExit=DEFAULT_SAVE_ON_EXIT,
 		askBeforeSaveOnExit=DEFAULT_ASK_BEFORE_SAVE_ON_EXIT,
 		loadFromUserPropertyFile=DEFAULT_LOAD_FROM_USER_PROPERTY_FILE;
-	private String userPropertyFile=DEFAULT_USER_PROPERTY_FILE;
+	private String 
+		userPropertyFile = DEFAULT_USER_PROPERTY_FILE;
+	private int
+		nbOfPropertyFileBackups = DEFAULT_NB_OF_PROPERY_FILE_BACKUPS;
 	
+
 	public static enum Status {
 		PreStartup,
 		Starting,
@@ -1152,7 +1158,7 @@ public class SimpleController implements Controller {
 		}
 		
 		File file=null;
-		if (userPropertyFile != null) {
+		if (userPropertyFile != null && userPropertyFile != "") {
 			file=new File(userPropertyFile);
 			LOGGER.finer("userPropertyFile: " + userPropertyFile);
 		}
@@ -1192,17 +1198,8 @@ public class SimpleController implements Controller {
 		}
 		
 		if (file != null) {
-			try {
-				LOGGER.finer("try to write properties to file: " + file);
-				String xml = propertyxStream.toXML(properties);
-				LOGGER.finest("properties: " + properties);
-				FileWriter writer = new FileWriter(file);
-				writer.write(xml);
-				writer.flush();
-				writer.close();
-			} catch (IOException e) {
-				LOGGER.info("writing properties failed: " + e.getMessage());
-			}
+			backupOldPropertyFiles(file);
+			writePropetyFile(file);
 		}
 		
 		try {
@@ -1216,6 +1213,49 @@ public class SimpleController implements Controller {
 		
 		LOGGER.exiting(SimpleController.class.getName(), "savePropertiesOnExit", true);
 		return true;
+	}
+
+
+	protected void backupOldPropertyFiles(File file) {
+		if (0 == nbOfPropertyFileBackups) return;
+		for (int i = nbOfPropertyFileBackups - 1; 0 <= i; i--) {
+			File backupFile = backupFile(file, i);
+			if (backupFile.exists()) {
+				backupFile.delete();
+			}
+			File prevBackupFile = backupFile(file, i - 1);
+			if (prevBackupFile.exists()) {
+				prevBackupFile.renameTo(backupFile);
+			}
+		}
+		file.renameTo(backupFile(file, 0));
+	}
+
+
+	protected File backupFile(File file, int i) {
+		String filePathAndStem = file.getAbsolutePath();
+		String extension = "";
+		int dotPos = filePathAndStem.lastIndexOf('.');
+		if (-1 != dotPos) {
+			extension = filePathAndStem.substring(dotPos);
+			filePathAndStem = filePathAndStem.substring(0, dotPos);
+		}
+		return new File(filePathAndStem + "." + i + extension);
+	}
+
+
+	protected void writePropetyFile(File file) {
+		try {
+			LOGGER.finer("try to write properties to file: " + file);
+			String xml = propertyxStream.toXML(properties);
+			LOGGER.finest("properties: " + properties);
+			FileWriter writer = new FileWriter(file);
+			writer.write(xml);
+			writer.flush();
+			writer.close();
+		} catch (IOException e) {
+			LOGGER.info("writing properties failed to file \"" + file + "\":" + e.getMessage());
+		}
 	}
 	
 	
@@ -1322,6 +1362,15 @@ public class SimpleController implements Controller {
 		}
 		readUserPreferences();
 		LOGGER.exiting(SimpleController.class.getName(), "setPropertiesResource");
+	}
+	
+	public int getNbOfPropertyFileBackups() {
+		return nbOfPropertyFileBackups;
+	}
+
+
+	public void setNbOfPropertyFileBackups(int nbOfPropertyFileBackups) {
+		this.nbOfPropertyFileBackups = nbOfPropertyFileBackups;
 	}
  
 	/**
