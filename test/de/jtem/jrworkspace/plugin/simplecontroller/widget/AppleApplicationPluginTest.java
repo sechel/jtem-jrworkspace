@@ -17,7 +17,6 @@ import org.junit.Test;
 import de.jtem.jrworkspace.plugin.flavor.OpenAboutFlavor.OpenAboutListener;
 import de.jtem.jrworkspace.plugin.flavor.OpenPreferencesFlavor.OpenPreferencesListener;
 import de.jtem.jrworkspace.plugin.flavor.ShutdownFlavor.ShutdownListener;
-import de.jtem.jrworkspace.plugin.simplecontroller.widget.AppleApplicationPlugin;
 
 public class AppleApplicationPluginTest {
 	private static ByteArrayOutputStream testOut = new ByteArrayOutputStream();
@@ -36,15 +35,15 @@ public class AppleApplicationPluginTest {
 	public void createWithExistingClass() {
 		new AppleApplicationPlugin();
 		
-		assertThat(testOut.toString(), containsString("de.jtem.jrworkspace.plugin.widget.MockAppleApplication addApplicationListener"));
+		assertThat(testOut.toString(), containsString("de.jtem.jrworkspace.plugin.simplecontroller.widget.MockAppleApplication addApplicationListener"));
 	}
 	
 	@Test
 	public void addMenuItems() {
 		new AppleApplicationPlugin();
 
-		assertThat(testOut.toString(), containsString("de.jtem.jrworkspace.plugin.widget.MockAppleApplication addPreferencesMenuItem"));
-		assertThat(testOut.toString(), containsString("de.jtem.jrworkspace.plugin.widget.MockAppleApplication addAboutMenuItem"));
+		assertThat(testOut.toString(), containsString("de.jtem.jrworkspace.plugin.simplecontroller.widget.MockAppleApplication addPreferencesMenuItem"));
+		assertThat(testOut.toString(), containsString("de.jtem.jrworkspace.plugin.simplecontroller.widget.MockAppleApplication addAboutMenuItem"));
 	}
 	
 	@Test
@@ -123,7 +122,7 @@ public class AppleApplicationPluginTest {
 
 	@Before
 	public void setMockClasses() {
-		AppleApplicationPlugin.APPLE_APPLICATION_CLASS = "de.jtem.jrworkspace.plugin.widget.MockAppleApplication";
-		AppleApplicationPlugin.APPLE_APPLICATION_LISTENER = "de.jtem.jrworkspace.plugin.widget.MockAppleApplicationListener";
+		AppleApplicationPlugin.APPLE_APPLICATION_CLASS = "de.jtem.jrworkspace.plugin.simplecontroller.widget.MockAppleApplication";
+		AppleApplicationPlugin.APPLE_APPLICATION_LISTENER = "de.jtem.jrworkspace.plugin.simplecontroller.widget.MockAppleApplicationListener";
 	}
 }
