@@ -106,7 +106,7 @@ public class LoggingSystemTest {
 	
 	@Test
 	public void testWrongLogLevelNameInSystemProperty() {
-		System.setProperty("de.jtem.jrworkspace.loglevel", "Servere");
+		System.setProperty("de.jtem.jrworkspace.loglevel", "Severe");
 		Assert.assertEquals(Logger.getLogger("").getLevel(),
 				LoggingSystem.tryToGetLoglevel());
 		Assert.assertThat(logStream.toString(), JUnitMatchers.containsString("Could not parse the value of the system property"));

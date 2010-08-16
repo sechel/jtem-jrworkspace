@@ -1,4 +1,4 @@
-package de.jtem.jrworkspace.plugin.widget;
+package de.jtem.jrworkspace.plugin.simplecontroller.widget;
 
 import static de.jtem.jrworkspace.logging.LoggingSystem.LOGGER;
 import static org.junit.Assert.assertThat;
