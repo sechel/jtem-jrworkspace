@@ -23,7 +23,7 @@ import java.util.logging.Logger;
  * you may change the log {@link Level} by <code>LoggingSystem.LOGGER.setLevel</code> or
  * set the the system property
  * <blockquote><code>
- * 		-Dde.jtem.jrworkspace.loglevel=LEVEL
+ * 		-Dde.jtem.jrworkspace.level=LEVEL
  * </blockquote></code>
  *
  * 
@@ -46,14 +46,14 @@ public class LoggingSystem {
 		Level level = null;
 		String levelName = null;
 		try {
-			levelName = System.getProperty("de.jtem.jrworkspace.loglevel");
+			levelName = System.getProperty("de.jtem.jrworkspace.level");
 		} catch (SecurityException se) {
 			LOGGER.config("No permission to read system property: " + se.getMessage());
 		}
 		try {
 			level = levelName == null ? null : Level.parse(levelName);
 		} catch (IllegalArgumentException e) {
-			LOGGER.config("Could not parse the value of the system property de.jtem.jrworkspace.loglevel \"" + levelName +"\" to a logging level:");  
+			LOGGER.config("Could not parse the value of the system property de.jtem.jrworkspace.level \"" + levelName +"\" to a logging level:");  
 		}
 		if (level == null) {
 			level = Logger.getLogger("").getLevel();
