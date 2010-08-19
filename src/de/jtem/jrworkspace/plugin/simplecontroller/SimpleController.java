@@ -1087,14 +1087,12 @@ public class SimpleController implements Controller {
 		if (loadFromUserPropertyFile) {
 			try {
 				in = new FileInputStream(userPropertyFile);
-				LOGGER.finer("userPropertyFile \"" + userPropertyFile + "\" used to set input stream");
-			} catch (Exception e) {
-				// just fall through
-			}
+				LOGGER.config("userPropertyFile \"" + userPropertyFile + "\" used to set input stream");
+			} catch (Exception e) {	}
 		}
 		if (in == null) {
 			in = propInputStream;
-			LOGGER.finer("property input stream used as input stream");
+			LOGGER.config("a property input stream used to get the properties");
 		}
 		
 		try {
@@ -1108,10 +1106,8 @@ public class SimpleController implements Controller {
 		if (in == null && propFile != null) {
 			try {
 				in = new FileInputStream(propFile);
-				LOGGER.finer("propFile \"" + propFile + "\" used as input stream");
-			} catch (Exception e) {
-				// ok thats also not accessible  
-			}
+				LOGGER.config("propFile \"" + propFile + "\" used");
+			} catch (Exception e) {	}
 		}
 		
 		if (in == null ) {
@@ -1158,13 +1154,13 @@ public class SimpleController implements Controller {
 		}
 		
 		File file=null;
-		if (userPropertyFile != null && userPropertyFile != "") {
+		if (userPropertyFile != null && !userPropertyFile.equals("")) {
 			file=new File(userPropertyFile);
-			LOGGER.finer("userPropertyFile: " + userPropertyFile);
+			LOGGER.config("userPropertyFile: \"" + userPropertyFile + "\"");
 		}
 		if (file == null){
 			file = propFile;
-			LOGGER.finer("propFile: " + (propFile == null ? "null" : propFile.getAbsolutePath()));
+			LOGGER.config("propFile: " + (propFile == null ? "null" : propFile.getAbsolutePath()));
 		}
 
 		SaveOnExitDialog dialog = new SaveOnExitDialog(file, mainWindow, this);
