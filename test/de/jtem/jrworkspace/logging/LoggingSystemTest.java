@@ -53,10 +53,10 @@ public class LoggingSystemTest {
 	
 	@BeforeClass
 	public static void initDefaulLogLevel() {
-		if (System.getProperty("de.jtem.jrworkspace.loglevel") == null) {
-			System.setProperty("de.jtem.jrworkspace.loglevel", defaultLogLevel.toString());
+		if (System.getProperty("de.jtem.jrworkspace.level") == null) {
+			System.setProperty("de.jtem.jrworkspace.level", defaultLogLevel.toString());
 		} else {
-			defaultLogLevel = Level.parse(System.getProperty("de.jtem.jrworkspace.loglevel"));
+			defaultLogLevel = Level.parse(System.getProperty("de.jtem.jrworkspace.level"));
 		}
 	}
 	
@@ -106,12 +106,12 @@ public class LoggingSystemTest {
 	
 	@Test
 	public void testWrongLogLevelNameInSystemProperty() {
-		System.setProperty("de.jtem.jrworkspace.loglevel", "Severe");
+		System.setProperty("de.jtem.jrworkspace.level", "Severe");
 		Assert.assertEquals(Logger.getLogger("").getLevel(),
 				LoggingSystem.tryToGetLoglevel());
 		Assert.assertThat(logStream.toString(), JUnitMatchers.containsString("Could not parse the value of the system property"));
 		
-		System.setProperty("de.jtem.jrworkspace.loglevel", "SEVERE");
+		System.setProperty("de.jtem.jrworkspace.level", "SEVERE");
 		Assert.assertEquals(Level.SEVERE, 
 				LoggingSystem.tryToGetLoglevel());
 	}
