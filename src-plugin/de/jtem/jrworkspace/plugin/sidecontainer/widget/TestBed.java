@@ -32,6 +32,8 @@ OF SUCH DAMAGE.
 package de.jtem.jrworkspace.plugin.sidecontainer.widget;
 
 import java.awt.BorderLayout;
+import java.awt.GridBagConstraints;
+import java.awt.GridBagLayout;
 
 import javax.swing.BorderFactory;
 import javax.swing.JFrame;
@@ -57,7 +59,14 @@ public class TestBed {
 		ShrinkPanel sp3 = new ShrinkPanel("Test Panel 3");
 		ShrinkPanel sp4 = new ShrinkPanel("Test Panel 4");
 		
-		sp1.add(new JLabel("Test Label 1"));
+		sp1.setLayout(new GridBagLayout());
+		GridBagConstraints c = new GridBagConstraints();
+		c.weightx = 1.0;
+		c.weighty = 0.0;
+		c.fill = GridBagConstraints.BOTH;
+		c.gridwidth = GridBagConstraints.REMAINDER;
+		sp1.add(new JLabel("Test Label 1"), c);
+		sp1.add(sp2, c);
 		sp2.add(new JLabel("Test Label 2"));
 		sp3.add(new JLabel("Test Label 3"));
 		sp4.add(new JLabel("Test Label 4"));
@@ -76,7 +85,6 @@ public class TestBed {
 		sps2.setBorder(BorderFactory.createEtchedBorder());
 		
 		spc1.addShrinkPanel(sp1);
-		spc1.addShrinkPanel(sp2);
 		spc1.addShrinkPanel(sp3);
 		spc2.addShrinkPanel(sp4);
 		

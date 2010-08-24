@@ -90,7 +90,7 @@ public class ShrinkPanel extends JPanel {
 		inset = 2,
 		contentInset = inset + 2,
 		boxInset = 6,
-		boxHeight = 15,
+		boxHeight = 13,
 		boxMiddle = inset + boxHeight / 2;
 	private boolean
 		shrinked = false,
@@ -100,6 +100,9 @@ public class ShrinkPanel extends JPanel {
 		helpCalledListener = null;
 	private Color
 		header_color = new Color(0.7f, 0.7f, 0.7f);
+	private Font
+		boldFont = new Font("Tahoma", Font.BOLD, 9),
+		normalFont = new Font("Tahoma", Font.PLAIN, 9);
 	private FloatDialog 
 		floatingDialog = new FloatDialog();
 	private boolean
@@ -345,21 +348,37 @@ public class ShrinkPanel extends JPanel {
 		g.setColor(Color.BLACK);
 		g.drawRoundRect(inset, boxMiddle, dim.width - inset * 2 - 1, dim.height - boxMiddle - inset - 1, 7, 7);
 		// header box
-		g.setColor(header_color);
-		g2D.setPaint(new GradientPaint(0, 0, getBackground(), 0, boxHeight, header_color));
-		g.fillRoundRect(boxInset, inset, dim.width - boxInset * 2 - 1, boxHeight, 7, 7);
+//		if (parentContainer != null) { // only top level shrink panels can have colors
+//			g.setColor(header_color);
+			g2D.setPaint(new GradientPaint(0, 0, getBackground(), 0, boxHeight, header_color));
+//		} else {
+//			g.setColor(getBackground());
+//		}
+//		if (parentContainer != null) {
+//			g.fillRoundRect(boxInset, inset, dim.width - boxInset * 2 - 1, boxHeight, 7, 7);
+//		} else {
+			g.fillRect(boxInset, inset, dim.width - boxInset * 2 - 1, boxHeight);
+//		}
 		// border
 		g.setColor(Color.BLACK);
-		g.drawRoundRect(boxInset, inset, dim.width - boxInset * 2 - 1, boxHeight, 7, 7);
+//		if (parentContainer != null) {
+//			g.drawRoundRect(boxInset, inset, dim.width - boxInset * 2 - 1, boxHeight, 7, 7);
+//		} else {
+			g.drawRect(boxInset, inset, dim.width - boxInset * 2 - 1, boxHeight);
+//		}
 		// header text
-		Font font = UIManager.getFont("Label.font");
-		g.setFont(font);
+//		Font font = UIManager.getFont("Label.font");
+		if (parentContainer != null) {
+			g.setFont(boldFont);
+		} else {
+			g.setFont(normalFont);
+		}
 		g.setColor(Color.BLACK);
-		Rectangle2D bounds = font.getStringBounds(name, g2D.getFontRenderContext());
+		Rectangle2D bounds = boldFont.getStringBounds(name, g2D.getFontRenderContext());
 		g.drawString(name, boxInset + (dim.width - boxInset * 2) / 2 - (int)bounds.getWidth() / 2, inset + boxHeight - 3);
 		// help button
 		if (showHelpIcon) {
-			Rectangle2D bounds2 = font.getStringBounds("?", g2D.getFontRenderContext());
+			Rectangle2D bounds2 = boldFont.getStringBounds("?", g2D.getFontRenderContext());
 			g.drawString("?", dim.width - boxInset - inset * 2 - (int)bounds2.getWidth(), inset + boxHeight - 3);
 		}
 		if (icon != null) {
