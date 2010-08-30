@@ -348,7 +348,7 @@ public class SimpleController implements Controller {
 				}
 				if (mainWindow != null) {
 					if (!localStartup) {
-						mainWindow.setSize(perspective.getCenterComponent().getPreferredSize());
+						mainWindow.setSize(getProperty(SimpleController.class, "mainWindowSize", perspective.getCenterComponent().getPreferredSize()));
 						mainWindow.setVisible(true);
 						LOGGER.finer("mainWindow visible");
 					}
@@ -1480,6 +1480,9 @@ public class SimpleController implements Controller {
 		Runnable doSaveAndExit=new Runnable(){
 			public void run() {
 				LOGGER.entering("doSaveAndExit Runnable", "run (do the save and exit stuff)", new Object[]{});
+				if (null != mainWindow) {
+					storeProperty(SimpleController.class, "mainWindowSize", mainWindow.getSize());
+				}
 				if (savePropertiesOnExit()) { //not canceled
 					dispose();
 					LOGGER.finer("system exit");
@@ -1488,7 +1491,7 @@ public class SimpleController implements Controller {
 			}
 		};
 		LOGGER.finer("start a new thread to do save on exit");
-		new Thread(doSaveAndExit,this.getClass()+"shutdown").run();
+		new Thread(doSaveAndExit,this.getClass()+" shutdown").run();
 		
 		LOGGER.exiting(SimpleController.class.getName(), "shutdown");
 	}
