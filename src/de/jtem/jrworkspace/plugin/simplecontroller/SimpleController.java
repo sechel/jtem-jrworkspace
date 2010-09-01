@@ -349,6 +349,7 @@ public class SimpleController implements Controller {
 				if (mainWindow != null) {
 					if (!localStartup) {
 						mainWindow.setSize(getProperty(SimpleController.class, "mainWindowSize", perspective.getCenterComponent().getPreferredSize()));
+						mainWindow.setExtendedState(getProperty(SimpleController.class, "mainWindowState", mainWindow.getExtendedState()));
 						mainWindow.setVisible(true);
 						LOGGER.finer("mainWindow visible");
 					}
@@ -1482,6 +1483,7 @@ public class SimpleController implements Controller {
 				LOGGER.entering("doSaveAndExit Runnable", "run (do the save and exit stuff)", new Object[]{});
 				if (null != mainWindow) {
 					storeProperty(SimpleController.class, "mainWindowSize", mainWindow.getSize());
+					storeProperty(SimpleController.class, "mainWindowState", mainWindow.getExtendedState());
 				}
 				if (savePropertiesOnExit()) { //not canceled
 					dispose();
