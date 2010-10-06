@@ -79,6 +79,7 @@ import de.jtem.jrworkspace.plugin.flavor.UIFlavor;
 import de.jtem.jrworkspace.plugin.pluginmanager.image.ImageHook;
 import de.jtem.jrworkspace.plugin.simplecontroller.SimpleController;
 
+@Deprecated /** has been replaced by the SPI method */
 public class PluginManager extends Plugin implements PreferencesFlavor, ActionListener, UIFlavor {
 
 	private JPanel

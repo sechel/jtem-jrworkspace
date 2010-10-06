@@ -68,8 +68,9 @@ public class AboutDialog extends JDialog{
 			mt.waitForAll();
 		} catch (InterruptedException e){}
 
-		setModalityType(DEFAULT_MODALITY_TYPE);
-
+//		setModalityType(DEFAULT_MODALITY_TYPE); // non 1.5
+		setModal(true);
+		
 		if (close_on_click_or_key) {
 			closeOnKey(parent);
 			closeOnMouseClick(parent);
