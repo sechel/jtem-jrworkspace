@@ -253,6 +253,7 @@ public class SimpleController implements Controller {
 		DEFAULT_NB_OF_PROPERY_FILE_BACKUPS = 1;
 
 	private boolean 
+		propertyEngineEnabled = true,
 		saveOnExit=DEFAULT_SAVE_ON_EXIT,
 		askBeforeSaveOnExit=DEFAULT_ASK_BEFORE_SAVE_ON_EXIT,
 		loadFromUserPropertyFile=DEFAULT_LOAD_FROM_USER_PROPERTY_FILE;
@@ -1081,7 +1082,10 @@ public class SimpleController implements Controller {
 	@SuppressWarnings("unchecked")
 	protected void loadProperties() {
 		LOGGER.entering(SimpleController.class.getName(), "loadProperties");
-		
+		if (!propertyEngineEnabled) {
+			LOGGER.exiting(SimpleController.class.getName(), "loadProperties property engine disabled");
+			return;
+		}
 		propertiesAreSafe = true;
 
 		InputStream in = null;
@@ -1137,6 +1141,10 @@ public class SimpleController implements Controller {
 	 */
 	protected boolean savePropertiesOnExit() {
 		LOGGER.entering(SimpleController.class.getName(), "savePropertiesOnExit");
+		if (!propertyEngineEnabled) {
+			LOGGER.exiting(SimpleController.class.getName(), "savePropertiesOnExit: property engine disabled", true);
+			return true;
+		}
 		LOGGER.finer("propertiesAreSafe: " + propertiesAreSafe);
 		LOGGER.finer("askBeforeSaveOnExit: " + askBeforeSaveOnExit);
 		LOGGER.finer("saveOnExit: " + saveOnExit);
@@ -1461,6 +1469,14 @@ public class SimpleController implements Controller {
 		writeUserPreferences();
 	}
 	
+	public boolean isPropertyEngineEnabled() {
+		return propertyEngineEnabled;
+	}
+	
+	public void setPropertyEngineEnabled(boolean propertyEngineEnabled) {
+		this.propertyEngineEnabled = propertyEngineEnabled;
+	}
+	
 	public boolean isRegisterSPIPlugins() {
 		return registerSPIPlugins;
 	}
@@ -1527,5 +1543,5 @@ public class SimpleController implements Controller {
 		}
 		Runtime.getRuntime().removeShutdownHook(shutdownHook);
 	}
-			
+	
 }
