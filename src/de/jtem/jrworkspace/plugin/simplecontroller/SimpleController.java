@@ -347,8 +347,11 @@ public class SimpleController implements Controller {
 						System.exit(-1);
 					}
 				}
-				if (mainWindow != null) {
+				if (hasMainWindow) {
 					if (!localStartup) {
+						updateMainWindow();
+						updateMenuBarInternal();
+						updateToolBar();
 						mainWindow.setSize(getProperty(SimpleController.class, "mainWindowSize", perspective.getCenterComponent().getPreferredSize()));
 						mainWindow.setExtendedState(getProperty(SimpleController.class, "mainWindowState", mainWindow.getExtendedState()));
 						mainWindow.setVisible(true);
@@ -636,7 +639,7 @@ public class SimpleController implements Controller {
 	
 	
 	protected void updateMainWindow() {
-		if (!hasMainWindow) {
+		if (!hasMainWindow || status == Starting) {
 			return;
 		}
 		centerPanel.removeAll();
@@ -653,9 +656,11 @@ public class SimpleController implements Controller {
 	
 	@SuppressWarnings("unchecked")
 	protected void updateMenuBarInternal() {
-		if (!hasMenuBar) {
+		if (!hasMenuBar || status == Starting) {
 			return;
 		}
+		System.out.println("SimpleController.updateMenuBarInternal()");
+		
 		List<MenuFlavor> menuList = new LinkedList<MenuFlavor>();
 		for (Plugin mp : new LinkedList<Plugin>(plugins)) {
 			if (mp instanceof MenuFlavor) {
@@ -667,10 +672,10 @@ public class SimpleController implements Controller {
 			}
 		}
 		Collections.sort(menuList, new MenuFlavorComparator());
-		JMenuBar mBar = new JMenuBar();
+		JMenuBar menuBar = new JMenuBar();
 		for (MenuFlavor mf : menuList) {
 			for (JMenu m : mf.getMenus()) {
-				mBar.add(m);
+				menuBar.add(m);
 			}
 		}
 		JMenu helpMenu = new JMenu("Help");
@@ -686,17 +691,17 @@ public class SimpleController implements Controller {
 		}
 		helpMenu.add(new JPopupMenu.Separator());
 		helpMenu.add(new AboutAction(aboutDialog));
-		mBar.add(Box.createHorizontalGlue());
-		mBar.add(helpMenu);
+		menuBar.add(Box.createHorizontalGlue());
+		menuBar.add(helpMenu);
 		JMenuBar oldBar = mainWindow.getJMenuBar();
-		if (oldBar != null) mBar.setPreferredSize(oldBar.getPreferredSize());
-		mainWindow.setJMenuBar(mBar);
+		if (oldBar != null) menuBar.setPreferredSize(oldBar.getPreferredSize());
+		mainWindow.setJMenuBar(menuBar);
 	}
 	
 	
 	@SuppressWarnings("unchecked")
 	protected void updateToolBar() {
-		if (!hasToolBar) {
+		if (!hasToolBar || status == Starting) {
 			return;
 		}
 		toolBarPanel.removeAll();
@@ -745,6 +750,7 @@ public class SimpleController implements Controller {
 		 * Completely rebuilds the gui of this controller
 		 */
 		public void updateFrontend() {
+			if (status != Started) return;
 			if (mainWindow != null) {
 				SwingUtilities.invokeLater(new Runnable() {
 					public void run() {
@@ -767,6 +773,7 @@ public class SimpleController implements Controller {
 		 * Updates the content gui of this controller
 		 */
 		public void updateContent() {
+			if (status != Started) return;
 			if (mainWindow != null) {
 				SwingUtilities.invokeLater(new Runnable() {
 					public void run() {
@@ -784,17 +791,16 @@ public class SimpleController implements Controller {
 		 * Updates the menu bar of this controller
 		 */
 		public void updateMenuBar() {
-			if (mainWindow != null) {
-				SwingUtilities.invokeLater(new Runnable() {
-					public void run() {
-						SimpleController.this.updateMenuBarInternal();
-						mainWindow.doLayout();
-						if (fullScreenFrame != null) {
-							fullScreenFrame.doLayout();
-						}
+			if (status != Started || mainWindow == null) return;
+			SwingUtilities.invokeLater(new Runnable() {
+				public void run() {
+					SimpleController.this.updateMenuBarInternal();
+					mainWindow.doLayout();
+					if (fullScreenFrame != null) {
+						fullScreenFrame.doLayout();
 					}
-				});
-			}
+				}
+			});
 		}
 		
 		/**
