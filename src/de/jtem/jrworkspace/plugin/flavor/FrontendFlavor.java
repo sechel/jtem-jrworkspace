@@ -79,7 +79,7 @@ public interface FrontendFlavor {
 		 * to full-screen
 		 * @param fs
 		 */
-		public void setFullscreen(boolean fs);
+		public void setFullscreen(boolean fs, boolean exclusive);
 		
 		/**
 		 * Check whether the window of the controller is in 

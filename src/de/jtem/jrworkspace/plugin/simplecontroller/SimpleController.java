@@ -47,8 +47,11 @@ import java.awt.Component;
 import java.awt.Container;
 import java.awt.Dimension;
 import java.awt.Frame;
+import java.awt.GraphicsConfiguration;
 import java.awt.GraphicsDevice;
+import java.awt.GraphicsEnvironment;
 import java.awt.GridLayout;
+import java.awt.Rectangle;
 import java.awt.event.WindowAdapter;
 import java.awt.event.WindowEvent;
 import java.io.File;
@@ -93,24 +96,24 @@ import de.jtem.jrworkspace.plugin.Controller;
 import de.jtem.jrworkspace.plugin.Plugin;
 import de.jtem.jrworkspace.plugin.PluginNameComparator;
 import de.jtem.jrworkspace.plugin.flavor.FrontendFlavor;
-import de.jtem.jrworkspace.plugin.flavor.FrontendFlavor.FrontendListener;
 import de.jtem.jrworkspace.plugin.flavor.HelpFlavor;
-import de.jtem.jrworkspace.plugin.flavor.HelpFlavor.HelpListener;
 import de.jtem.jrworkspace.plugin.flavor.MenuFlavor;
 import de.jtem.jrworkspace.plugin.flavor.OpenAboutFlavor;
-import de.jtem.jrworkspace.plugin.flavor.OpenAboutFlavor.OpenAboutListener;
 import de.jtem.jrworkspace.plugin.flavor.OpenPreferencesFlavor;
-import de.jtem.jrworkspace.plugin.flavor.OpenPreferencesFlavor.OpenPreferencesListener;
 import de.jtem.jrworkspace.plugin.flavor.PerspectiveFlavor;
 import de.jtem.jrworkspace.plugin.flavor.PreferencesFlavor;
 import de.jtem.jrworkspace.plugin.flavor.PropertiesFlavor;
-import de.jtem.jrworkspace.plugin.flavor.PropertiesFlavor.PropertiesListener;
 import de.jtem.jrworkspace.plugin.flavor.ShutdownFlavor;
-import de.jtem.jrworkspace.plugin.flavor.ShutdownFlavor.ShutdownListener;
 import de.jtem.jrworkspace.plugin.flavor.StatusFlavor;
-import de.jtem.jrworkspace.plugin.flavor.StatusFlavor.StatusChangedListener;
 import de.jtem.jrworkspace.plugin.flavor.ToolBarFlavor;
 import de.jtem.jrworkspace.plugin.flavor.UIFlavor;
+import de.jtem.jrworkspace.plugin.flavor.FrontendFlavor.FrontendListener;
+import de.jtem.jrworkspace.plugin.flavor.HelpFlavor.HelpListener;
+import de.jtem.jrworkspace.plugin.flavor.OpenAboutFlavor.OpenAboutListener;
+import de.jtem.jrworkspace.plugin.flavor.OpenPreferencesFlavor.OpenPreferencesListener;
+import de.jtem.jrworkspace.plugin.flavor.PropertiesFlavor.PropertiesListener;
+import de.jtem.jrworkspace.plugin.flavor.ShutdownFlavor.ShutdownListener;
+import de.jtem.jrworkspace.plugin.flavor.StatusFlavor.StatusChangedListener;
 import de.jtem.jrworkspace.plugin.simplecontroller.action.AboutAction;
 import de.jtem.jrworkspace.plugin.simplecontroller.action.HelpWindowAction;
 import de.jtem.jrworkspace.plugin.simplecontroller.action.PreferencesWindowAction;
@@ -851,7 +854,7 @@ public class SimpleController implements Controller {
 		 * Activates the full-screen mode of this controller
 		 * @param fs 
 		 */
-		public void setFullscreen(boolean fs) {
+		public void setFullscreen(boolean fs, boolean exclusive) {
 			if (mainWindow == null) {
 				return;
 			}
@@ -873,7 +876,21 @@ public class SimpleController implements Controller {
 					fullScreenFrame.add(menuBar, NORTH);
 				}
 				mainWindow.dispose();
-				gd.setFullScreenWindow(fullScreenFrame);
+				if (exclusive) {
+					gd.setFullScreenWindow(fullScreenFrame);
+				} else {
+					Rectangle virtualBounds = new Rectangle();
+					GraphicsEnvironment ge = GraphicsEnvironment.getLocalGraphicsEnvironment();
+					GraphicsDevice[] gs = ge.getScreenDevices();
+					for (GraphicsDevice device : gs) {
+						GraphicsConfiguration[] gc = device.getConfigurations();
+						for (int i = 0; i < gc.length; i++) {
+							virtualBounds = virtualBounds.union(gc[i].getBounds());
+						}
+					}
+					fullScreenFrame.setBounds(virtualBounds);
+					fullScreenFrame.setVisible(true);
+				}
 			} else {
 				Component[] c = fullScreenFrame.getComponents();
 				mainWindow.setContentPane((Container)c[0]);
@@ -1311,11 +1328,11 @@ public class SimpleController implements Controller {
 	 * can be changed with this method
 	 * @param fs
 	 */
-	public void setFullscreen(final boolean fs) {
+	public void setFullscreen(final boolean fs, final boolean exclusive) {
 		try {
 			SwingUtilities.invokeAndWait(new Runnable() {
 				public void run() {
-					flavorListener.setFullscreen(fs);				
+					flavorListener.setFullscreen(fs, exclusive);				
 				}
 			});
 		} catch (Exception e) { }
