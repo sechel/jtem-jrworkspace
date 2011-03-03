@@ -349,6 +349,8 @@ public class SimpleController implements Controller {
 						LOGGER.severe("SimpleController: No main perspective flavor found. Exit.");
 						System.exit(-1);
 					}
+					if (hasMenuBar) updateMenuBarInternal();
+					if (hasToolBar) updateToolBarInternal();
 				}
 				if (mainWindow != null) {
 					if (!localStartup) {
@@ -553,7 +555,7 @@ public class SimpleController implements Controller {
 			updateMenuBarInternal();
 		}
 		if (p instanceof ToolBarFlavor) {
-			updateToolBar();
+			updateToolBarInternal();
 		}
 		if (p instanceof MenuFlavor) {
 			updateMenuBarInternal();
@@ -656,7 +658,7 @@ public class SimpleController implements Controller {
 	
 	@SuppressWarnings("unchecked")
 	protected void updateMenuBarInternal() {
-		if (!hasMenuBar) {
+		if (!hasMenuBar || status == Starting) {
 			return;
 		}
 		List<MenuFlavor> menuList = new LinkedList<MenuFlavor>();
@@ -698,8 +700,8 @@ public class SimpleController implements Controller {
 	
 	
 	@SuppressWarnings("unchecked")
-	protected void updateToolBar() {
-		if (!hasToolBar) {
+	protected void updateToolBarInternal() {
+		if (!hasToolBar || status == Starting) {
 			return;
 		}
 		toolBarPanel.removeAll();
