@@ -333,7 +333,7 @@ public class SimpleController implements Controller {
 	 */
 	public void startup() {
 		LOGGER.entering(SimpleController.class.getName(), "startup");
-		status = Status.Starting;
+		status = Starting;
 		registerSPIPlugins();
 		readUserPreferences();
 		loadProperties();
@@ -343,7 +343,7 @@ public class SimpleController implements Controller {
 				for (Plugin p : new LinkedList<Plugin>(plugins)) {
 					activatePlugin(p);
 				}
-				status = Status.Started;
+				status = Started;
 				if (hasToolBar || hasMenuBar) {
 					if (perspective == null) {
 						LOGGER.severe("SimpleController: No main perspective flavor found. Exit.");
