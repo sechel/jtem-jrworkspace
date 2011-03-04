@@ -7,6 +7,6 @@
 	<classpathentry kind="lib" path="lib/xpp3.jar"/>
 	<classpathentry kind="lib" path="lib/xstream.jar"/>
 	<classpathentry kind="lib" path="lib/ecj3.4.1custom.jar"/>
-	<classpathentry kind="con" path="org.eclipse.jdt.junit.JUNIT_CONTAINER/4"/>
+	<classpathentry kind="lib" path="junit.jar"/>
 	<classpathentry kind="output" path="bin"/>
 </classpath>
