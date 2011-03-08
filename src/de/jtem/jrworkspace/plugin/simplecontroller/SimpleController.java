@@ -322,6 +322,8 @@ public class SimpleController implements Controller {
 			p = pClass.newInstance();
 		} catch (Exception e) {
 			LOGGER.severe(e.toString());
+			e.printStackTrace();
+			return;
 		}
 		plugins.add(p);
 	}
