@@ -96,24 +96,24 @@ import de.jtem.jrworkspace.plugin.Controller;
 import de.jtem.jrworkspace.plugin.Plugin;
 import de.jtem.jrworkspace.plugin.PluginNameComparator;
 import de.jtem.jrworkspace.plugin.flavor.FrontendFlavor;
+import de.jtem.jrworkspace.plugin.flavor.FrontendFlavor.FrontendListener;
 import de.jtem.jrworkspace.plugin.flavor.HelpFlavor;
+import de.jtem.jrworkspace.plugin.flavor.HelpFlavor.HelpListener;
 import de.jtem.jrworkspace.plugin.flavor.MenuFlavor;
 import de.jtem.jrworkspace.plugin.flavor.OpenAboutFlavor;
+import de.jtem.jrworkspace.plugin.flavor.OpenAboutFlavor.OpenAboutListener;
 import de.jtem.jrworkspace.plugin.flavor.OpenPreferencesFlavor;
+import de.jtem.jrworkspace.plugin.flavor.OpenPreferencesFlavor.OpenPreferencesListener;
 import de.jtem.jrworkspace.plugin.flavor.PerspectiveFlavor;
 import de.jtem.jrworkspace.plugin.flavor.PreferencesFlavor;
 import de.jtem.jrworkspace.plugin.flavor.PropertiesFlavor;
+import de.jtem.jrworkspace.plugin.flavor.PropertiesFlavor.PropertiesListener;
 import de.jtem.jrworkspace.plugin.flavor.ShutdownFlavor;
+import de.jtem.jrworkspace.plugin.flavor.ShutdownFlavor.ShutdownListener;
 import de.jtem.jrworkspace.plugin.flavor.StatusFlavor;
+import de.jtem.jrworkspace.plugin.flavor.StatusFlavor.StatusChangedListener;
 import de.jtem.jrworkspace.plugin.flavor.ToolBarFlavor;
 import de.jtem.jrworkspace.plugin.flavor.UIFlavor;
-import de.jtem.jrworkspace.plugin.flavor.FrontendFlavor.FrontendListener;
-import de.jtem.jrworkspace.plugin.flavor.HelpFlavor.HelpListener;
-import de.jtem.jrworkspace.plugin.flavor.OpenAboutFlavor.OpenAboutListener;
-import de.jtem.jrworkspace.plugin.flavor.OpenPreferencesFlavor.OpenPreferencesListener;
-import de.jtem.jrworkspace.plugin.flavor.PropertiesFlavor.PropertiesListener;
-import de.jtem.jrworkspace.plugin.flavor.ShutdownFlavor.ShutdownListener;
-import de.jtem.jrworkspace.plugin.flavor.StatusFlavor.StatusChangedListener;
 import de.jtem.jrworkspace.plugin.simplecontroller.action.AboutAction;
 import de.jtem.jrworkspace.plugin.simplecontroller.action.HelpWindowAction;
 import de.jtem.jrworkspace.plugin.simplecontroller.action.PreferencesWindowAction;
@@ -341,6 +341,15 @@ public class SimpleController implements Controller {
 		loadProperties();
 		Runnable r = new Runnable() {
 			public void run() {
+				if (manageLookAndFeel) {
+					try {
+						String defaultLnF = "cross_platform_lnf_classname";
+						String lnfClass = getProperty(SimpleController.class, "lookAndFeelClass", defaultLnF);
+						flavorListener.installLookAndFeel(lnfClass);
+					} catch (Exception e) {
+						LOGGER.config("Could not load look and feel.");
+					}
+				}
 				initializeComponents();
 				for (Plugin p : new LinkedList<Plugin>(plugins)) {
 					activatePlugin(p);
@@ -370,8 +379,9 @@ public class SimpleController implements Controller {
 						} catch (Exception e) {
 							LOGGER.config("Could not load look and feel.");
 						}
+					} else {
+						SwingUtilities.updateComponentTreeUI(mainWindow);
 					}
-					SwingUtilities.updateComponentTreeUI(mainWindow);
 				}
 			}
 		};
@@ -844,6 +854,7 @@ public class SimpleController implements Controller {
 				UIManager.setLookAndFeel(lnfClassName);
 			} catch (Exception e) {
 				System.err.println("Cannot install look and feel: " + lnfClassName);
+				return;
 			}
 			// notify UIFlavors
 			for (Plugin p : plugins) {
