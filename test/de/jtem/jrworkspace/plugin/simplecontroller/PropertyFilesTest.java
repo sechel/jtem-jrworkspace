@@ -50,7 +50,7 @@ public class PropertyFilesTest {
 		nbPlugin = new NbPlugin();
 		controller.registerPlugin(nbPlugin);		
 		controller.startupLocal();
-		Runtime.getRuntime().removeShutdownHook(controller.shutdownHook);
+//		Runtime.getRuntime().removeShutdownHook(controller.shutdownHook);
 	}
 	
 	@Test

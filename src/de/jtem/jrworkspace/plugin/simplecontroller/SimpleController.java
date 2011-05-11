@@ -244,7 +244,7 @@ public class SimpleController implements Controller {
 		propInputStream = null;
 	protected Preferences 
 		userPreferences=null;
-	protected final Thread shutdownHook = new ShutDownHook();
+//	protected final Thread shutdownHook = new ShutDownHook();
 	
 	protected static boolean 
 		DEFAULT_SAVE_ON_EXIT=true,
@@ -272,11 +272,11 @@ public class SimpleController implements Controller {
 		Started
 	}
 	
-	protected class ShutDownHook extends Thread{
-		public void run() {
-			LOGGER.info("Unexpected shutdown, no properties saved.");
-		}
-	};
+//	protected class ShutDownHook extends Thread{
+//		public void run() {
+//			LOGGER.info("Unexpected shutdown, no properties saved.");
+//		}
+//	};
 	
 	
 	/**
@@ -298,7 +298,7 @@ public class SimpleController implements Controller {
 		//init with user preferences associated with the controllers class, may be overridden by package specific properties
 		userPreferences = Preferences.userNodeForPackage(this.getClass());
 		
-		Runtime.getRuntime().addShutdownHook(shutdownHook);
+//		Runtime.getRuntime().addShutdownHook(shutdownHook);
 		
 		LOGGER.exiting(SimpleController.class.getName(), "SimpleController");
 	}
@@ -1576,7 +1576,7 @@ public class SimpleController implements Controller {
 			preferencesWindow.dispose();
 			preferencesWindow = null;
 		}
-		Runtime.getRuntime().removeShutdownHook(shutdownHook);
+//		Runtime.getRuntime().removeShutdownHook(shutdownHook);
 	}
 	
 }
