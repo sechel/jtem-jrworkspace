@@ -338,7 +338,9 @@ public class ShrinkSlotVertical extends ShrinkSlot implements MouseMotionListene
     @Override
     public void updateUI() {
     	super.updateUI();
-    	fillPanel.updateUI();
+    	if (fillPanel != null) {
+    		fillPanel.updateUI();
+    	}
     }
     
 }
