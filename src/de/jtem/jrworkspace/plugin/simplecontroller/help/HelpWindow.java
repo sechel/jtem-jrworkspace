@@ -113,8 +113,6 @@ public class HelpWindow extends JDialog implements TreeSelectionListener {
 	
 	private class NavTreeModel extends AbstractTreeModel implements TreeCellRenderer{
 
-		private static final long 
-			serialVersionUID = 1L;
 		private DefaultTreeCellRenderer
 			defaultTreeCellRenderer = new DefaultTreeCellRenderer();
 		
