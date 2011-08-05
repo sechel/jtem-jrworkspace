@@ -63,7 +63,7 @@ public class SaveOnExitDialog {
 	//gui values and actions results that are used later
 	final private boolean[] yesNoCanceled=new boolean[] {false,false,true}; 
 	final JTextField filenameTF=new JTextField();
-	final JCheckBox rememberCB=new JCheckBox("Rember my decision.");
+	final JCheckBox rememberCB=new JCheckBox("Remember my decision.");
 	final JCheckBox loadCB=new JCheckBox("Load properties from this file on startup.");
 	
 	final SimpleController controller;
