@@ -92,18 +92,21 @@ public interface FrontendFlavor {
 		 * @param show
 		 */
 		public void setShowMenuBar(boolean show);
+		public boolean isShowMenuBar();
 		
 		/**
 		 * Shows or hides the tool bar of the main windows 
 		 * @param show
 		 */
 		public void setShowToolBar(boolean show);
+		public boolean isShowToolBar();
 		
 		/**
 		 * Shows of hides the status bar of the main window
 		 * @param show
 		 */
 		public void setShowStatusBar(boolean show);
+		public boolean isShowStatusBar();
 		
 		/**
 		 * Set the application title

@@ -943,6 +943,14 @@ public class SimpleController implements Controller {
 				}
 			});
 		}
+		public boolean isShowMenuBar() {
+			if (mainWindow == null) return false;
+			JMenuBar menu = mainWindow.getJMenuBar();
+			if (menu == null || menu.isPreferredSizeSet()) {
+				return false;
+			}
+			return true;
+		}
 		
 		/**
 		 * Sets the tool bars visibility
@@ -955,6 +963,9 @@ public class SimpleController implements Controller {
 				}
 			});
 		}
+		public boolean isShowToolBar() {
+			return toolBarPanel.isVisible();
+		}
 		
 		/**
 		 * Sets the status bars visibility
@@ -966,6 +977,9 @@ public class SimpleController implements Controller {
 					statusLabel.setVisible(show);
 				}
 			});
+		}
+		public boolean isShowStatusBar() {
+			return statusLabel.isVisible();
 		}
 		
 		public void setTitle(String title) {
