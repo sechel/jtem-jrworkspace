@@ -122,6 +122,7 @@ import de.jtem.jrworkspace.plugin.simplecontroller.image.ImageHook;
 import de.jtem.jrworkspace.plugin.simplecontroller.preferences.PreferencesWindow;
 import de.jtem.jrworkspace.plugin.simplecontroller.widget.AboutDialog;
 import de.jtem.jrworkspace.plugin.simplecontroller.widget.SaveOnExitDialog;
+import de.jtem.jrworkspace.plugin.simplecontroller.widget.SplashScreen;
 import de.jtem.jrworkspace.plugin.simplecontroller.widget.WrapLayout;
 
 
@@ -210,6 +211,8 @@ public class SimpleController implements Controller {
 		mainWindow = null;
 	protected Frame
 		fullScreenFrame = null;
+	protected SplashScreen
+		splashScreen = null;
 	protected HelpWindow
 		helpWindow = null;
 	protected HelpWindowAction	
@@ -272,12 +275,6 @@ public class SimpleController implements Controller {
 		Started
 	}
 	
-//	protected class ShutDownHook extends Thread{
-//		public void run() {
-//			LOGGER.info("Unexpected shutdown, no properties saved.");
-//		}
-//	};
-	
 	
 	/**
 	 * Construct a SimpleController. Initialize the properties file to 
@@ -297,9 +294,6 @@ public class SimpleController implements Controller {
 		
 		//init with user preferences associated with the controllers class, may be overridden by package specific properties
 		userPreferences = Preferences.userNodeForPackage(this.getClass());
-		
-//		Runtime.getRuntime().addShutdownHook(shutdownHook);
-		
 		LOGGER.exiting(SimpleController.class.getName(), "SimpleController");
 	}
 	
@@ -310,6 +304,7 @@ public class SimpleController implements Controller {
 	 */
 	public void registerPlugin(Plugin p) {
 		plugins.add(p);
+		setSplashStatus(p.getClass().getName());
 	}
 	
 	/**
@@ -326,6 +321,7 @@ public class SimpleController implements Controller {
 			return;
 		}
 		plugins.add(p);
+		setSplashStatus(p.getClass().getName());
 	}
 	
 	/**
@@ -335,6 +331,7 @@ public class SimpleController implements Controller {
 	 */
 	public void startup() {
 		LOGGER.entering(SimpleController.class.getName(), "startup");
+		setSplashStatus("activating plug-ins...");
 		status = Starting;
 		registerSPIPlugins();
 		readUserPreferences();
@@ -398,7 +395,7 @@ public class SimpleController implements Controller {
 			e.printStackTrace(new PrintWriter(stackTrace));
 			LOGGER.severe(stackTrace.toString());
 		}
-		
+		setSplashStatus("ready.");
 		LOGGER.exiting(SimpleController.class.getName(), "startup");
 	}
 
@@ -572,8 +569,8 @@ public class SimpleController implements Controller {
 		if (p instanceof MenuFlavor) {
 			updateMenuBarInternal();
 		}
-		
 		LOGGER.exiting(SimpleController.class.getName(), "activatePlugin");
+		updateSplashProgress();
 	}
 
 	
@@ -646,11 +643,24 @@ public class SimpleController implements Controller {
 		return (T)properties.remove(context.getName() + ":" + key);
 	}
 	
-	
 	public boolean isActive(Plugin p) {
 		return installed.contains(p.getClass());
 	}
 	
+	
+	public void setSplashScreen(SplashScreen screen) {
+		this.splashScreen = screen;
+	}
+	public void setSplashStatus(String status) {
+		if (splashScreen == null) return;
+		splashScreen.setStatus(status);
+		updateSplashProgress();
+	}
+	public void updateSplashProgress() {
+		if (splashScreen == null) return;
+		double progress = installed.size() / (double)plugins.size();
+		splashScreen.setProgress(progress);
+	}
 	
 	protected void updateMainWindow() {
 		if (!hasMainWindow) {

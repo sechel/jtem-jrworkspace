@@ -46,6 +46,7 @@ import java.awt.Dimension;
 import java.awt.Insets;
 import java.awt.event.ActionEvent;
 import java.awt.event.ActionListener;
+import java.awt.event.InputEvent;
 import java.awt.event.KeyEvent;
 
 import javax.swing.BorderFactory;
@@ -114,11 +115,11 @@ public abstract class SideContainerPerspective extends Plugin implements Perspec
 		containersMenu.add(showTopSlotItem);
 		containersMenu.add(showBottomSlotItem);
 		
-		hidePanelsItem.setAccelerator(getKeyStroke(KeyEvent.VK_H, KeyEvent.ALT_MASK | KeyEvent.SHIFT_MASK));
-		showLeftSlotItem.setAccelerator(getKeyStroke(KeyEvent.VK_LEFT, KeyEvent.ALT_MASK | KeyEvent.SHIFT_MASK));
-		showRightSlotItem.setAccelerator(getKeyStroke(KeyEvent.VK_RIGHT, KeyEvent.ALT_MASK | KeyEvent.SHIFT_MASK));
-		showTopSlotItem.setAccelerator(getKeyStroke(KeyEvent.VK_UP, KeyEvent.ALT_MASK | KeyEvent.SHIFT_MASK));
-		showBottomSlotItem.setAccelerator(getKeyStroke(KeyEvent.VK_DOWN, KeyEvent.ALT_MASK | KeyEvent.SHIFT_MASK));
+		hidePanelsItem.setAccelerator(getKeyStroke(KeyEvent.VK_H, InputEvent.ALT_MASK | InputEvent.SHIFT_MASK));
+		showLeftSlotItem.setAccelerator(getKeyStroke(KeyEvent.VK_LEFT, InputEvent.ALT_MASK | InputEvent.SHIFT_MASK));
+		showRightSlotItem.setAccelerator(getKeyStroke(KeyEvent.VK_RIGHT, InputEvent.ALT_MASK | InputEvent.SHIFT_MASK));
+		showTopSlotItem.setAccelerator(getKeyStroke(KeyEvent.VK_UP, InputEvent.ALT_MASK | InputEvent.SHIFT_MASK));
+		showBottomSlotItem.setAccelerator(getKeyStroke(KeyEvent.VK_DOWN, InputEvent.ALT_MASK | InputEvent.SHIFT_MASK));
 	}
 	
 	

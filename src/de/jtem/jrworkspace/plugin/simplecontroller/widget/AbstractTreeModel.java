@@ -89,7 +89,7 @@ public abstract class AbstractTreeModel implements TreeModel
 		TreeModelEvent e= new TreeModelEvent(this,getPathTo(parent), indices,child);
 		for(int i=listeners.size()-1; i>-1; --i)
 		{
-			TreeModelListener tml=(TreeModelListener)listeners.get(i);
+			TreeModelListener tml=listeners.get(i);
 			tml.treeNodesInserted(e);
 		}
 	}
@@ -107,7 +107,7 @@ public abstract class AbstractTreeModel implements TreeModel
 		//System.out.println(getClass()+": firing "+e);
 		for(int i=listeners.size()-1; i>-1; --i)
 		{
-			TreeModelListener tml=(TreeModelListener)listeners.get(i);
+			TreeModelListener tml=listeners.get(i);
 			tml.treeNodesChanged(e);
 		}
 	}
@@ -119,7 +119,7 @@ public abstract class AbstractTreeModel implements TreeModel
 		//System.out.println(getClass()+": firing "+e);
 		for(int i=listeners.size()-1; i>-1; --i)
 		{
-			TreeModelListener tml=(TreeModelListener)listeners.get(i);
+			TreeModelListener tml=listeners.get(i);
 			tml.treeStructureChanged(e);
 		}
 	}
@@ -131,7 +131,7 @@ public abstract class AbstractTreeModel implements TreeModel
 		//System.out.println(getClass()+": firing "+e);
 		for(int i=listeners.size()-1; i>-1; --i)
 		{
-			TreeModelListener tml=(TreeModelListener)listeners.get(i);
+			TreeModelListener tml=listeners.get(i);
 			tml.treeNodesRemoved(e);
 		}
 	}
