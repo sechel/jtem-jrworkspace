@@ -512,7 +512,7 @@ public class SimpleController implements Controller {
 	
 	protected void activatePlugin(Plugin p) {
 		LOGGER.entering(SimpleController.class.getName(), "activatePlugin", new Object[]{p});
-		
+		setSplashStatus(p.getClass().getName());
 		if (isActive(p)) {
 			return;
 		} else {
@@ -570,7 +570,6 @@ public class SimpleController implements Controller {
 			updateMenuBarInternal();
 		}
 		LOGGER.exiting(SimpleController.class.getName(), "activatePlugin");
-		updateSplashProgress();
 	}
 
 	
