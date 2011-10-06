@@ -63,13 +63,8 @@ public abstract class ShrinkSlot extends JPanel {
     		Point l = c.getLocationOnScreen();
     		Dimension size = c.getSize();
     		if (l.x < onScreen.x && onScreen.x < l.x + size.width &&
-    			l.y < onScreen.y && onScreen.y < l.y + size.height) {
-    			if (c instanceof ShrinkSlotHorizontal) {
-    				ShrinkSlotHorizontal slh = (ShrinkSlotHorizontal)c;
-    				if (slh.isOccupied()) {
-    					continue;
-    				}
-    			}
+    			l.y < onScreen.y && onScreen.y < l.y + size.height
+    		) {
     			return c;
     		}
     	}

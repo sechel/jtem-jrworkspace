@@ -30,89 +30,60 @@ OF SUCH DAMAGE.
 **/
 
 package de.jtem.jrworkspace.plugin.sidecontainer.widget;
-
-import java.awt.Color;
 import java.awt.Dimension;
-import java.awt.Graphics;
-import java.awt.GridBagConstraints;
-import java.awt.GridBagLayout;
 import java.awt.Point;
 
-public class ShrinkSlotHorizontal extends ShrinkSlot {
-
+/**
+ * A container class which can stack ShrinkPanels and scroll them
+ * <p>
+ * Copyright 2005 <a href="http://www.sechel.de">Stefan Sechelmann</a>
+ * <a href="http://www.math.tu-berlin.de/geometrie">TU-Berlin</a> 
+ * @author Stefan Sechelmann
+ */
+public class ShrinkSlotHorizontal extends ShrinkSlotVertical {
+	
 	private static final long 
 		serialVersionUID = 1L;
-	private GridBagConstraints
-		gbc = new GridBagConstraints();
-	private ShrinkPanel
-		panel = null;
-	private Dimension
-		emptySize = null;
-	private boolean
-		showInsertHint = false;
-	private int
-		height = 150;
 	
-	public ShrinkSlotHorizontal(int height) {
-		this.height = height;
-		emptySize = new Dimension(10, height);
-		setPreferredSize(emptySize);
-		setLayout(new GridBagLayout());
-		gbc.fill = GridBagConstraints.BOTH;
-		gbc.gridwidth = 1;
-		gbc.weightx = 1.0;
-		gbc.weighty = 1.0;
+	public ShrinkSlotHorizontal(){
+		super(100);
 	}
 	
-	
-	@Override
-	public void addShrinkPanel(ShrinkPanel sp) {
-		this.panel = sp;
-		sp.setParentSlot(this);
-		setPreferredSize(null);
-		add(sp, gbc);
+	protected void updateLayout() {
+		content.removeAll();
+		for (ShrinkPanel sp : panels) {
+			content.add(sp, normalConstraints);
+		}
+		if (panels.size() == 0) {
+			setPreferredSize(new Dimension(10, 10));
+			setMinimumSize(new Dimension(10, 10));
+		} else {
+			setPreferredSize(null);
+			setMinimumSize(new Dimension(100, 10));
+		}
+		content.doLayout();
 		revalidate();
+		updateUI();
+	}
+	
+	protected void shrinkOtherPanels(ShrinkPanel p) {
+		for (ShrinkPanel sp : panels) {
+			if (sp != p) {
+				sp.setShrinked(true);
+			}
+		}
 	}
 	
 	@Override
-	public void addShrinkPanelAt(ShrinkPanel s, Point p) {
-		addShrinkPanel(s);
+	public void addShrinkPanelAt(ShrinkPanel panel, Point p) {
+		super.addShrinkPanelAt(panel, p);
+		panel.setShrinked(false);
 	}
-	
 	
 	@Override
-	public void removeShrinkPanel(ShrinkPanel sp) {
-		this.panel = null;
-		setPreferredSize(emptySize);
-		remove(sp);
-		revalidate();
+	public void addShrinkPanel(ShrinkPanel panel) {
+		super.addShrinkPanel(panel);
+		panel.setShrinked(false);
 	}
-
-	
-	public boolean isOccupied() {
-		return panel != null;
-	}
-
-	
-	@Override
-	public void showInsertHint(boolean show, Point p) {
-		showInsertHint = show;
-		repaint();
-	}
-	
-    
-    @Override
-    public void paint(Graphics g) {
-    	super.paint(g);
-    	if (showInsertHint) {
-    		Dimension size = getSize();
-    		g.setColor(Color.BLACK);
-    		g.drawRect(0, 0, size.width - 1, size.height - 1);
-    	}
-    }
-    
-    public int getPreferredHeight() {
-    	return height;
-    }
     
 }

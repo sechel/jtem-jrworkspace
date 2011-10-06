@@ -53,7 +53,6 @@ public class TestBed {
 		JPanel centerPanel = new JPanel();
 		centerPanel.setLayout(new BorderLayout());
 		
-		
 		ShrinkPanel sp1 = new ShrinkPanel("Test Panel 1", true);
 		ShrinkPanel sp2 = new ShrinkPanel("Test Panel 2");
 		ShrinkPanel sp3 = new ShrinkPanel("Test Panel 3");
@@ -67,14 +66,16 @@ public class TestBed {
 		c.gridwidth = GridBagConstraints.REMAINDER;
 		sp1.add(new JLabel("Test Label 1"), c);
 		sp1.add(sp2, c);
+		c.weighty = 1.0;
+		sp1.add(new JPanel(), c);
 		sp2.add(new JLabel("Test Label 2"));
 		sp3.add(new JLabel("Test Label 3"));
 		sp4.add(new JLabel("Test Label 4"));
 		
 		ShrinkSlotVertical spc1 = new ShrinkSlotVertical(200);
 		ShrinkSlotVertical spc2 = new ShrinkSlotVertical(200);
-		ShrinkSlotHorizontal sps1 = new ShrinkSlotHorizontal(10);
-		ShrinkSlotHorizontal sps2 = new ShrinkSlotHorizontal(10);
+		ShrinkSlotHorizontal sps1 = new ShrinkSlotHorizontal();
+		ShrinkSlotHorizontal sps2 = new ShrinkSlotHorizontal();
 //		JPanel spc1 = new JPanel();
 //		JPanel spc2 = new JPanel();
 //		JPanel sps1 = new JPanel();

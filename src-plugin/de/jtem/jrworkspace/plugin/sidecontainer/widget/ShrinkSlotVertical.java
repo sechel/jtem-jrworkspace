@@ -71,17 +71,17 @@ public class ShrinkSlotVertical extends ShrinkSlot implements MouseMotionListene
 	
 	private static final long 
 		serialVersionUID = 1L;
-	private JPanel 
+	protected JPanel 
 		content = new JPanel();
-	private JScrollPane
+	protected JScrollPane
 		scroller = new JScrollPane(JScrollPane.VERTICAL_SCROLLBAR_NEVER, JScrollPane.HORIZONTAL_SCROLLBAR_NEVER);
-	private List<ShrinkPanel>
+	protected List<ShrinkPanel>
 		panels = new LinkedList<ShrinkPanel>();
 	private Map<ShrinkPanel, Integer>
 		positionMap = new HashMap<ShrinkPanel, Integer>(); 
 	private GridBagLayout 
 		gbl = new GridBagLayout();
-	private GridBagConstraints 
+	protected GridBagConstraints 
 		normalConstraints = new GridBagConstraints(),
 		fillConstraints = new GridBagConstraints();
 	private JPanel

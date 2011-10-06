@@ -327,6 +327,13 @@ public class ShrinkPanel extends JPanel {
 			ShrinkSlotVertical ssv = (ShrinkSlotVertical)parentContainer;
 			ssv.updateLayout();
 		}
+		if (parentContainer instanceof ShrinkSlotHorizontal) {
+			ShrinkSlotHorizontal ssh = (ShrinkSlotHorizontal)parentContainer;
+			if (!isShrinked()) {
+				ssh.shrinkOtherPanels(this);
+				ssh.updateLayout();
+			}
+		}
 	}
 
 	

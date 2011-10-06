@@ -70,8 +70,8 @@ public abstract class SideContainerPerspective extends Plugin implements Perspec
 		leftSlot = new ShrinkSlotVertical(250),
 		rightSlot = new ShrinkSlotVertical(250);
 	private ShrinkSlotHorizontal
-		upperSlot = new ShrinkSlotHorizontal(10),
-		lowerSlot = new ShrinkSlotHorizontal(10);
+		upperSlot = new ShrinkSlotHorizontal(),
+		lowerSlot = new ShrinkSlotHorizontal();
 	private JPanel
 		centerPanel = new JPanel(),
 		content = new JPanel();
