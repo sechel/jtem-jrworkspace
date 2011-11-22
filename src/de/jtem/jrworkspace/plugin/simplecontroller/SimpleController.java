@@ -677,7 +677,6 @@ public class SimpleController implements Controller {
 	}
 	
 	
-	@SuppressWarnings("unchecked")
 	protected void updateMenuBarInternal() {
 		if (!hasMenuBar || status == Starting) {
 			return;
@@ -686,7 +685,7 @@ public class SimpleController implements Controller {
 		for (Plugin mp : new LinkedList<Plugin>(plugins)) {
 			if (mp instanceof MenuFlavor) {
 				MenuFlavor mf = (MenuFlavor)mp;
-				getPlugin((Class<Plugin>)mf.getPerspective());
+				getPlugin(mf.getPerspective().asSubclass(Plugin.class));
 				if (mf.getPerspective().equals(perspective.getClass())) {
 					menuList.add(mf);
 				}

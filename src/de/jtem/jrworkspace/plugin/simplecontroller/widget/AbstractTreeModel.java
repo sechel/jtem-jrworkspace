@@ -42,7 +42,7 @@ import javax.swing.tree.TreePath;
 /**
  * Baseclass for TreeModel implementations. Manages listeners and
  * provides fireXXX methods for notifying them.<br>
- * The {@link #valueForPathChanged(TreePath,newValue) valueForPathChanged}
+ * The {@link #valueForPathChanged(TreePath,Object) valueForPathChanged}
  * method is implemented as no-op which comes handy for immutable trees
  * and trees where the editor&lt;-&gt;node communication is already enough.
  */
@@ -154,7 +154,7 @@ public abstract class AbstractTreeModel implements TreeModel
 
 	/**
 	 * Used by event instance creation. Calls
-	 * {@link #getIndexOfChild(Object) getIndexOfChild} for every array entry.
+	 * {@link #getIndexOfChild(Object,Object) getIndexOfChild} for every array entry.
 	 * Should be overridden if more efficient methods are available.
 	 */
 	protected int[] getIndicesFor(Object parent, Object[] child)

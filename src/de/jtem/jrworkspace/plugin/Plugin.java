@@ -52,7 +52,7 @@ public abstract class Plugin {
 	/**
 	 * Returns an instance of {@link PluginInfo}
 	 * @return plug-in information
-	 * @see {@link PluginInfo}
+	 * @see PluginInfo
 	 */
 	public PluginInfo getPluginInfo() {
 		return PluginInfo.create(getClass());
@@ -62,7 +62,7 @@ public abstract class Plugin {
 	 * Is called when the plug-in is installed 
 	 * @param c the applications {@link Controller}
 	 * @throws Exception
-	 * @see {@link Controller}
+	 * @see Controller
 	 */
 	public void install(Controller c) throws Exception{
 	}
@@ -72,7 +72,7 @@ public abstract class Plugin {
 	 * Id called when this plug-in is about to be uninstalled
 	 * @param c this applications {@link Controller}
 	 * @throws Exception
-	 * @see {@link Controller}
+	 * @see Controller
 	 */
 	public void uninstall(Controller c) throws Exception {
 	}
@@ -84,7 +84,7 @@ public abstract class Plugin {
 	 * as argument.
 	 * @param c this applications {@link Controller}
 	 * @throws Exception
-	 * @see {@link Controller}
+	 * @see Controller
 	 */
 	public void restoreStates(Controller c) throws Exception {
 	}
@@ -93,9 +93,9 @@ public abstract class Plugin {
 	 * Is called after this plug-in has been uninstalled. The recommended way to save properties
 	 * is to call {@link Controller#storeProperty(Class, String, Object)} on the controller provided
 	 * as argument.
-	 * @param cthis applications {@link Controller}
+	 * @param c this application's {@link Controller}
 	 * @throws Exception
-	 * @see {@link Controller}
+	 * @see Controller
 	 */
 	public void storeStates(Controller c) throws Exception {
 	}
@@ -126,7 +126,7 @@ public abstract class Plugin {
 	
 	/**
 	 * This method simply returns getClass().hashCode()
-	 * @see equals
+	 * @see #equals
 	 */
 	@Override
 	public int hashCode() {

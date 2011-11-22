@@ -46,7 +46,7 @@ public interface PerspectiveFlavor {
 
 	/**
 	 * The title of the perspective
-	 * @return
+	 * @return the title
 	 */
 	public String getTitle();
 	

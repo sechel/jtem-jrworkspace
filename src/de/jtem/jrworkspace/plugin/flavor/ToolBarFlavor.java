@@ -44,7 +44,7 @@ public interface ToolBarFlavor {
 
 	/**
 	 * Returns a tool-bar component usually this is a {@link JToolBar}
-	 * @return
+	 * @return a tool-bar component
 	 */
 	public Component getToolBarComponent();
 	
@@ -58,7 +58,7 @@ public interface ToolBarFlavor {
 	 * The tool-bar priority. If there are more that one tool-bar
 	 * installed the tool-bar get sorted according to this priority.
 	 * If {@link JToolBar}s are used the user can change the 
-	 * @return
+	 * @return the priority
 	 */
 	public double getToolBarPriority();
 	

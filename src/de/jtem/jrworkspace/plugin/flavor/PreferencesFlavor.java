@@ -77,14 +77,14 @@ public interface PreferencesFlavor {
 	/**
 	 * The JPanel of the sub-page with index i
 	 * @param i the index of the sub-page
-	 * @return
+	 * @return the JPanel of the sub-page with index i
 	 */
 	public JPanel getSubPage(int i);
 	
 	/**
 	 * The icon of sub-page i
 	 * @param i the index of the sub-page
-	 * @return
+	 * @return the icon of sub-page i
 	 */
 	public Icon getSubPageIcon(int i);
 

@@ -37,13 +37,13 @@ public interface HelpFlavor {
 
 	/**
 	 * Returns the title for these help pages
-	 * @return
+	 * @return the title
 	 */
 	public String getHelpTitle();
 	
 	/**
-	 * Returns an help icon
-	 * @return
+	 * Returns a help icon
+	 * @return a help icon
 	 */
 	public Icon getHelpIcon();
 	
@@ -52,8 +52,8 @@ public interface HelpFlavor {
 	 * 
 	 * Note: relative backward paths (..) don't seem to work with the Web Start ClassLoader! 
 	 * 
-	 * @see {@link HelpFlavor#getHelpHandle()}
-	 * @return
+	 * @see HelpFlavor#getHelpHandle()
+	 * @return a path to the help HTML file
 	 */
 	public String getHelpPath();
 	
@@ -70,7 +70,7 @@ public interface HelpFlavor {
 	
 	/**
 	 * Returns the name of the HTML root help document
-	 * @see {@link HelpFlavor#getHelpHandle()}
+	 * @see HelpFlavor#getHelpHandle()
 	 * @return the name of the root document
 	 */
 	public String getHelpDocument();
