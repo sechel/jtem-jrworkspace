@@ -77,13 +77,11 @@ public class ShrinkSlotHorizontal extends ShrinkSlotVertical {
 	@Override
 	public void addShrinkPanelAt(ShrinkPanel panel, Point p) {
 		super.addShrinkPanelAt(panel, p);
-		panel.setShrinked(false);
 	}
 	
 	@Override
 	public void addShrinkPanel(ShrinkPanel panel) {
 		super.addShrinkPanel(panel);
-		panel.setShrinked(false);
 	}
     
 }

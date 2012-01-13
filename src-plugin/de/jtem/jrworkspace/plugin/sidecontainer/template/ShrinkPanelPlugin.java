@@ -191,7 +191,6 @@ public abstract class ShrinkPanelPlugin extends Plugin implements UIFlavor, Help
 		perspective = c.getPlugin(getPerspectivePluginClass());
 		perspective.getPanelsMenu().add(menuItem);
 		menuItem.setSelected(showPanel);
-		
 		setShowPanel(showPanel);
 	}
 
