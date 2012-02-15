@@ -55,6 +55,10 @@ import java.awt.Point;
 import java.awt.PointerInfo;
 import java.awt.RenderingHints;
 import java.awt.Window;
+import java.awt.event.ComponentEvent;
+import java.awt.event.ComponentListener;
+import java.awt.event.ContainerEvent;
+import java.awt.event.ContainerListener;
 import java.awt.event.MouseAdapter;
 import java.awt.event.MouseEvent;
 import java.awt.event.MouseMotionListener;
@@ -81,7 +85,7 @@ import de.jtem.jrworkspace.plugin.sidecontainer.image.ImageHook;
  * <a href="http://www.math.tu-berlin.de/geometrie">TU-Berlin</a> 
  * @author Stefan Sechelmann
  */
-public class ShrinkPanel extends JPanel {
+public class ShrinkPanel extends JPanel implements ComponentListener, ContainerListener {
 	
 	private static final long 
 		serialVersionUID = 1L;
@@ -150,6 +154,7 @@ public class ShrinkPanel extends JPanel {
 		c.weighty = 1.0;
 		c.insets = new Insets(boxHeight + contentInset, contentInset, contentInset, contentInset);
 		
+		content.addComponentListener(this);
 		content.setLayout(new MinSizeGridBagLayout());
 		super.add(content, c);
 		setBorder(null);
@@ -204,47 +209,69 @@ public class ShrinkPanel extends JPanel {
 	
 
 	@Override
-	public Component add(Component arg0) {
-		content.add(arg0);
-		return arg0;
+	public Component add(Component c) {
+		content.add(c);
+		if (c instanceof Container) {
+			((Container)c).addContainerListener(this);
+		}
+		return c;
 	}
 	
 
 	@Override
-	public void add(Component arg0, Object arg1) {
-		content.add(arg0, arg1);
+	public void add(Component c, Object constraints) {
+		content.add(c, constraints);
+		if (c instanceof Container) {
+			((Container)c).addContainerListener(this);
+		}
+		revalidate();
 	}
 	
 
 	@Override
-	public Component add(Component arg0, int arg1) {
-		return content.add(arg0, arg1);
+	public Component add(Component c, int constraints) {
+		Component result = content.add(c, constraints);
+		if (c instanceof Container) {
+			((Container)c).addContainerListener(this);
+		}
+		return result;
 	}
 	
 
 	@Override
-	public void add(Component arg0, Object arg1, int arg2) {
-		content.add(arg0, arg1, arg2);
+	public void add(Component c, Object constraints, int index) {
+		content.add(c, constraints, index);
+		if (c instanceof Container) {
+			((Container)c).addContainerListener(this);
+		}
 	}
 	
 	@Override
-	public Component add(String arg0, Component arg1) {
-		return content.add(arg0, arg1);
+	public Component add(String name, Component c) {
+		Component result = content.add(name, c);
+		if (c instanceof Container) {
+			((Container)c).addContainerListener(this);
+		}
+		return result;
 	}
-
 
     @Override
-	public void remove(Component arg0) {
-        content.remove(arg0);
+	public void remove(Component c) {
+        content.remove(c);
+		if (c instanceof Container) {
+			((Container)c).removeContainerListener(this);
+		}
     }
-
 
     @Override
 	public void removeAll() {
+    	for (Component c : getComponents()) {
+    		if (c instanceof Container) {
+    			((Container)c).removeContainerListener(this);
+    		}	
+    	}
         content.removeAll();
     }
-
-    
     
 	public void setFloating(boolean floating){
 		if (this.floating == floating) {
@@ -620,6 +647,24 @@ public class ShrinkPanel extends JPanel {
 	
 	public boolean isFloatable() {
 		return floatable;
+	}
+	
+	public void componentHidden(ComponentEvent e) {
+	}
+	public void componentMoved(ComponentEvent e) {
+	}
+	public void componentResized(ComponentEvent e) {
+		if (parentContainer != null) {
+			parentContainer.revalidate();
+		}
+		revalidate();
+	}
+	public void componentShown(ComponentEvent e) {
+	}
+	public void componentAdded(ContainerEvent e) {
+		revalidate();
+	}
+	public void componentRemoved(ContainerEvent e) {
 	}
 	
 }
