@@ -240,6 +240,8 @@ public abstract class SideContainerPerspective extends Plugin implements Perspec
 				mainPanel.remove(rightSlot);
 			}
 		}
+		centerPanel.revalidate();
+		mainPanel.revalidate();
 	}
 	
 	
@@ -250,8 +252,8 @@ public abstract class SideContainerPerspective extends Plugin implements Perspec
 		showTop = showTopSlotItem.isSelected();
 		showBottom = showBottomSlotItem.isSelected();
 		updateStates();
-		mainPanel.doLayout();
-		mainPanel.updateUI();
+//		mainPanel.doLayout();
+//		mainPanel.updateUI();
 	}
 	
 	
@@ -347,11 +349,17 @@ public abstract class SideContainerPerspective extends Plugin implements Perspec
 		showLeftSlotItem.setSelected(showLeft);
 		updateStates();
 	}
+	public boolean isShowLeft() {
+		return showLeft;
+	}
 	
 	public void setShowRight(boolean showRight) {
 		this.showRight = showRight;
 		showRightSlotItem.setSelected(showRight);
 		updateStates();
+	}
+	public boolean isShowRight() {
+		return showRight;
 	}
 	
 	public void setShowTop(boolean showTop) {
@@ -359,11 +367,17 @@ public abstract class SideContainerPerspective extends Plugin implements Perspec
 		showTopSlotItem.setSelected(showTop);
 		updateStates();
 	}
+	public boolean isShowTop() {
+		return showTop;
+	}
 	
 	public void setShowBottom(boolean showBottom) {
 		this.showBottom = showBottom;
 		showBottomSlotItem.setSelected(showBottom);
 		updateStates();
+	}
+	public boolean isShowBottom() {
+		return showBottom;
 	}
 	
 }
