@@ -193,6 +193,8 @@ import de.jtem.jrworkspace.plugin.simplecontroller.widget.WrapLayout;
  */
 public class SimpleController implements Controller {
 
+	protected String
+		name = "Simple Controller";
 	protected Set<Plugin>
 		plugins = new TreeSet<Plugin>(new PluginNameComparator());
 	protected Stack<Plugin>
@@ -297,6 +299,15 @@ public class SimpleController implements Controller {
 		LOGGER.exiting(SimpleController.class.getName(), "SimpleController");
 	}
 	
+	public SimpleController(String name) {
+		this();
+		this.name = name;
+	}
+	
+	@Override
+	public String toString() {
+		return name;
+	}
 
 	/**
 	 * Registers a plug-in with this SimpleController
