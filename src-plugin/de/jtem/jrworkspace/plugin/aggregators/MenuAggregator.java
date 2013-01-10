@@ -254,7 +254,15 @@ public abstract class MenuAggregator extends Plugin implements MenuFlavor, Front
 		}
 		MenuEntry entry = null;
 		for (MenuEntry e : set) {
-			if (e.item == item) {
+			if (item instanceof Action) {
+				if (e.item instanceof ActionJMenuItem) {
+					ActionJMenuItem actionItem = (ActionJMenuItem)e.item;
+					if (actionItem.getAction() == item) {
+						entry = e;
+						break;
+					}
+				}
+			} else if (e.item == item) {
 				entry = e;
 				break;
 			}
@@ -273,8 +281,19 @@ public abstract class MenuAggregator extends Plugin implements MenuFlavor, Front
 		addMenuEntry(context, entry);
 	}
 	
+	private static class ActionJMenuItem extends JMenuItem {
+
+		private static final long serialVersionUID = 1L;
+
+		public ActionJMenuItem(Action a) {
+			super(a);
+		}
+		
+	}
+	
+	
 	public void addMenuItem(Class<?> context, double priority, Action menuAction, String... menuPath) {
-		JMenuItem actionItem = new JMenuItem(menuAction);
+		ActionJMenuItem actionItem = new ActionJMenuItem(menuAction);
 		MenuEntry entry = new MenuEntry(context, menuPath, actionItem, priority);
 		addMenuEntry(context, entry);
 	}

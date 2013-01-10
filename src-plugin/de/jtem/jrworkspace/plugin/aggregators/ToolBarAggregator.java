@@ -62,7 +62,7 @@ public abstract class ToolBarAggregator extends Plugin implements ToolBarFlavor 
 	
 	private class ToolBarItem implements Comparable<ToolBarItem> {
 		
-		public  Object 
+		public Object 
 			item = null;
 		public double 
 			priority = 0.0;

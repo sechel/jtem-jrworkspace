@@ -31,12 +31,12 @@ OF SUCH DAMAGE.
 
 package de.jtem.jrworkspace.plugin.simplecontroller.preferences;
 
-import static java.awt.BorderLayout.NORTH;
 import static javax.swing.JSplitPane.HORIZONTAL_SPLIT;
 
 import java.awt.BorderLayout;
 import java.awt.Component;
 import java.awt.Frame;
+import java.awt.GridLayout;
 import java.awt.Image;
 import java.util.Collections;
 import java.util.Comparator;
@@ -101,7 +101,7 @@ public class PreferencesWindow extends JDialog implements TreeSelectionListener 
 		navTree.setShowsRootHandles(true);
 		navTree.setExpandsSelectedPaths(false);
 		navTree.setRootVisible(false);
-		pagePanel.setLayout(new BorderLayout());
+		pagePanel.setLayout(new GridLayout());
 	}
 
 	
@@ -243,11 +243,11 @@ public class PreferencesWindow extends JDialog implements TreeSelectionListener 
 		if (path.getPathCount() == 2) {
 			PreferencesFlavor plugin = (PreferencesFlavor)path.getLastPathComponent();
 			pagePanel.removeAll();
-			pagePanel.add(plugin.getMainPage(), NORTH);
+			pagePanel.add(plugin.getMainPage());
 		} else {
 			PageTreeRow pageTreeRow = (PageTreeRow)path.getLastPathComponent();
 			pagePanel.removeAll();
-			pagePanel.add(pageTreeRow.pagePanel, NORTH);
+			pagePanel.add(pageTreeRow.pagePanel);
 		}
 		SwingUtilities.updateComponentTreeUI(pagePanel);
 	}
