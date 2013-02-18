@@ -61,7 +61,7 @@ public class HelpBrowser extends JPanel {
 		scroller = new JScrollPane(editorPane);
 	private HTMLEditorKit
 		editorKit = null;
-	private Document
+	private HTMLDocument
 		doc = null;
 	private HelpFlavor
 		activeHelp = null;
@@ -87,12 +87,12 @@ public class HelpBrowser extends JPanel {
 			return;
 		}
 		activeHelp = help;
-		editorKit = new HelpHTMLEditorKit(help);
+		editorKit = new HTMLEditorKit();
 		editorPane.setEditorKit(editorKit);
 		String pagePath = help.getHelpPath() + help.getHelpDocument();
 		String cssPath = help.getHelpPath() + help.getHelpStyleSheet();
 		loadCss(cssPath);
-		loadPage(pagePath);
+		loadPage(pagePath, help.getHelpPath());
 	}
 	
 	
@@ -118,8 +118,12 @@ public class HelpBrowser extends JPanel {
 	}
 	
 	
-	private void loadPage(String path) {
+	private void loadPage(String path, String base) {
 		try {
+			URL baseURL = activeHelp.getHelpHandle().getResource(base);
+//			URL pathURL = activeHelp.getHelpHandle().getResource(path);
+//			System.out.println("opening help at " + pathURL);
+//			System.out.println("document base is " + baseURL);
 			InputStream in = null;
 			if (path.startsWith("http://")) {
 				URL url = new URL(path);
@@ -127,12 +131,13 @@ public class HelpBrowser extends JPanel {
 			} else {
 				in = activeHelp.getHelpHandle().getResourceAsStream(path);
 			}
-			doc = editorKit.createDefaultDocument();
+			doc = (HTMLDocument)editorKit.createDefaultDocument();
+			doc.setBase(baseURL);
 			doc.putProperty("IgnoreCharsetDirective",true);
 			editorKit.read(in, doc, 0);
 			editorPane.setDocument(doc);
 		} catch (Exception e) {
-			System.out.println("cannot load help page: " + path);
+			System.out.println("cannot load help page: " + path + ": " + e);
 		} 
 		history.add(doc);
 	}
@@ -153,14 +158,14 @@ public class HelpBrowser extends JPanel {
 							editorKit = new HTMLEditorKit();
 							editorKit.setStyleSheet(null);
 							editorPane.setEditorKit(editorKit);
-							doc = editorKit.createDefaultDocument();
+							doc = (HTMLDocument)editorKit.createDefaultDocument();
 							editorPane.setDocument(doc);
 							editorPane.setPage(e.getURL());
 						} catch (IOException e1) {
 							System.out.println(e1.getLocalizedMessage());
 						}
 					} else if (e.getDescription().toLowerCase().endsWith(".html")) {
-						loadPage(activeHelp.getHelpPath() + e.getDescription());		
+						loadPage(activeHelp.getHelpPath() + e.getDescription(), activeHelp.getHelpPath());		
 					} else {
 						editorPane.scrollToReference(e.getDescription().substring(1));
 					}

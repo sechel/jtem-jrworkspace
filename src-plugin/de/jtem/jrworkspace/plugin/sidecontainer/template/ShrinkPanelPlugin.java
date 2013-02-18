@@ -261,7 +261,7 @@ public abstract class ShrinkPanelPlugin extends Plugin implements UIFlavor, Help
 
 	public String getHelpPath() {
 		checkHelpResource();
-		return helpPath==null ? "help" : helpPath;
+		return helpPath==null ? "help/" : helpPath;
 	}
 
 	public Class<?> getHelpHandle() {
