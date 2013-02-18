@@ -50,7 +50,7 @@ public interface HelpFlavor {
 	/**
 	 * Returns a path to the help HTML file. <br><br>
 	 * 
-	 * Note: relative backward paths (..) don't seem to work with the Web Start ClassLoader! 
+	 * Note: relative backward paths (..) and additional ./ don't seem to work with the Web Start ClassLoader! 
 	 * 
 	 * @see HelpFlavor#getHelpHandle()
 	 * @return a path to the help HTML file
