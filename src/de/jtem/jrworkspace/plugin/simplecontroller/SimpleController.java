@@ -39,7 +39,6 @@ import static java.awt.BorderLayout.CENTER;
 import static java.awt.BorderLayout.NORTH;
 import static java.awt.BorderLayout.SOUTH;
 import static java.awt.FlowLayout.LEADING;
-import static javax.swing.SwingUtilities.invokeAndWait;
 import static javax.swing.SwingUtilities.isEventDispatchThread;
 
 import java.awt.BorderLayout;
@@ -341,14 +340,19 @@ public class SimpleController implements Controller {
 	 * is a plug-in implementing {@link PerspectiveFlavor}
 	 */
 	public void startup() {
-		LOGGER.entering(SimpleController.class.getName(), "startup");
-		setSplashStatus("activating plug-ins...");
-		status = Starting;
-		registerSPIPlugins();
-		readUserPreferences();
-		loadProperties();
-		Runnable r = new Runnable() {
+		Runnable jobLoadProperties = new Runnable() {
 			public void run() {
+				LOGGER.entering(SimpleController.class.getName(), "startup");
+				setSplashStatus("loading properties");
+				status = Starting;
+				registerSPIPlugins();
+				readUserPreferences();
+				loadProperties();
+			}
+		};
+		Runnable jobInitialize = new Runnable() {
+			public void run() {
+				setSplashStatus("initializing components");
 				if (manageLookAndFeel) {
 					try {
 						String defaultLnF = "cross_platform_lnf_classname";
@@ -359,9 +363,20 @@ public class SimpleController implements Controller {
 					}
 				}
 				initializeComponents();
-				for (Plugin p : new LinkedList<Plugin>(plugins)) {
+			}
+		};
+		List<Runnable> activateJobs = new LinkedList<Runnable>();
+		for (final Plugin p : new LinkedList<Plugin>(plugins)) {
+			Runnable activationJob = new Runnable() {
+				public void run() {
 					activatePlugin(p);
 				}
+			};
+			activateJobs.add(activationJob);
+		}
+		Runnable jobFinalize = new Runnable() {
+			public void run() {
+				setSplashStatus("completing startup");
 				status = Started;
 				if (hasToolBar || hasMenuBar) {
 					if (perspective == null) {
@@ -393,21 +408,33 @@ public class SimpleController implements Controller {
 				}
 			}
 		};
+		Runnable jobReady = new Runnable() {
+			public void run() {
+				setSplashStatus("ready");
+				LOGGER.exiting(SimpleController.class.getName(), "startup");
+			}
+		};
+		
+		StartupChain startupChain = new StartupChain();
+		startupChain.appendJob(jobLoadProperties);
+		startupChain.appendJob(jobInitialize);
+		startupChain.appendAll(activateJobs);
+		startupChain.appendJob(jobFinalize);
+		startupChain.appendJob(jobReady);
+		
 		try {
 			if (isEventDispatchThread()) {
 				LOGGER.finer("startup directly on the event dispatch thread");
-				r.run();
+				startupChain.startDirect();
 			} else {
-				LOGGER.finer("startup on the event dispatch thread via invoke and wait");
-				invokeAndWait(r);
+				LOGGER.finer("startup on the event dispatch thread and wait for completion");
+				startupChain.startQueuedAndWait();
 			}
 		} catch (Exception e) {
 			StringWriter stackTrace = new StringWriter();
 			e.printStackTrace(new PrintWriter(stackTrace));
 			LOGGER.severe(stackTrace.toString());
 		}
-		setSplashStatus("ready.");
-		LOGGER.exiting(SimpleController.class.getName(), "startup");
 	}
 
 	
