@@ -178,7 +178,7 @@ public class WrapLayout extends FlowLayout
    			int num = target.getComponentCount();
    			for (int i = 0; i < num; i++) {
    				Component c = target.getComponent(i);
-   				if (i == num - 1 || Math.abs(target.getComponent(i + 1).getBounds().y - c.getBounds().y) > 5) {
+   				if (i == num - 1 || target.getComponent(i + 1).getBounds().y > c.getBounds().y) {
    					Rectangle bounds = c.getBounds();
    					int width = targetWidth - bounds.x - getHgap();
    					bounds.width = width;
