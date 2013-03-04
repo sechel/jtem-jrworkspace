@@ -314,7 +314,7 @@ public class SimpleController implements Controller {
 	 */
 	public void registerPlugin(Plugin p) {
 		plugins.add(p);
-		setSplashStatus(p.getClass().getName());
+		setSplashStatus(p.getClass().getSimpleName());
 	}
 	
 	/**
@@ -331,7 +331,7 @@ public class SimpleController implements Controller {
 			return;
 		}
 		plugins.add(p);
-		setSplashStatus(p.getClass().getName());
+		setSplashStatus(p.getClass().getSimpleName());
 	}
 	
 	/**
@@ -550,7 +550,7 @@ public class SimpleController implements Controller {
 	
 	protected void activatePlugin(Plugin p) {
 		LOGGER.entering(SimpleController.class.getName(), "activatePlugin", new Object[]{p});
-		setSplashStatus(p.getClass().getName());
+		setSplashStatus(p.getClass().getSimpleName());
 		if (isActive(p)) {
 			return;
 		} else {
