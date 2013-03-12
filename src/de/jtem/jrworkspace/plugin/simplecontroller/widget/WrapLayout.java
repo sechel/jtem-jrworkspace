@@ -1,5 +1,21 @@
 package de.jtem.jrworkspace.plugin.simplecontroller.widget;
-import java.awt.*;
+import java.awt.BorderLayout;
+import java.awt.Color;
+import java.awt.Component;
+import java.awt.Container;
+import java.awt.Dimension;
+import java.awt.EventQueue;
+import java.awt.FlowLayout;
+import java.awt.GridLayout;
+import java.awt.Insets;
+import java.awt.Rectangle;
+
+import javax.swing.BorderFactory;
+import javax.swing.JButton;
+import javax.swing.JComboBox;
+import javax.swing.JFrame;
+import javax.swing.JPanel;
+import javax.swing.JToolBar;
 
 /**
  *  FlowLayout subclass that fully supports wrapping of components.
@@ -178,7 +194,7 @@ public class WrapLayout extends FlowLayout
    			int num = target.getComponentCount();
    			for (int i = 0; i < num; i++) {
    				Component c = target.getComponent(i);
-   				if (i == num - 1 || target.getComponent(i + 1).getBounds().y > c.getBounds().y) {
+   				if (i == num - 1 || target.getComponent(i + 1).getBounds().x <= c.getBounds().x) {
    					Rectangle bounds = c.getBounds();
    					int width = targetWidth - bounds.x - getHgap();
    					bounds.width = width;
@@ -219,4 +235,51 @@ public class WrapLayout extends FlowLayout
 
 		dim.height += rowHeight;
 	}
+	
+	
+	public static void main(String[] args) throws Exception {
+		Runnable r = new Runnable() {
+			public void run() {
+				try {
+					startup();
+				} catch (Exception e) {	}
+			}
+		};
+		EventQueue.invokeLater(r);
+	}
+	
+	public static void startup() throws Exception {
+		JFrame f = new JFrame("Wrap Layout Test");
+		
+		JToolBar t1 = new JToolBar();
+		JToolBar t2 = new JToolBar();
+		t2.setLayout(new GridLayout(1, 3));
+		
+		t1.setPreferredSize(new Dimension(300, 25));
+		
+		t1.add(new JButton("B1"));
+		t1.add(new JButton("B2"));
+		t1.add(new JButton("B3"));
+		t1.add(new JComboBox());
+		t1.add(new JButton("test"));
+		t2.add(new JComboBox());
+		t2.add(new JComboBox());
+		t2.add(new JComboBox());
+		
+		t1.setBackground(Color.MAGENTA);
+		t2.setBackground(Color.CYAN);
+		
+		JPanel northPanel = new JPanel();
+		northPanel.setBorder(BorderFactory.createEtchedBorder());
+		northPanel.setLayout(new WrapLayout(WrapLayout.LEADING, 2, 0));
+		northPanel.add(t1);
+		northPanel.add(t2);
+		
+		f.setSize(800, 600);
+		f.setLayout(new BorderLayout());
+		f.add(northPanel, BorderLayout.NORTH);
+		f.setDefaultCloseOperation(JFrame.EXIT_ON_CLOSE);
+		f.setVisible(true);
+	}
+	
 }
