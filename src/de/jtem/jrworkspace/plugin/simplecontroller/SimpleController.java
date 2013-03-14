@@ -365,6 +365,24 @@ public class SimpleController implements Controller {
 				initializeComponents();
 			}
 		};
+		
+		StartupChain initChain = new StartupChain();
+		initChain.appendJob(jobLoadProperties);
+		initChain.appendJob(jobInitialize);
+		try {
+			if (isEventDispatchThread()) {
+				LOGGER.finer("start initialization directly on the event dispatch thread");
+				initChain.startDirect();
+			} else {
+				LOGGER.finer("start initialization on the event dispatch thread and wait for completion");
+				initChain.startQueuedAndWait();
+			}
+		} catch (Exception e) {
+			StringWriter stackTrace = new StringWriter();
+			e.printStackTrace(new PrintWriter(stackTrace));
+			LOGGER.severe(stackTrace.toString());
+		}
+		
 		List<Runnable> activateJobs = new LinkedList<Runnable>();
 		for (final Plugin p : new LinkedList<Plugin>(plugins)) {
 			Runnable activationJob = new Runnable() {
