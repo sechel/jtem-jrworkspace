@@ -248,7 +248,10 @@ public class SimpleController implements Controller {
 		propInputStream = null;
 	protected Preferences 
 		userPreferences=null;
-//	protected final Thread shutdownHook = new ShutDownHook();
+	protected File
+		staticPropertiesFile = null;
+	protected PropertiesMode
+		propertiesMode = PropertiesMode.UserPropertiesFile;
 	
 	protected static boolean 
 		DEFAULT_SAVE_ON_EXIT=true,
@@ -274,6 +277,11 @@ public class SimpleController implements Controller {
 		PreStartup,
 		Starting,
 		Started
+	}
+	
+	public static enum PropertiesMode {
+		UserPropertiesFile,
+		StaticPropertiesFile
 	}
 	
 	
@@ -1202,7 +1210,12 @@ public class SimpleController implements Controller {
 		propertiesAreSafe = true;
 
 		InputStream in = null;
-		if (loadFromUserPropertyFile) {
+		if (propertiesMode == PropertiesMode.StaticPropertiesFile) {
+			try {
+				in = new FileInputStream(staticPropertiesFile);
+				LOGGER.finer("reading properties from static properties file " + staticPropertiesFile);
+			} catch (Exception e) {}
+		} else if (loadFromUserPropertyFile) {
 			try {
 				in = new FileInputStream(userPropertyFile);
 				LOGGER.config("userPropertyFile \"" + userPropertyFile + "\" used to set input stream");
@@ -1286,7 +1299,10 @@ public class SimpleController implements Controller {
 		}
 
 		SaveOnExitDialog dialog = new SaveOnExitDialog(file, mainWindow, this);
-		if (askBeforeSaveOnExit){
+		if (propertiesMode == PropertiesMode.StaticPropertiesFile) {
+			LOGGER.finer("saving properties to static file " + staticPropertiesFile);
+			file = staticPropertiesFile;
+		} else if (askBeforeSaveOnExit){
 			boolean canceled=!dialog.show();
 			if (canceled) {
 				LOGGER.exiting(SimpleController.class.getName(), "savePropertiesOnExit (property file saving dialog canceled)", false);
@@ -1317,7 +1333,7 @@ public class SimpleController implements Controller {
 		
 		if (file != null) {
 			backupOldPropertyFiles(file);
-			writePropetyFile(file);
+			writePropertyFile(file);
 		}
 		
 		try {
@@ -1362,7 +1378,7 @@ public class SimpleController implements Controller {
 	}
 
 
-	protected void writePropetyFile(File file) {
+	protected void writePropertyFile(File file) {
 		try {
 			LOGGER.finer("try to write properties to file: " + file);
 			String xml = propertyxStream.toXML(properties);
@@ -1580,6 +1596,13 @@ public class SimpleController implements Controller {
 	public void setUserPropertyFile(String userPropertyFile) {
 		this.userPropertyFile = userPropertyFile;
 		writeUserPreferences();
+	}
+	
+	public void setPropertiesMode(PropertiesMode preferencesMode) {
+		this.propertiesMode = preferencesMode;
+	}
+	public void setStaticPropertiesFile(File staticPropertiesFile) {
+		this.staticPropertiesFile = staticPropertiesFile;
 	}
 	
 	public boolean isPropertyEngineEnabled() {
