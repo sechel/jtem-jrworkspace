@@ -18,8 +18,12 @@ public class StartupChain implements Runnable {
 			}
 			return;
 		}
-		chain.get(activeJob++).run();
-		EventQueue.invokeLater(this);
+		try {
+			chain.get(activeJob).run();
+		} finally {
+			activeJob++;
+			EventQueue.invokeLater(this);
+		}
 	}
 	
 	public void startDirect() {
