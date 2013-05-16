@@ -414,7 +414,9 @@ public class SimpleController implements Controller {
 				}
 				if (mainWindow != null) {
 					if (!localStartup) {
-						mainWindow.setSize(getProperty(SimpleController.class, "mainWindowSize", perspective.getCenterComponent().getPreferredSize()));
+						Dimension prefSize = perspective.getCenterComponent().getPreferredSize();
+						Dimension size = getProperty(SimpleController.class, "mainWindowSize", prefSize);
+						mainWindow.setSize(size);
 						mainWindow.setExtendedState(getProperty(SimpleController.class, "mainWindowState", mainWindow.getExtendedState()));
 						mainWindow.setVisible(true);
 						LOGGER.finer("mainWindow visible");
@@ -503,7 +505,7 @@ public class SimpleController implements Controller {
 	           registerPlugin(p);
 			}
 		} catch (Exception e) {
-			System.out.println("Error while loading SPI plugins: " + e.getLocalizedMessage());
+			LOGGER.warning("Error while loading SPI plugins: " + e.getLocalizedMessage());
 		}
 	}
 	
@@ -1076,7 +1078,7 @@ public class SimpleController implements Controller {
 			try {
 				properties = (HashMap<String, Object>) propertyxStream.fromXML(r);
 			} catch (Exception e) {
-				System.out.println("Could not read properties: " + e.getLocalizedMessage());
+				LOGGER.warning("Could not read properties: " + e.getLocalizedMessage());
 				return;
 			}
 			for (Plugin p : plugins) {
@@ -1215,6 +1217,10 @@ public class SimpleController implements Controller {
 				in = new FileInputStream(staticPropertiesFile);
 				LOGGER.finer("reading properties from static properties file " + staticPropertiesFile);
 			} catch (Exception e) {}
+			if (in == null) {
+				LOGGER.info("static properties file not found " + staticPropertiesFile);
+				return;
+			}
 		} else if (loadFromUserPropertyFile) {
 			try {
 				in = new FileInputStream(userPropertyFile);
