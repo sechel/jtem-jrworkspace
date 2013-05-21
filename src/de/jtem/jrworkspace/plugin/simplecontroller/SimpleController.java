@@ -44,6 +44,7 @@ import static javax.swing.SwingUtilities.isEventDispatchThread;
 import java.awt.BorderLayout;
 import java.awt.Component;
 import java.awt.Container;
+import java.awt.Desktop;
 import java.awt.Dimension;
 import java.awt.Frame;
 import java.awt.GraphicsConfiguration;
@@ -51,6 +52,7 @@ import java.awt.GraphicsDevice;
 import java.awt.GraphicsEnvironment;
 import java.awt.GridLayout;
 import java.awt.Rectangle;
+import java.awt.Desktop.Action;
 import java.awt.event.WindowAdapter;
 import java.awt.event.WindowEvent;
 import java.io.File;
@@ -63,7 +65,10 @@ import java.io.Reader;
 import java.io.StringWriter;
 import java.io.Writer;
 import java.lang.reflect.Method;
+import java.net.URI;
+import java.net.URISyntaxException;
 import java.net.URL;
+import java.util.Collection;
 import java.util.Collections;
 import java.util.Comparator;
 import java.util.HashMap;
@@ -73,6 +78,7 @@ import java.util.List;
 import java.util.Set;
 import java.util.Stack;
 import java.util.TreeSet;
+import java.util.Vector;
 import java.util.prefs.BackingStoreException;
 import java.util.prefs.Preferences;
 
@@ -95,24 +101,24 @@ import de.jtem.jrworkspace.plugin.Controller;
 import de.jtem.jrworkspace.plugin.Plugin;
 import de.jtem.jrworkspace.plugin.PluginNameComparator;
 import de.jtem.jrworkspace.plugin.flavor.FrontendFlavor;
-import de.jtem.jrworkspace.plugin.flavor.FrontendFlavor.FrontendListener;
 import de.jtem.jrworkspace.plugin.flavor.HelpFlavor;
-import de.jtem.jrworkspace.plugin.flavor.HelpFlavor.HelpListener;
 import de.jtem.jrworkspace.plugin.flavor.MenuFlavor;
 import de.jtem.jrworkspace.plugin.flavor.OpenAboutFlavor;
-import de.jtem.jrworkspace.plugin.flavor.OpenAboutFlavor.OpenAboutListener;
 import de.jtem.jrworkspace.plugin.flavor.OpenPreferencesFlavor;
-import de.jtem.jrworkspace.plugin.flavor.OpenPreferencesFlavor.OpenPreferencesListener;
 import de.jtem.jrworkspace.plugin.flavor.PerspectiveFlavor;
 import de.jtem.jrworkspace.plugin.flavor.PreferencesFlavor;
 import de.jtem.jrworkspace.plugin.flavor.PropertiesFlavor;
-import de.jtem.jrworkspace.plugin.flavor.PropertiesFlavor.PropertiesListener;
 import de.jtem.jrworkspace.plugin.flavor.ShutdownFlavor;
-import de.jtem.jrworkspace.plugin.flavor.ShutdownFlavor.ShutdownListener;
 import de.jtem.jrworkspace.plugin.flavor.StatusFlavor;
-import de.jtem.jrworkspace.plugin.flavor.StatusFlavor.StatusChangedListener;
 import de.jtem.jrworkspace.plugin.flavor.ToolBarFlavor;
 import de.jtem.jrworkspace.plugin.flavor.UIFlavor;
+import de.jtem.jrworkspace.plugin.flavor.FrontendFlavor.FrontendListener;
+import de.jtem.jrworkspace.plugin.flavor.HelpFlavor.HelpListener;
+import de.jtem.jrworkspace.plugin.flavor.OpenAboutFlavor.OpenAboutListener;
+import de.jtem.jrworkspace.plugin.flavor.OpenPreferencesFlavor.OpenPreferencesListener;
+import de.jtem.jrworkspace.plugin.flavor.PropertiesFlavor.PropertiesListener;
+import de.jtem.jrworkspace.plugin.flavor.ShutdownFlavor.ShutdownListener;
+import de.jtem.jrworkspace.plugin.flavor.StatusFlavor.StatusChangedListener;
 import de.jtem.jrworkspace.plugin.simplecontroller.action.AboutAction;
 import de.jtem.jrworkspace.plugin.simplecontroller.action.HelpWindowAction;
 import de.jtem.jrworkspace.plugin.simplecontroller.action.PreferencesWindowAction;
@@ -236,7 +242,8 @@ public class SimpleController implements Controller {
 		hasPreferencesMenu = false,
 		localStartup = false,
 		registerSPIPlugins = true,
-		manageLookAndFeel = true;
+		manageLookAndFeel = true,
+		useExternalHelpBrowser = false;
 	protected Status
 		status = Status.PreStartup;
 
@@ -1067,10 +1074,47 @@ public class SimpleController implements Controller {
 		 * @param hf the help flavor plug-in to show 
 		 */
 		public void showHelpPage(HelpFlavor hf) {
-			if (helpWindow != null) {
+			String helpresource = hf.getHelpDocument();
+			if (useExternalHelpBrowser && helpresource.startsWith("http://") || helpresource.startsWith("file://"))	{
+				System.err.println("Have a URL");
+				browseDocumentation(helpresource);
+			}
+			else if (helpWindow != null) {
 				helpWindow.activateHelpPage(hf);
 				helpWindowAction.actionPerformed(null);
 			}
+		}
+
+		/**
+		 * handle display of on-line documentation using the Desktop object of Java 6
+		 */
+	    transient Desktop desktop;
+	    transient Collection<String> urls = new Vector<String>();
+		public void browseDocumentation(String docName)	{
+			if (docName == null) return;
+			if (urls.contains(docName)) {
+				System.err.println("URL already open in browser");
+				return;
+			}
+	        if (Desktop.isDesktopSupported()) {
+	        		desktop = Desktop.getDesktop();
+	            if (desktop != null && desktop.isSupported(Action.BROWSE)) {
+	            	URI uri = null;
+	            	// this all needs to be checked over by a URL guru who knows how to handle the different cases
+				try {
+					if (docName.startsWith("http") || docName.startsWith("file")) uri = new URI(docName);
+					else 
+						throw new IllegalStateException("Can't open resource "+docName);
+				} catch (URISyntaxException e) {
+					e.printStackTrace();
+				}
+	            	try {
+						desktop.browse(uri);
+				        urls.add(docName);
+					} catch (IOException e) {
+					}
+	            }
+	        }
 		}
 
 		@SuppressWarnings("unchecked")
