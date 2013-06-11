@@ -265,6 +265,7 @@ public class ShrinkSlotVertical extends ShrinkSlot implements MouseMotionListene
 	}
 	
 	
+	@Override
 	public void mouseDragged(MouseEvent e) {
 		JScrollBar vert = scroller.getVerticalScrollBar();
 		int schroll_pos = vert.getValue();
@@ -272,24 +273,31 @@ public class ShrinkSlotVertical extends ShrinkSlot implements MouseMotionListene
 		lastDrag = e.getY() - (e.getY() - lastDrag);
 	}
 
+	@Override
 	public void mouseMoved(MouseEvent arg0) {
 	}
+	@Override
 	public void mouseClicked(MouseEvent arg0) {
 	}
 
 
+	@Override
 	public void mousePressed(MouseEvent arg0) {
 		lastDrag = arg0.getY();
 	}
 
+	@Override
 	public void mouseReleased(MouseEvent arg0) {
 	}
+	@Override
 	public void mouseEntered(MouseEvent arg0) {
 	}
+	@Override
 	public void mouseExited(MouseEvent arg0) {
 	}
 
-    public void mouseWheelMoved(MouseWheelEvent m) {
+    @Override
+	public void mouseWheelMoved(MouseWheelEvent m) {
         int dx = -m.getUnitsToScroll() * 5;
 		JScrollBar vert = scroller.getVerticalScrollBar();
 		int schroll_pos = vert.getValue();

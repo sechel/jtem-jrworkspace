@@ -19,6 +19,7 @@ public class ToolBarAggregatorTest  {
 			addTool(getClass(), 0, new JLabel("Test Tool 4"));
 		}
 	
+		@Override
 		public Class<? extends PerspectiveFlavor> getPerspective() {
 			return SPIPluginTest.class;
 		}
@@ -35,6 +36,7 @@ public class ToolBarAggregatorTest  {
 			addTool(getClass(), 0, new JLabel("Test Tool 8"));
 		}
 	
+		@Override
 		public Class<? extends PerspectiveFlavor> getPerspective() {
 			return SPIPluginTest.class;
 		}

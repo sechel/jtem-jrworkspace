@@ -228,6 +228,7 @@ public abstract class ShrinkPanelPlugin extends Plugin implements UIFlavor, Help
 	
 	private class ShowPanelListener implements ActionListener {
 
+		@Override
 		public void actionPerformed(ActionEvent e) {
 			getShrinkPanel().setShrinked(false);
 			setShowPanel(menuItem.isSelected());
@@ -235,35 +236,42 @@ public abstract class ShrinkPanelPlugin extends Plugin implements UIFlavor, Help
 		
 	}
 	
+	@Override
 	public void mainUIChanged(String uiClass) {
 		SwingUtilities.updateComponentTreeUI(getShrinkPanel());
 	}
 	
 	
+	@Override
 	public void helpCalled() {
 		if (helpListener != null) {
 			helpListener.showHelpPage(this);
 		}
 	}
 	
+	@Override
 	public String getHelpTitle() {
 		return getPluginInfo().name;
 	}
 	
+	@Override
 	public Icon getHelpIcon() {
 		return getPluginInfo().icon;
 	}
 	
+	@Override
 	public String getHelpDocument() {
 		checkHelpResource();
 		return helpDocument==null ? "default.html" : helpDocument;
 	}
 
+	@Override
 	public String getHelpPath() {
 		checkHelpResource();
 		return helpPath==null ? "help/" : helpPath;
 	}
 
+	@Override
 	public Class<?> getHelpHandle() {
 		checkHelpResource();
 		return helpHandle==null ? ShrinkPanelPlugin.class : helpHandle;
@@ -286,10 +294,12 @@ public abstract class ShrinkPanelPlugin extends Plugin implements UIFlavor, Help
 	}
 	
 	
+	@Override
 	public String getHelpStyleSheet() {
 		return null;
 	}
 	
+	@Override
 	public void setHelpListener(HelpListener l) {
 		helpListener = l;
 	}

@@ -245,6 +245,7 @@ public abstract class SideContainerPerspective extends Plugin implements Perspec
 	}
 	
 	
+	@Override
 	public void actionPerformed(ActionEvent e) {
 		hidePanels = hidePanelsItem.isSelected();
 		showLeft = showLeftSlotItem.isSelected();
@@ -292,6 +293,7 @@ public abstract class SideContainerPerspective extends Plugin implements Perspec
 	}
 	
 	
+	@Override
 	public final Component getCenterComponent() {
 		return mainPanel;
 	}

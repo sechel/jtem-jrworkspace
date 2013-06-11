@@ -125,6 +125,7 @@ public class LookAndFeelSwitch extends Plugin implements PreferencesFlavor, Fron
 	}
 	
 	
+	@Override
 	public void setFrontendListener(FrontendListener l) {
 		this.frontendListener = l;
 	}
@@ -168,22 +169,27 @@ public class LookAndFeelSwitch extends Plugin implements PreferencesFlavor, Fron
 		activeIndex = c.getProperty(getClass(), "activeLookAndFeel", 0);
 	}
 	
+	@Override
 	public int getNumSubPages() {
 		return 0;
 	}
 
+	@Override
 	public String getMainName() {
 		return "Look And Feel";
 	}
 
+	@Override
 	public JPanel getMainPage() {
 		return getOptionsPanel();
 	}
 
+	@Override
 	public JPanel getSubPage(int i) {
 		return null;
 	}
 
+	@Override
 	public String getSubPageName(int i) {
 		return null;
 	}
@@ -198,6 +204,7 @@ public class LookAndFeelSwitch extends Plugin implements PreferencesFlavor, Fron
 	}
 
 	
+	@Override
 	public void actionPerformed(ActionEvent e) {
 		updateLookAndFeel();
 		updateFrontend();
@@ -254,10 +261,12 @@ public class LookAndFeelSwitch extends Plugin implements PreferencesFlavor, Fron
 
 	}
 
+	@Override
 	public Icon getSubPageIcon(int i) {
 		return null;
 	}
 
+	@Override
 	public Icon getMainIcon() {
 		return getPluginInfo().icon;
 	}

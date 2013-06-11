@@ -63,6 +63,7 @@ public class PreferencesWindowAction extends AbstractAction {
 	}
 	
 	
+	@Override
 	public void actionPerformed(ActionEvent e) {
 		preferencesWindow.showWindow();
 	}

@@ -32,6 +32,8 @@ OF SUCH DAMAGE.
 package de.jtem.jrworkspace.plugin.flavor;
 
 import java.awt.Component;
+import java.awt.Image;
+import java.util.List;
 
 import javax.swing.Icon;
 
@@ -55,6 +57,12 @@ public interface PerspectiveFlavor {
 	 * @return an icon
 	 */
 	public Icon getIcon();
+	
+	/**
+	 * As of java 1.6 an icon list with different image sizes can be provided; 
+	 * @return
+	 */
+	public List<Image> getIconList();
 	
 	/**
 	 * Is called which this Perspective is about to become visible or hidden

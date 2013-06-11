@@ -484,6 +484,7 @@ public class ShrinkPanel extends JPanel implements ComponentListener, ContainerL
     		borderColor = new Color(240, 200, 190);
     		
     	
+		@Override
 		public void mouseDragged(MouseEvent e) {
 			if (!isFloatable()) {
 				return;
@@ -532,6 +533,7 @@ public class ShrinkPanel extends JPanel implements ComponentListener, ContainerL
 			repaint();
 		}
 	
+		@Override
 		public void mouseMoved(MouseEvent e) {
 		}
 	
@@ -649,21 +651,27 @@ public class ShrinkPanel extends JPanel implements ComponentListener, ContainerL
 		return floatable;
 	}
 	
+	@Override
 	public void componentHidden(ComponentEvent e) {
 	}
+	@Override
 	public void componentMoved(ComponentEvent e) {
 	}
+	@Override
 	public void componentResized(ComponentEvent e) {
 		if (parentContainer != null) {
 			parentContainer.revalidate();
 		}
 		revalidate();
 	}
+	@Override
 	public void componentShown(ComponentEvent e) {
 	}
+	@Override
 	public void componentAdded(ContainerEvent e) {
 		revalidate();
 	}
+	@Override
 	public void componentRemoved(ContainerEvent e) {
 	}
 	

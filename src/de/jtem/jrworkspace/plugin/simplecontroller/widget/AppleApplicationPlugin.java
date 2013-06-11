@@ -65,20 +65,24 @@ public class AppleApplicationPlugin extends Plugin
 		return info;
 	}
 	
+	@Override
 	public void setShutdownListener(ShutdownListener shutdownListener) {
 		this.shutdownListener = shutdownListener;
 	}
 	
 	
+	@Override
 	public void setOpenAboutListener(OpenAboutListener openAboutListener) {
 		this.openAboutListener = openAboutListener;
 	}
 
+	@Override
 	public void setOpenPreferencesListener(OpenPreferencesListener openPreferencesListener) {
 		this.openPreferencesListener = openPreferencesListener;
 	}
 
 	private class AppleApplicationListener implements InvocationHandler {
+		@Override
 		public Object invoke(Object proxy, Method method, Object[] args) throws Throwable {
 			LOGGER.finer(method.getName());
 			if (method.getName() == "handleQuit" && shutdownListener != null) {

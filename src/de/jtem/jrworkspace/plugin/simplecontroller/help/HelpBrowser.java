@@ -146,6 +146,7 @@ public class HelpBrowser extends JPanel {
 	
     private class JarLinkListener implements HyperlinkListener {
 
+		@Override
 		public void hyperlinkUpdate(HyperlinkEvent e) {
 			if (e.getEventType() == HyperlinkEvent.EventType.ACTIVATED) {
 				if (e instanceof HTMLFrameHyperlinkEvent) {

@@ -239,6 +239,7 @@ public class WrapLayout extends FlowLayout
 	
 	public static void main(String[] args) throws Exception {
 		Runnable r = new Runnable() {
+			@Override
 			public void run() {
 				try {
 					startup();
@@ -271,7 +272,7 @@ public class WrapLayout extends FlowLayout
 		
 		JPanel northPanel = new JPanel();
 		northPanel.setBorder(BorderFactory.createEtchedBorder());
-		northPanel.setLayout(new WrapLayout(WrapLayout.LEADING, 2, 0));
+		northPanel.setLayout(new WrapLayout(FlowLayout.LEADING, 2, 0));
 		northPanel.add(t1);
 		northPanel.add(t2);
 		

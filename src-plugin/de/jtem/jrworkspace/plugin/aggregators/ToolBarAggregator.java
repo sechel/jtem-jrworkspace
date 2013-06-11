@@ -72,6 +72,7 @@ public abstract class ToolBarAggregator extends Plugin implements ToolBarFlavor 
 			this.priority = priority;
 		}
 
+		@Override
 		public int compareTo(ToolBarItem o) {
 			if (priority == o.priority) {
 				return getName().compareTo(o.getName());
@@ -180,10 +181,12 @@ public abstract class ToolBarAggregator extends Plugin implements ToolBarFlavor 
 	}
 	
 	
+	@Override
 	public Component getToolBarComponent() {
 		return toolbar;
 	}
 
+	@Override
 	public double getToolBarPriority() {
 		return 0;
 	}

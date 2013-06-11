@@ -11,6 +11,7 @@ public class StartupChain implements Runnable {
 		chain = new ArrayList<Runnable>();
 	private int activeJob = 0;
 	
+	@Override
 	public void run() {
 		if (activeJob >= chain.size()) {
 			synchronized (this) {

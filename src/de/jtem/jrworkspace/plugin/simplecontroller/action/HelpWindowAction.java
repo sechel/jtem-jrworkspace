@@ -61,6 +61,7 @@ public class HelpWindowAction extends AbstractAction {
 	}
 	
 	
+	@Override
 	public void actionPerformed(ActionEvent e) {
 		if (helpWindow.isShowing()) {
 			helpWindow.toFront();

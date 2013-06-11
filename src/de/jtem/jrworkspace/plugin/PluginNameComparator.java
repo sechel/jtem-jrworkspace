@@ -35,6 +35,7 @@ import java.util.Comparator;
 
 public class PluginNameComparator implements Comparator<Plugin> {
 
+	@Override
 	public int compare(Plugin o1, Plugin o2) {
 		if (o1 == o2) {
 			return 0;

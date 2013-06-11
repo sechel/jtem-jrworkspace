@@ -45,6 +45,7 @@ import java.awt.BorderLayout;
 import java.awt.Component;
 import java.awt.Container;
 import java.awt.Desktop;
+import java.awt.Desktop.Action;
 import java.awt.Dimension;
 import java.awt.Frame;
 import java.awt.GraphicsConfiguration;
@@ -52,7 +53,6 @@ import java.awt.GraphicsDevice;
 import java.awt.GraphicsEnvironment;
 import java.awt.GridLayout;
 import java.awt.Rectangle;
-import java.awt.Desktop.Action;
 import java.awt.event.WindowAdapter;
 import java.awt.event.WindowEvent;
 import java.io.File;
@@ -101,24 +101,24 @@ import de.jtem.jrworkspace.plugin.Controller;
 import de.jtem.jrworkspace.plugin.Plugin;
 import de.jtem.jrworkspace.plugin.PluginNameComparator;
 import de.jtem.jrworkspace.plugin.flavor.FrontendFlavor;
+import de.jtem.jrworkspace.plugin.flavor.FrontendFlavor.FrontendListener;
 import de.jtem.jrworkspace.plugin.flavor.HelpFlavor;
+import de.jtem.jrworkspace.plugin.flavor.HelpFlavor.HelpListener;
 import de.jtem.jrworkspace.plugin.flavor.MenuFlavor;
 import de.jtem.jrworkspace.plugin.flavor.OpenAboutFlavor;
+import de.jtem.jrworkspace.plugin.flavor.OpenAboutFlavor.OpenAboutListener;
 import de.jtem.jrworkspace.plugin.flavor.OpenPreferencesFlavor;
+import de.jtem.jrworkspace.plugin.flavor.OpenPreferencesFlavor.OpenPreferencesListener;
 import de.jtem.jrworkspace.plugin.flavor.PerspectiveFlavor;
 import de.jtem.jrworkspace.plugin.flavor.PreferencesFlavor;
 import de.jtem.jrworkspace.plugin.flavor.PropertiesFlavor;
+import de.jtem.jrworkspace.plugin.flavor.PropertiesFlavor.PropertiesListener;
 import de.jtem.jrworkspace.plugin.flavor.ShutdownFlavor;
+import de.jtem.jrworkspace.plugin.flavor.ShutdownFlavor.ShutdownListener;
 import de.jtem.jrworkspace.plugin.flavor.StatusFlavor;
+import de.jtem.jrworkspace.plugin.flavor.StatusFlavor.StatusChangedListener;
 import de.jtem.jrworkspace.plugin.flavor.ToolBarFlavor;
 import de.jtem.jrworkspace.plugin.flavor.UIFlavor;
-import de.jtem.jrworkspace.plugin.flavor.FrontendFlavor.FrontendListener;
-import de.jtem.jrworkspace.plugin.flavor.HelpFlavor.HelpListener;
-import de.jtem.jrworkspace.plugin.flavor.OpenAboutFlavor.OpenAboutListener;
-import de.jtem.jrworkspace.plugin.flavor.OpenPreferencesFlavor.OpenPreferencesListener;
-import de.jtem.jrworkspace.plugin.flavor.PropertiesFlavor.PropertiesListener;
-import de.jtem.jrworkspace.plugin.flavor.ShutdownFlavor.ShutdownListener;
-import de.jtem.jrworkspace.plugin.flavor.StatusFlavor.StatusChangedListener;
 import de.jtem.jrworkspace.plugin.simplecontroller.action.AboutAction;
 import de.jtem.jrworkspace.plugin.simplecontroller.action.HelpWindowAction;
 import de.jtem.jrworkspace.plugin.simplecontroller.action.PreferencesWindowAction;
@@ -356,6 +356,7 @@ public class SimpleController implements Controller {
 	 */
 	public void startup() {
 		Runnable jobLoadProperties = new Runnable() {
+			@Override
 			public void run() {
 				LOGGER.entering(SimpleController.class.getName(), "startup");
 				setSplashStatus("loading properties");
@@ -366,6 +367,7 @@ public class SimpleController implements Controller {
 			}
 		};
 		Runnable jobInitialize = new Runnable() {
+			@Override
 			public void run() {
 				setSplashStatus("initializing components");
 				if (manageLookAndFeel) {
@@ -401,6 +403,7 @@ public class SimpleController implements Controller {
 		List<Runnable> activateJobs = new LinkedList<Runnable>();
 		for (final Plugin p : new LinkedList<Plugin>(plugins)) {
 			Runnable activationJob = new Runnable() {
+				@Override
 				public void run() {
 					activatePlugin(p);
 				}
@@ -408,6 +411,7 @@ public class SimpleController implements Controller {
 			activateJobs.add(activationJob);
 		}
 		Runnable jobFinalize = new Runnable() {
+			@Override
 			public void run() {
 				setSplashStatus("completing startup");
 				status = Started;
@@ -444,6 +448,7 @@ public class SimpleController implements Controller {
 			}
 		};
 		Runnable jobReady = new Runnable() {
+			@Override
 			public void run() {
 				setSplashStatus("ready");
 				LOGGER.exiting(SimpleController.class.getName(), "startup");
@@ -646,6 +651,7 @@ public class SimpleController implements Controller {
 	}
 
 	
+	@Override
 	public <T extends Plugin> T getPlugin(Class<T> clazz) {
 		for (Plugin p : new LinkedList<Plugin>(plugins)) {
 			if (p.getClass().equals(clazz)) {
@@ -679,6 +685,7 @@ public class SimpleController implements Controller {
 		throw new RuntimeException("SimpleController: plug-in " + clazz.getSimpleName() + " not found.");
 	}
 
+	@Override
 	@SuppressWarnings("unchecked")
 	public <T> List<T> getPlugins(Class<T> clazz) {
 		List<Class<T>> classList = new LinkedList<Class<T>>();
@@ -695,6 +702,7 @@ public class SimpleController implements Controller {
 	}
 
 	
+	@Override
 	@SuppressWarnings("unchecked")
 	public <T> T getProperty(Class<?> context, String key, T defaultValue) {
 		T value = (T)properties.get(context.getName() + ":" + key);
@@ -705,16 +713,19 @@ public class SimpleController implements Controller {
 		return value;
 	}
 
+	@Override
 	public Object storeProperty(Class<?> context, String key, Object property) {
 		return properties.put(context.getName() + ":" + key, property);
 	}
 	
 	
+	@Override
 	@SuppressWarnings("unchecked")
 	public <T> T deleteProperty(Class<?> context, String key) {
 		return (T)properties.remove(context.getName() + ":" + key);
 	}
 	
+	@Override
 	public boolean isActive(Plugin p) {
 		return installed.contains(p.getClass());
 	}
@@ -747,6 +758,9 @@ public class SimpleController implements Controller {
 		mainWindow.setTitle(perspective.getTitle());
 		mainWindow.setMinimumSize(mainWindow.getRootPane().getMinimumSize());
 		mainWindow.setIconImage(ImageHook.renderIcon(perspective.getIcon()));
+		if (perspective.getIconList() != null) {
+			mainWindow.setIconImages(perspective.getIconList());
+		}
 	}
 	
 	
@@ -832,6 +846,7 @@ public class SimpleController implements Controller {
 		 * string should be changed
 		 * @param status the new status string
 		 */
+		@Override
 		public void statusChanged(String status) {
 			if (statusLabel != null) {
 				statusLabel.setText(status);
@@ -842,11 +857,13 @@ public class SimpleController implements Controller {
 		/**
 		 * Completely rebuilds the gui of this controller
 		 */
+		@Override
 		public void updateFrontend() {
 			if (mainWindow == null || status != Started) {
 				return;
 			}
 			SwingUtilities.invokeLater(new Runnable() {
+				@Override
 				public void run() {
 					updateMainWindow();
 					updateMenuBar();
@@ -865,11 +882,13 @@ public class SimpleController implements Controller {
 		/**
 		 * Updates the content gui of this controller
 		 */
+		@Override
 		public void updateContent() {
 			if (mainWindow == null || status != Started) {
 				return;
 			}
 			SwingUtilities.invokeLater(new Runnable() {
+				@Override
 				public void run() {
 					updateMainWindow();
 					mainWindow.doLayout();
@@ -883,11 +902,13 @@ public class SimpleController implements Controller {
 		/**
 		 * Updates the menu bar of this controller
 		 */
+		@Override
 		public void updateMenuBar() {
 			if (mainWindow == null || status != Started) {
 				return;
 			}
 			SwingUtilities.invokeLater(new Runnable() {
+				@Override
 				public void run() {
 					SimpleController.this.updateMenuBarInternal();
 					mainWindow.doLayout();
@@ -901,9 +922,11 @@ public class SimpleController implements Controller {
 		/**
 		 * Updates the frontends UI
 		 */
+		@Override
 		public void updateFrontendUI() {
 			if (status == Started && mainWindow != null && mainWindow.isShowing()) {
 				SwingUtilities.invokeLater(new Runnable() {
+					@Override
 					public void run() {
 						SwingUtilities.updateComponentTreeUI(mainWindow);
 						if (fullScreenFrame != null) {
@@ -924,6 +947,7 @@ public class SimpleController implements Controller {
 		 * Installs a new look and feel on this controllers gui
 		 * @param lnfClassName the class name of the lnf class
 		 */
+		@Override
 		public void installLookAndFeel(String lnfClassName) {
 			if (lnfClassName.equals("system_lnf_classname")) {
 				lnfClassName = UIManager.getSystemLookAndFeelClassName();
@@ -950,6 +974,7 @@ public class SimpleController implements Controller {
 		 * Activates the full-screen mode of this controller
 		 * @param fs 
 		 */
+		@Override
 		public void setFullscreen(boolean fs, boolean exclusive) {
 			if (mainWindow == null) {
 				return;
@@ -1004,6 +1029,7 @@ public class SimpleController implements Controller {
 		 * Check whether the window of the controller is in 
 		 * full-screen mode
 		 */
+		@Override
 		public boolean isFullscreen() {
 			return fullScreenFrame != null && fullScreenFrame.isShowing();
 		}
@@ -1013,8 +1039,10 @@ public class SimpleController implements Controller {
 		 * Set the menu bars visibility
 		 * @param show
 		 */
+		@Override
 		public void setShowMenuBar(final boolean show) {
 			SwingUtilities.invokeLater(new Runnable() {
+				@Override
 				public void run() {
 					if (mainWindow.getJMenuBar() != null) {
 						Dimension d = show ? null : new Dimension(10, 0);
@@ -1024,6 +1052,7 @@ public class SimpleController implements Controller {
 				}
 			});
 		}
+		@Override
 		public boolean isShowMenuBar() {
 			if (mainWindow == null) return false;
 			JMenuBar menu = mainWindow.getJMenuBar();
@@ -1037,13 +1066,16 @@ public class SimpleController implements Controller {
 		 * Sets the tool bars visibility
 		 * @param show
 		 */
+		@Override
 		public void setShowToolBar(final boolean show) {
 			SwingUtilities.invokeLater(new Runnable() {
+				@Override
 				public void run() {
 					toolBarPanel.setVisible(show);
 				}
 			});
 		}
+		@Override
 		public boolean isShowToolBar() {
 			return toolBarPanel.isVisible();
 		}
@@ -1052,17 +1084,21 @@ public class SimpleController implements Controller {
 		 * Sets the status bars visibility
 		 * @param show
 		 */
+		@Override
 		public void setShowStatusBar(final boolean show) {
 			SwingUtilities.invokeLater(new Runnable() {
+				@Override
 				public void run() {
 					statusLabel.setVisible(show);
 				}
 			});
 		}
+		@Override
 		public boolean isShowStatusBar() {
 			return statusLabel.isVisible();
 		}
 		
+		@Override
 		public void setTitle(String title) {
 			if (mainWindow != null) {
 				mainWindow.setTitle(title);
@@ -1073,6 +1109,7 @@ public class SimpleController implements Controller {
 		 * Displays the help page of the given plug-in
 		 * @param hf the help flavor plug-in to show 
 		 */
+		@Override
 		public void showHelpPage(HelpFlavor hf) {
 			String helpresource = hf.getHelpDocument();
 			if (useExternalHelpBrowser && helpresource.startsWith("http://") || helpresource.startsWith("file://"))	{
@@ -1117,6 +1154,7 @@ public class SimpleController implements Controller {
 	        }
 		}
 
+		@Override
 		@SuppressWarnings("unchecked")
 		public void readProperties(Reader r) {
 			try {
@@ -1134,6 +1172,7 @@ public class SimpleController implements Controller {
 			}
 		}
 
+		@Override
 		public void writeProperties(Writer w) {
 			for (Plugin p : plugins) {
 				try {
@@ -1145,6 +1184,7 @@ public class SimpleController implements Controller {
 			propertyxStream.toXML(properties, w);
 		}
 		
+		@Override
 		public void loadDefaultProperties() {
 			properties = new HashMap<String, Object>();
 			for (Plugin p : plugins) {
@@ -1156,46 +1196,57 @@ public class SimpleController implements Controller {
 			}
 		}
 
+		@Override
 		public String getUserPropertyFile() {
 			return SimpleController.this.getUserPropertyFile();
 		}
 
+		@Override
 		public boolean isAskBeforeSaveOnExit() {
 			return SimpleController.this.isAskBeforeSaveOnExit();
 		}
 
+		@Override
 		public boolean isLoadFromUserPropertyFile() {
 			return SimpleController.this.isLoadFromUserPropertyFile();
 		}
 
+		@Override
 		public boolean isSaveOnExit() {
 			return SimpleController.this.isSaveOnExit();
 		}
 
+		@Override
 		public void setAskBeforeSaveOnExit(boolean askBeforeSaveOnExit) {
 			SimpleController.this.setAskBeforeSaveOnExit(askBeforeSaveOnExit);
 		}
 
+		@Override
 		public void setLoadFromUserPropertyFile(boolean loadFromUserPropertyFile) {
 			SimpleController.this.setLoadFromUserPropertyFile(loadFromUserPropertyFile);
 		}
 
+		@Override
 		public void setSaveOnExit(boolean saveOnExit) {
 			SimpleController.this.setSaveOnExit(saveOnExit);
 		}
 
+		@Override
 		public void setUserPropertyFile(String userPropertyFile) {
 			SimpleController.this.setUserPropertyFile(userPropertyFile);
 		}
 
+		@Override
 		public void shutdown() {
 			SimpleController.this.shutdown();
 		}
 
+		@Override
 		public void openAboutWindow() {
 			aboutDialog.showWindow();
 		}
 
+		@Override
 		public void openPreferencesWindow() {
 			preferencesWindow.showWindow();
 		}
@@ -1203,12 +1254,14 @@ public class SimpleController implements Controller {
 	
 	
 	protected class MenuFlavorComparator implements Comparator<MenuFlavor> {
+		@Override
 		public int compare(MenuFlavor o1, MenuFlavor o2) {
 			return o1.getPriority() < o2.getPriority() ? -1 : 1;
 		}
 	}
 	
 	protected class ToolBarFlavorComparator implements Comparator<ToolBarFlavor> {
+		@Override
 		public int compare(ToolBarFlavor o1, ToolBarFlavor o2) {
 			return o1.getToolBarPriority() < o2.getToolBarPriority() ? -1 : 1;
 		}
@@ -1490,6 +1543,7 @@ public class SimpleController implements Controller {
 	public void setFullscreen(final boolean fs, final boolean exclusive) {
 		try {
 			SwingUtilities.invokeAndWait(new Runnable() {
+				@Override
 				public void run() {
 					flavorListener.setFullscreen(fs, exclusive);				
 				}
@@ -1681,6 +1735,7 @@ public class SimpleController implements Controller {
 		LOGGER.entering(SimpleController.class.getName(), "shutdown", new Object[]{});
 		
 		Runnable doSaveAndExit=new Runnable(){
+			@Override
 			public void run() {
 				LOGGER.entering("doSaveAndExit Runnable", "run (do the save and exit stuff)", new Object[]{});
 				if (null != mainWindow) {

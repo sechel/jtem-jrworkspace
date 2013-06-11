@@ -102,6 +102,7 @@ public class SaveOnExitDialog {
 
 		//add functionality
 		chooseButton.addActionListener(new ActionListener() {
+			@Override
 			public void actionPerformed(ActionEvent e) {
 				fileChooser.setSelectedFile(new File(filenameTF.getText()));
 				int choice = fileChooser.showDialog(dialog, "Select");
@@ -111,18 +112,21 @@ public class SaveOnExitDialog {
 			}
 		});
 		yesButton.addActionListener(new ActionListener() {
+			@Override
 			public void actionPerformed(ActionEvent e) {
 				yesNoCanceled[0]=true; yesNoCanceled[1]=yesNoCanceled[2]=false;
 				dialog.setVisible(false);
 			}
 		});
 		noButton.addActionListener(new ActionListener() {
+			@Override
 			public void actionPerformed(ActionEvent e) {
 				yesNoCanceled[1]=true; yesNoCanceled[0]=yesNoCanceled[2]=false;
 				dialog.setVisible(false);
 			}
 		});
 		cancelButton.addActionListener(new ActionListener() {
+			@Override
 			public void actionPerformed(ActionEvent e) {
 				yesNoCanceled[2]=true; yesNoCanceled[0]=yesNoCanceled[1]=false;
 				dialog.setVisible(false);

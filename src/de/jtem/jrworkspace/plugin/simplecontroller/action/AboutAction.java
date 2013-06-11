@@ -53,6 +53,7 @@ public class AboutAction extends AbstractAction {
 	}
 	
 	
+	@Override
 	public void actionPerformed(ActionEvent e) {
 		dialog.showWindow();
 	}

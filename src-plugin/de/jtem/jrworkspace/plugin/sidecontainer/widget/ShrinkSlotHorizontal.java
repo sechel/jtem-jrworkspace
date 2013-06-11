@@ -49,6 +49,7 @@ public class ShrinkSlotHorizontal extends ShrinkSlotVertical {
 		super(100);
 	}
 	
+	@Override
 	protected void updateLayout() {
 		content.removeAll();
 		for (ShrinkPanel sp : panels) {

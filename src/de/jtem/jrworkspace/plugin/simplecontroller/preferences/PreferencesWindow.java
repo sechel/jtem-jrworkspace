@@ -181,6 +181,7 @@ public class PreferencesWindow extends JDialog implements TreeSelectionListener 
 			}
 		}
 
+		@Override
 		public Component getTreeCellRendererComponent(JTree tree, Object value,
 				boolean selected, boolean expanded, boolean leaf, int row,
 				boolean hasFocus) {
@@ -233,6 +234,7 @@ public class PreferencesWindow extends JDialog implements TreeSelectionListener 
 	}
 
 
+	@Override
 	public void valueChanged(TreeSelectionEvent e) {
 		TreePath path = e.getNewLeadSelectionPath();
 		if (path == null) {
@@ -255,6 +257,7 @@ public class PreferencesWindow extends JDialog implements TreeSelectionListener 
 	
 	private class PageComparator implements Comparator<PreferencesFlavor> {
 
+		@Override
 		public int compare(PreferencesFlavor o1, PreferencesFlavor o2) {
 			return o1.getMainName().compareTo(o2.getMainName());
 		}

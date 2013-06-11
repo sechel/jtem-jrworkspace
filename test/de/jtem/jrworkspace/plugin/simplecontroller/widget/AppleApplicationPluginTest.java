@@ -51,6 +51,7 @@ public class AppleApplicationPluginTest {
 		LOGGER.setLevel(Level.INFO);
 		AppleApplicationPlugin p = new AppleApplicationPlugin();
 		p.setShutdownListener(new ShutdownListener() {
+			@Override
 			public void shutdown() {
 				LOGGER.info("shutdown called");
 			}
@@ -66,6 +67,7 @@ public class AppleApplicationPluginTest {
 		LOGGER.setLevel(Level.INFO);
 		AppleApplicationPlugin p = new AppleApplicationPlugin();
 		p.setOpenAboutListener(new OpenAboutListener() {
+			@Override
 			public void openAboutWindow() {
 				LOGGER.info("about called");				
 			}
@@ -81,6 +83,7 @@ public class AppleApplicationPluginTest {
 		LOGGER.setLevel(Level.INFO);
 		AppleApplicationPlugin p = new AppleApplicationPlugin();
 		p.setOpenPreferencesListener(new OpenPreferencesListener() {
+			@Override
 			public void openPreferencesWindow() {
 				LOGGER.info("preferences called");				
 			}

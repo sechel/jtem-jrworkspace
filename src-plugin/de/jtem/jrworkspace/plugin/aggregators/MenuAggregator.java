@@ -158,6 +158,7 @@ public abstract class MenuAggregator extends Plugin implements MenuFlavor, Front
 			}
 		}
 
+		@Override
 		public int compareTo(MenuNode o) {
 			double p1 = entry == null ? Double.MAX_VALUE : entry.priority;
 			double p2 = o.entry == null ? Double.MAX_VALUE : o.entry.priority;
@@ -213,6 +214,7 @@ public abstract class MenuAggregator extends Plugin implements MenuFlavor, Front
 	}
 	
 	
+	@Override
 	public List<JMenu> getMenus() {
 		MenuNode root = new MenuNode("Menu Bar", null, 0);
 		for (Set<MenuEntry> mSet : menuMap.values()) {
@@ -336,10 +338,12 @@ public abstract class MenuAggregator extends Plugin implements MenuFlavor, Front
 		}
 	}
 	
+	@Override
 	public double getPriority() {
 		return 1.0;
 	}
 
+	@Override
 	public void setFrontendListener(FrontendListener l) {
 		updateListener = l;
 		l.updateMenuBar();

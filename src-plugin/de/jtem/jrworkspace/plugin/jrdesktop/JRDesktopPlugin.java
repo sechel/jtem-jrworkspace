@@ -33,6 +33,8 @@ package de.jtem.jrworkspace.plugin.jrdesktop;
 
 import java.awt.Component;
 import java.awt.Dimension;
+import java.awt.Image;
+import java.util.List;
 
 import javax.swing.Icon;
 import javax.swing.JDesktopPane;
@@ -64,6 +66,7 @@ public class JRDesktopPlugin extends Plugin implements PerspectiveFlavor {
 	}
 
 	
+	@Override
 	public Component getCenterComponent() {
 		return desktop;
 	}
@@ -84,6 +87,7 @@ public class JRDesktopPlugin extends Plugin implements PerspectiveFlavor {
 		desktop.remove(frame);
 	}
 
+	@Override
 	public void setVisible(boolean visible) {
 		
 	}
@@ -96,10 +100,17 @@ public class JRDesktopPlugin extends Plugin implements PerspectiveFlavor {
 	public void uninstall(Controller c) throws Exception {
 	}
 
+	@Override
 	public Icon getIcon() {
 		return getPluginInfo().icon;
 	}
+	
+	@Override
+	public List<Image> getIconList() {
+		return null;
+	}
 
+	@Override
 	public String getTitle() {
 		return getPluginInfo().name;
 	}

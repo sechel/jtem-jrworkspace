@@ -138,6 +138,7 @@ public class HelpWindow extends JDialog implements TreeSelectionListener {
 			}
 		}
 
+		@Override
 		public Component getTreeCellRendererComponent(JTree tree, Object value,
 				boolean selected, boolean expanded, boolean leaf, int row,
 				boolean hasFocus) {
@@ -192,6 +193,7 @@ public class HelpWindow extends JDialog implements TreeSelectionListener {
 	
 	
 
+	@Override
 	public void valueChanged(TreeSelectionEvent e) {
 		TreePath path = e.getNewLeadSelectionPath();
 		if (path == null) {
@@ -205,6 +207,7 @@ public class HelpWindow extends JDialog implements TreeSelectionListener {
 	
 	private class PageComparator implements Comparator<HelpFlavor> {
 
+		@Override
 		public int compare(HelpFlavor o1, HelpFlavor o2) {
 			return o1.getHelpTitle().compareTo(o2.getHelpTitle());
 		}

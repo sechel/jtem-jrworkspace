@@ -66,11 +66,13 @@ public abstract class AbstractTreeModel implements TreeModel
 		listeners = new ArrayList<TreeModelListener>();
 	}
 
+	@Override
 	public void addTreeModelListener(TreeModelListener l)
 	{
 		listeners.add(l);
 	}
 
+	@Override
 	public void removeTreeModelListener(TreeModelListener l)
 	{
 		listeners.remove(l);
@@ -169,18 +171,21 @@ public abstract class AbstractTreeModel implements TreeModel
 	 * Must be implemented by subclasses, return the child of parent at index.
 	 * @see TreeModel#getChild(Object,int)
 	 */
+	@Override
 	public abstract Object getChild(Object parent, int index);
 
 	/**
 	 * Must be implemented by subclasses, return number of children.
 	 * @see TreeModel#getChildCount(Object)
 	 */
+	@Override
 	public abstract int getChildCount(Object parent);
 
 	/**
 	 * Defaults to a linear search for the child. Can be overridden
 	 * if there is a more efficient way of determining the index.
 	 */
+	@Override
 	public int getIndexOfChild(Object parent, Object child)
 	{
 		final int l=getChildCount(parent);
@@ -192,6 +197,7 @@ public abstract class AbstractTreeModel implements TreeModel
 	/**
 	 * Returns the root object specified in the constructor.
 	 */
+	@Override
 	public Object getRoot()
 	{
 		return root;
@@ -201,6 +207,7 @@ public abstract class AbstractTreeModel implements TreeModel
 	 * Returns <code>getChildCount(node)==0</code>, should be overridden
 	 * if the semantics of leaf nodes differs.
 	 */
+	@Override
 	public boolean isLeaf(Object node)
 	{
 		return getChildCount(node)==0;
@@ -210,6 +217,7 @@ public abstract class AbstractTreeModel implements TreeModel
 	 * Simply does nothing. Models that doe not support editing or do
 	 * not required conversion are not required to override this.
 	 */
+	@Override
 	public void valueForPathChanged(TreePath path, Object newValue) {}
 
 	/**
