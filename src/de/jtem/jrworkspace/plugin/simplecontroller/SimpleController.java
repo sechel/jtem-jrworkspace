@@ -456,8 +456,6 @@ public class SimpleController implements Controller {
 		};
 		
 		StartupChain startupChain = new StartupChain();
-		startupChain.appendJob(jobLoadProperties);
-		startupChain.appendJob(jobInitialize);
 		startupChain.appendAll(activateJobs);
 		startupChain.appendJob(jobFinalize);
 		startupChain.appendJob(jobReady);
