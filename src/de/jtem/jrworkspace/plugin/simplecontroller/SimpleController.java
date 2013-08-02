@@ -509,8 +509,10 @@ public class SimpleController implements Controller {
 			return; // we are java 5 and have no service loader
 		}
 		try {
-			Method loadMethod = slClass.getMethod("load", Class.class);
-			Iterable<Plugin> loader = (Iterable<Plugin>)loadMethod.invoke(slClass, Plugin.class);
+			Method loadMethod = slClass.getMethod("load", Class.class, ClassLoader.class);
+			ClassLoader contextLoader = Thread.currentThread().getContextClassLoader();
+			ClassLoader pluginLoader = new ClassLoader(contextLoader) {};
+			Iterable<Plugin> loader = (Iterable<Plugin>)loadMethod.invoke(slClass, Plugin.class, pluginLoader);
 			for (Plugin p : loader) {
 	           registerPlugin(p);
 			}
