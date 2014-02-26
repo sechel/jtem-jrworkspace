@@ -99,9 +99,12 @@ public class ShrinkPanel extends JPanel implements ComponentListener, ContainerL
 	private boolean
 		shrinked = false,
 		floating = false,
-		showHelpIcon = false;
+		showHelpIcon = false,
+		showHideIcon = false;
 	private HelpCalledListener
 		helpCalledListener = null;
+	private HideCalledListener
+		hideCalledListener = null;
 	private Color
 		header_color = new Color(0.7f, 0.7f, 0.7f);
 	private Font
@@ -181,6 +184,12 @@ public class ShrinkPanel extends JPanel implements ComponentListener, ContainerL
 		
 		public void helpCalled();
 		
+	}
+	
+	public static interface HideCalledListener {
+
+		public void hideCalled();
+
 	}
 	
 	private static class FloatDialog extends JDialog {
@@ -411,9 +420,18 @@ public class ShrinkPanel extends JPanel implements ComponentListener, ContainerL
 		Rectangle2D bounds = boldFont.getStringBounds(name, g2D.getFontRenderContext());
 		g.drawString(name, boxInset + (dim.width - boxInset * 2) / 2 - (int)bounds.getWidth() / 2, inset + boxHeight - 3);
 		// help button
+		
+		int position = dim.width - boxInset - inset * 2;
+		if (showHideIcon) {
+			Rectangle2D bounds2 = boldFont.getStringBounds("X", g2D.getFontRenderContext());
+			position -= (int)bounds2.getWidth();
+			g.drawString("X", position, inset + boxHeight - 3);
+			position -= inset;
+		}
 		if (showHelpIcon) {
 			Rectangle2D bounds2 = boldFont.getStringBounds("?", g2D.getFontRenderContext());
-			g.drawString("?", dim.width - boxInset - inset * 2 - (int)bounds2.getWidth(), inset + boxHeight - 3);
+			position -= (int)bounds2.getWidth();
+			g.drawString("?", position, inset + boxHeight - 3);
 		}
 		if (icon != null) {
 			icon.paintIcon(this, g2D, boxInset + inset, inset + 1);
@@ -438,12 +456,28 @@ public class ShrinkPanel extends JPanel implements ComponentListener, ContainerL
 		@Override
 		public void mouseClicked(MouseEvent m) {
 			Dimension dim = getSize();
+			int position = dim.width - boxInset - inset * 2;
+			if (showHideIcon) { // check if hide is clicked
+				Graphics2D g2D = (Graphics2D)m.getComponent().getGraphics();
+				Font font = UIManager.getFont("Label.font");
+				Rectangle2D bounds2 = font.getStringBounds("?", g2D.getFontRenderContext());
+				int startX = position - (int)bounds2.getWidth();
+				int endX = position;
+				position -= (int)bounds2.getWidth()- inset;
+				if (startX <= m.getX() && m.getX() <= endX &&
+						inset <= m.getY() && m.getY() <= inset + boxHeight) {
+					if (hideCalledListener != null) {
+						hideCalledListener.hideCalled();
+					}
+					return;
+				}
+			}
 			if (showHelpIcon) { // check if help is clicked
 				Graphics2D g2D = (Graphics2D)m.getComponent().getGraphics();
 				Font font = UIManager.getFont("Label.font");
 				Rectangle2D bounds2 = font.getStringBounds("?", g2D.getFontRenderContext());
-				int startX = dim.width - boxInset - inset * 2 - (int)bounds2.getWidth();
-				int endX = dim.width - boxInset - inset * 2;
+				int startX = position - (int)bounds2.getWidth();
+				int endX = position;
 				if (startX <= m.getX() && m.getX() <= endX &&
 						inset <= m.getY() && m.getY() <= inset + boxHeight) {
 					if (helpCalledListener != null) {
@@ -614,6 +648,14 @@ public class ShrinkPanel extends JPanel implements ComponentListener, ContainerL
 	
 	public void setHelpCalledListener(HelpCalledListener helpCalledListener) {
 		this.helpCalledListener = helpCalledListener;
+	}
+	
+	public void setShowHideIcon(boolean showHideIcon) {
+		this.showHideIcon = showHideIcon;
+	}
+	
+	public void setHideCalledListener(HideCalledListener hideCalledListener) {
+		this.hideCalledListener = hideCalledListener;
 	}
 	
 	private Point getLocationOnScreen(MouseEvent e) {

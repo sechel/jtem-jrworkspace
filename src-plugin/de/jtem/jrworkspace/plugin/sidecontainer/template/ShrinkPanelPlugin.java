@@ -47,6 +47,7 @@ import de.jtem.jrworkspace.plugin.sidecontainer.SideContainerPerspective;
 import de.jtem.jrworkspace.plugin.sidecontainer.image.ImageHook;
 import de.jtem.jrworkspace.plugin.sidecontainer.widget.ShrinkPanel;
 import de.jtem.jrworkspace.plugin.sidecontainer.widget.ShrinkPanel.HelpCalledListener;
+import de.jtem.jrworkspace.plugin.sidecontainer.widget.ShrinkPanel.HideCalledListener;
 
 /** Extend this class to get a shrink panel {@link Plugin} which will show up in the {@link SideContainerPerspective} 
  * returned by your implementation of {@link #getPerspectivePluginClass()}.
@@ -65,7 +66,7 @@ import de.jtem.jrworkspace.plugin.sidecontainer.widget.ShrinkPanel.HelpCalledLis
  * <p>To turn this off override {@link #getHelpDocument()}, {@link #getHelpPath()}, and {@link #getHelpHandle()}.
  *
  */
-public abstract class ShrinkPanelPlugin extends Plugin implements UIFlavor, HelpFlavor, HelpCalledListener {
+public abstract class ShrinkPanelPlugin extends Plugin implements UIFlavor, HelpFlavor, HelpCalledListener, HideCalledListener {
 
 	private SideContainerPerspective
 		perspective = null;
@@ -106,6 +107,8 @@ public abstract class ShrinkPanelPlugin extends Plugin implements UIFlavor, Help
 		shrinkPanel = new ShrinkPanel(getPluginInfo().name);
 		shrinkPanel.setShowHelpIcon(true);
 		shrinkPanel.setHelpCalledListener(this);
+		shrinkPanel.setShowHideIcon(true);
+		shrinkPanel.setHideCalledListener(this);
 		shrinkPanel.setIcon(getPluginInfo().icon);
 		Icon smallIcon = null;
 		if (getPluginInfo().icon != null) {
@@ -241,6 +244,10 @@ public abstract class ShrinkPanelPlugin extends Plugin implements UIFlavor, Help
 		SwingUtilities.updateComponentTreeUI(getShrinkPanel());
 	}
 	
+	@Override
+	public void hideCalled() {
+		setShowPanel(false);
+	}
 	
 	@Override
 	public void helpCalled() {

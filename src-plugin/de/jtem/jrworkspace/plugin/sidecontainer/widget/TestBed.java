@@ -41,12 +41,15 @@ import javax.swing.JLabel;
 import javax.swing.JPanel;
 import javax.swing.UIManager;
 
+import de.jtem.jrworkspace.plugin.sidecontainer.widget.ShrinkPanel.HelpCalledListener;
+import de.jtem.jrworkspace.plugin.sidecontainer.widget.ShrinkPanel.HideCalledListener;
+
 public class TestBed {
 
 	
 	public static void main(String[] args) throws Exception {
 		UIManager.setLookAndFeel(UIManager.getSystemLookAndFeelClassName());
-		JFrame f = new JFrame("ShrinkPanel Testbed");
+		final JFrame f = new JFrame("ShrinkPanel Testbed");
 		f.setLayout(new BorderLayout());
 		f.setSize(800, 600);
 		
@@ -54,9 +57,41 @@ public class TestBed {
 		centerPanel.setLayout(new BorderLayout());
 		
 		ShrinkPanel sp1 = new ShrinkPanel("Test Panel 1", true);
+		sp1.setShowHelpIcon(true);
+		
+
 		ShrinkPanel sp2 = new ShrinkPanel("Test Panel 2");
+		sp2.setShowHideIcon(true);
+		
 		ShrinkPanel sp3 = new ShrinkPanel("Test Panel 3");
+		sp3.setShowHelpIcon(true);
+		sp3.setShowHideIcon(true);
+		
 		ShrinkPanel sp4 = new ShrinkPanel("Test Panel 4");
+		
+		HelpCalledListener hcl = new HelpCalledListener() {
+
+			@Override
+			public void helpCalled() {
+				System.out.println("Help!");
+			}
+		};
+		sp1.setHelpCalledListener(hcl);
+		sp2.setHelpCalledListener(hcl);
+		sp3.setHelpCalledListener(hcl);
+		sp4.setHelpCalledListener(hcl);
+		
+		HideCalledListener hicl = new HideCalledListener() {
+
+			@Override
+			public void hideCalled() {
+				System.out.println("Hide!");
+			}
+		};
+		sp1.setHideCalledListener(hicl);
+		sp2.setHideCalledListener(hicl);
+		sp3.setHideCalledListener(hicl);
+		sp4.setHideCalledListener(hicl);
 		
 		sp1.setLayout(new GridBagLayout());
 		GridBagConstraints c = new GridBagConstraints();
