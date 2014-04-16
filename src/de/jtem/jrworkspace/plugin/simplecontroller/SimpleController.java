@@ -624,6 +624,7 @@ public class SimpleController implements Controller {
 			((OpenPreferencesFlavor)p).setOpenPreferencesListener(flavorListener);
 		}
 		try {
+			LOGGER.fine("installing plugin " + p.getClass().getResource(p.getClass().getSimpleName() + ".class"));
 			p.install(this);
 		} catch (Exception e) {
 			e.printStackTrace();

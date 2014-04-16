@@ -34,11 +34,10 @@ import java.util.logging.Logger;
  */
 public class LoggingSystem {
 	
-	public static final Logger LOGGER = Logger.getLogger("de.jtem.jrworkspace");
-	private static final Level DEFAULT_LOG_LEVEL = tryToGetLoglevel(); 
+	public static final Logger 
+		LOGGER = Logger.getLogger(LoggingSystem.class.getName());
 	
 	static {
-        tryToInitLogger();
         tryToInitFileHandler();
 	}
 
@@ -61,27 +60,6 @@ public class LoggingSystem {
 		return level;
 	}
 
-	private static void tryToInitLogger() {
-		try {
-            initLogger();
-        } catch (SecurityException se) {
-        	LOGGER.config("No permission to init logger: " + se.getMessage());
-        }
-	}
-
-	private static void initLogger(){
-		LOGGER.setLevel(DEFAULT_LOG_LEVEL);
-		LOGGER.setUseParentHandlers(false);
-        useConsoleHandler();
-	}
-
-
-	private static void useConsoleHandler() {
-		Handler handler = new ConsoleHandler();
-        handler.setLevel(Level.ALL);
-        LOGGER.addHandler(handler);
-	}
-	
 	private static void tryToInitFileHandler() {
 		try {
 			initFileHandler(System.getProperty("de.jtem.jrworkspace.logfile"));
