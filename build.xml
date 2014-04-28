@@ -66,6 +66,10 @@
 				<attribute name="Implementation-Title" value="The jRWorkspace Plugin SDK"/>
 			</manifest>
 		</jar>
-	</target>	
+	</target>
+	
+	<target name="clean">
+		<echo>no clean needed using eclipse bin folder</echo>
+	</target>
 
 </project>

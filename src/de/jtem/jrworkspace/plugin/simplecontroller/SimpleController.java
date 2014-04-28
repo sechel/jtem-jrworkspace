@@ -376,7 +376,7 @@ public class SimpleController implements Controller {
 						String lnfClass = getProperty(SimpleController.class, "lookAndFeelClass", defaultLnF);
 						flavorListener.installLookAndFeel(lnfClass);
 					} catch (Exception e) {
-						LOGGER.config("Could not load look and feel.");
+						LOGGER.warning("Could not load look and feel.");
 					}
 				}
 				initializeComponents();
@@ -660,7 +660,7 @@ public class SimpleController implements Controller {
 					try {
 						activatePlugin(p);
 					} catch (Exception e) {
-						LOGGER.info("could not install dependent plug-in: " + p);
+						LOGGER.warning("could not install dependent plug-in: " + p);
 					}
 				}
 				return clazz.cast(p);
@@ -671,7 +671,7 @@ public class SimpleController implements Controller {
 			try {
 				p = clazz.newInstance();
 			} catch (Exception e) {
-				LOGGER.info("could not instantiate dependent plug-in: " + clazz.getSimpleName() + ": " + e.getClass().getSimpleName());
+				LOGGER.warning("could not instantiate dependent plug-in: " + clazz.getSimpleName() + ": " + e.getClass().getSimpleName());
 				return null;
 			}
 			registerPlugin(p);
@@ -679,7 +679,7 @@ public class SimpleController implements Controller {
 			try {
 				activatePlugin(p);
 			} catch (Exception e) {
-				LOGGER.info("could not install dependent plug-in \"" + p + "\" exceptiion: " + e.getClass().getSimpleName());
+				LOGGER.warning("could not install dependent plug-in \"" + p + "\" exceptiion: " + e.getClass().getSimpleName());
 			}
 			return clazz.cast(p);
 		}
@@ -1316,7 +1316,7 @@ public class SimpleController implements Controller {
 				LOGGER.finer("reading properties from static properties file " + staticPropertiesFile);
 			} catch (Exception e) {}
 			if (in == null) {
-				LOGGER.info("static properties file not found " + staticPropertiesFile);
+				LOGGER.warning("static properties file not found " + staticPropertiesFile);
 				return;
 			}
 		} else if (loadFromUserPropertyFile) {
@@ -1353,7 +1353,7 @@ public class SimpleController implements Controller {
 		try {
 			properties = properties.getClass().cast(propertyxStream.fromXML(in));
 		} catch (Exception e) {
-			LOGGER.info("error while loading properties: " + e.getMessage());
+			LOGGER.warning("error while loading properties: " + e.getMessage());
 			propertiesAreSafe = false;
 		} finally {
 			try {
@@ -1388,7 +1388,7 @@ public class SimpleController implements Controller {
 			try {
 				p.storeStates(SimpleController.this);
 			} catch (Exception e) {
-				LOGGER.info("could not store states of plugin \"" + p + "\": " + e.getMessage());
+				LOGGER.warning("could not store states of plugin \"" + p + "\": " + e.getMessage());
 			}
 		}
 		
@@ -1446,7 +1446,7 @@ public class SimpleController implements Controller {
 				userPreferences.flush();
 			}
 		} catch (BackingStoreException e) {
-			LOGGER.info("could not persist user preferences: " + e.getMessage());
+			LOGGER.warning("could not persist user preferences: " + e.getMessage());
 		}
 		
 		LOGGER.exiting(SimpleController.class.getName(), "savePropertiesOnExit", true);
@@ -1492,7 +1492,7 @@ public class SimpleController implements Controller {
 			writer.flush();
 			writer.close();
 		} catch (IOException e) {
-			LOGGER.info("writing properties failed to file \"" + file + "\":" + e.getMessage());
+			LOGGER.warning("writing properties failed to file \"" + file + "\":" + e.getMessage());
 		}
 	}
 	
