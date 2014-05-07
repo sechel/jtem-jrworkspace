@@ -575,12 +575,14 @@ public class SimpleController implements Controller {
 			mainWindow.setDefaultCloseOperation(WindowConstants.DO_NOTHING_ON_CLOSE);
 			mainWindow.setLayout(new BorderLayout());
 			mainWindow.add(centerPanel, CENTER);
-			mainWindow.addWindowListener(new WindowAdapter() {
-				@Override
-				public void windowClosing(WindowEvent e) {
-					shutdown();
-				}
-			});
+			if (!localStartup) {
+				mainWindow.addWindowListener(new WindowAdapter() {
+					@Override
+					public void windowClosing(WindowEvent e) {
+						shutdown();
+					}
+				});
+			}
 		}
 		if (hasHelpMenu && helpWindow == null) {
 			helpWindow = new HelpWindow(mainWindow);
