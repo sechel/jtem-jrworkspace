@@ -311,11 +311,28 @@ public class SimpleController implements Controller {
 		//init with user preferences associated with the controllers class, may be overridden by package specific properties
 		userPreferences = Preferences.userNodeForPackage(this.getClass());
 		LOGGER.exiting(SimpleController.class.getName(), "SimpleController");
+		setupAppleHandlers();
 	}
 	
 	public SimpleController(String name) {
 		this();
 		this.name = name;
+	}
+	
+	private void setupAppleHandlers() {
+		try {
+			Class<?> app = Class.forName("com.apple.eawt.Application");
+			Class<?> quit = Class.forName("com.apple.eawt.QuitStrategy");
+			Method getAppMethod = app.getMethod("getApplication");
+			Method setQuitMethod = app.getMethod("setQuitStrategy", quit);
+			Method valueOfMethod = quit.getMethod("valueOf", String.class);
+			Object closeAllStrategy = valueOfMethod.invoke(quit, "CLOSE_ALL_WINDOWS");
+			Object appObject = getAppMethod.invoke(app);
+			setQuitMethod.invoke(appObject, closeAllStrategy);
+		} catch (Exception e) {
+			LOGGER.info("could not setup mac os handlers, may be not on a mac.");
+			return;
+		}
 	}
 	
 	@Override
@@ -1783,7 +1800,6 @@ public class SimpleController implements Controller {
 			preferencesWindow.dispose();
 			preferencesWindow = null;
 		}
-//		Runtime.getRuntime().removeShutdownHook(shutdownHook);
 	}
 	
 }
