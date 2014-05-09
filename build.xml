@@ -23,7 +23,7 @@
 		>
 			<manifest>
 				<attribute name="Built-By" value="${user.name}"/>
-				<attribute name="Implementation-Vendor" value="Stefan Sechelmann"/>
+				<attribute name="Implementation-Vendor" value="${vendor}"/>
 				<attribute name="Implementation-Title" value="The jRWorkspace Plugin SDK"/>
 				<attribute name="Implementation-Version" value="${version}"/>
 				<attribute name="Implementation-URL" value="http://fs.math.tu-berlin.de:8000/svn/jtem/jrworkspace/"/>
