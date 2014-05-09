@@ -7,7 +7,7 @@
 	<tstamp>
 		<format property="version" pattern="yyyy-MM-dd"/>
 	</tstamp>
-	
+	<property name="vendor" value="Stefan Sechelmann" />
 	<target name="all" depends="jrworkspace, jrworkspaceNaked"/>
 	
 	<target name="jrworkspace">
