@@ -21,7 +21,7 @@ PACKAGESUMHTML=doc/de/jtem/jrworkspace/plugin/package-summary.html
 #location of the web site, may be empty
 SERVER=gauss.math.tu-berlin.de
 #directory of the website on the server, or local if SERVER is empty
-SRVDIR=/net/www/pub/jtem
+SRVDIR=/net/www3/pub/jtem
 
 #directory for the dependencies
 LIBDIR=lib
@@ -39,7 +39,7 @@ EXCLTESTS=
 JUNIT=junit.jar
 
 #compile options
-JAVACOPTS=-target 1.5 -source 1.5
+JAVACOPTS=-target 1.6 -source 1.6
 
 #javadoc options
 JAVADOCOPTS= -author -protected -nodeprecated -nodeprecatedlist \
@@ -48,7 +48,7 @@ JAVADOCOPTS= -author -protected -nodeprecated -nodeprecatedlist \
   -header '<a href="http://www.jtem.de/$(NAME)" target="_top">$(NAME)</a> by<br><a href="http://www.jtem.de" target="_top">jTEM</a>' \
   -footer '<a href="http://www.jtem.de/$(NAME)" target="_top">$(NAME)</a> by<br><a href="http://www.jtem.de" target="_top">jTEM</a>' \
   -bottom '<font size=-1><b><a href="mailto:jtem@math.tu-berlin.de?subject=$(NAME):">jTEM</a></b></font>' \
-  -link http://java.sun.com/javase/6/docs/api/ \
+  -link http://docs.oracle.com/javase/7/docs/api/ \
   $(foreach d, $(DEPNAMES), -link $(JTEMURL)/$(d)/api) \
   -d $(DOCDIR) -classpath "$(BINDIR):`find $(LIBDIR) -name '*.jar' -printf %p: 2> /dev/null `" \
   -sourcepath `echo $(SRCDIRS) | tr \  :` \
@@ -61,7 +61,7 @@ CLEAN=$(BINDIR) $(DOCDIR) $(WEBDIR) $(RELDIR) .testscompiled \
 	$(LIBDIR)/.lastUpdateDepsPlusADay $(LIBDIR)/.lastUpdateDepsCheck
 
 #jtem site url
-JTEMURL=http://www.math.tu-berlin.de/jtem
+JTEMURL=http://www3.math.tu-berlin.de/jtem
 
 
 
