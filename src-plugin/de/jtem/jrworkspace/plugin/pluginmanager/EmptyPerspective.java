@@ -33,6 +33,8 @@ package de.jtem.jrworkspace.plugin.pluginmanager;
 
 import java.awt.Component;
 import java.awt.Dimension;
+import java.awt.Image;
+import java.util.List;
 
 import javax.swing.Icon;
 import javax.swing.JPanel;
@@ -63,6 +65,12 @@ public class EmptyPerspective extends Plugin implements PerspectiveFlavor {
 
 	public void setVisible(boolean visible) {
 
+	}
+
+	@Override
+	public List<Image> getIconList() {
+		// TODO Auto-generated method stub
+		return null;
 	}
 
 }

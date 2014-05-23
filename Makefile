@@ -36,7 +36,9 @@ TESTBINDIR=$(TESTDIR)
 #exclude the following tests  
 EXCLTESTS=
 #where to find junit.jar
-JUNIT=junit.jar
+JUNIT=$(wildcard junit*.jar)
+JUNITTESTRUNNER =org.junit.runner.JUnitCore
+
 
 #compile options
 JAVACOPTS=-target 1.6 -source 1.6
@@ -83,8 +85,6 @@ else
   et_=$(addprefix %,$(EXCLTESTS:.java=))
   TESTS=$(filter-out $(et_), $(ALLTESTS))
   ext_=$(filter $(et_), $(ALLTESTS))
-  #choose junit test runner class
-  junit_test_runner_class=`(java -cp $(JUNIT) org.junit.runner.JUnitCore 1>/dev/null 2>&1 && echo org.junit.runner.JUnitCore) || echo junit.textui.TestRunner`  
 endif
   
 DEPNAMES=$(shell cat dependencies.txt 2> /dev/null | grep -v '^\#' )
@@ -179,7 +179,7 @@ else
 	@for test in $(TESTS); do \
 		echo "- JUnitTest: $$test"; \
 		java -ea -classpath "`find $(LIBDIR) -name '*.jar' -printf %p: 2> /dev/null`$(JUNIT):$(BINDIR):$(TESTBINDIR)" \
-			$(junit_test_runner_class) $$test || { echo "JUnit Test failed!" ; exit 1; } \
+			$(JUNITTESTRUNNER) $$test || { echo "JUnit Test failed!" ; exit 1; } \
 		done;
 	@if [ -n "$(ext_)" ]; then echo "WARNING: some tests where exluded, see variable EXCLTESTS"; fi
 endif
@@ -307,7 +307,7 @@ debug:
 	@echo PACKAGESUMHTML=$(PACKAGESUMHTML); echo
 	@echo PACKAGEHTML=$(PACKAGEHTML); echo
 	@echo DEPS=$(DEPS); echo
-	@echo junit_test_runner_class=$(junit_test_runner_class); echo
+	@echo JUNITTESTRUNNER=$(JUNITTESTRUNNER); echo
 
 .PHONY: clean
 clean:
