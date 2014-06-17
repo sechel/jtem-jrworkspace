@@ -30,6 +30,7 @@ OF SUCH DAMAGE.
 **/
 
 package de.jtem.jrworkspace.plugin.sidecontainer.widget;
+
 import static java.awt.GridBagConstraints.BOTH;
 import static java.awt.GridBagConstraints.REMAINDER;
 
