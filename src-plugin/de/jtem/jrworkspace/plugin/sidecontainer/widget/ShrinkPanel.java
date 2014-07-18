@@ -32,6 +32,8 @@ OF SUCH DAMAGE.
 package de.jtem.jrworkspace.plugin.sidecontainer.widget;
 
 import static de.jtem.jrworkspace.plugin.sidecontainer.image.ImageHook.setDialogIconImage;
+import static java.awt.Dialog.ModalityType.APPLICATION_MODAL;
+import static java.awt.Dialog.ModalityType.MODELESS;
 import static java.awt.event.MouseEvent.BUTTON1;
 import static java.awt.event.MouseEvent.NOBUTTON;
 
@@ -40,7 +42,6 @@ import java.awt.Component;
 import java.awt.Container;
 import java.awt.Dimension;
 import java.awt.Font;
-import java.awt.Frame;
 import java.awt.GradientPaint;
 import java.awt.Graphics;
 import java.awt.Graphics2D;
@@ -200,8 +201,8 @@ public class ShrinkPanel extends JPanel implements ComponentListener, ContainerL
 			super();
 		}
 
-		public FloatDialog(Frame owner, boolean modal) {
-			super(owner, modal);
+		public FloatDialog(Window owner, boolean modal) {
+			super(owner, modal ? APPLICATION_MODAL : MODELESS);
 		}
 		
 	}
@@ -294,7 +295,7 @@ public class ShrinkPanel extends JPanel implements ComponentListener, ContainerL
 	        }
 			super.remove(content);
 			Window w = SwingUtilities.getWindowAncestor(parentContainer);
-			floatingDialog = new FloatDialog((Frame)w, false);
+			floatingDialog = new FloatDialog(w, false);
 			if (iconImage != null) {
 				setDialogIconImage(floatingDialog, iconImage);
 			}
@@ -347,7 +348,8 @@ public class ShrinkPanel extends JPanel implements ComponentListener, ContainerL
 		}
 		if (getParent() != null && getParent() instanceof JComponent) {
 			Window w = SwingUtilities.getWindowAncestor(this);
-			if (w != null && (w instanceof FloatDialog)) {
+			Container slot = SwingUtilities.getAncestorOfClass(ShrinkSlot.class, this);
+			if (w != null && w instanceof FloatDialog && slot == null) {
 				Dimension d = w.getLayout().minimumLayoutSize(w);
 		        w.setMinimumSize(d);
 		        w.setSize(w.getWidth(), d.height);
@@ -516,7 +518,6 @@ public class ShrinkPanel extends JPanel implements ComponentListener, ContainerL
     		dialog = null;
     	private Color
     		borderColor = new Color(240, 200, 190);
-    		
     	
 		@Override
 		public void mouseDragged(MouseEvent e) {
@@ -537,7 +538,7 @@ public class ShrinkPanel extends JPanel implements ComponentListener, ContainerL
 				}
 				dragHandle = e.getPoint();
 				Window w = SwingUtilities.getWindowAncestor(parentContainer);
-				dialog = new JDialog((Frame)w, false);
+				dialog = new JDialog(w, MODELESS);
 				dialog.setUndecorated(true);
 				dialog.setTitle(name);
 				getParentSlot().removeShrinkPanel(ShrinkPanel.this);
@@ -555,7 +556,7 @@ public class ShrinkPanel extends JPanel implements ComponentListener, ContainerL
 			Point l = getLocationOnScreen(e);
 			Point p = new Point(l.x - dragHandle.x, l.y - dragHandle.y);
 			dialog.setLocation(p);
-			ShrinkSlot slot = ShrinkSlot.getContainerUnderMouse(getLocationOnScreen(e));
+			ShrinkSlot slot = ShrinkSlot.getSlotUnderMouse(getLocationOnScreen(e));
 			if (slot == null) {
 				ShrinkSlot.hideAllInsertHints();
 				dialog.getRootPane().setBorder(BorderFactory.createEtchedBorder());
@@ -573,9 +574,10 @@ public class ShrinkPanel extends JPanel implements ComponentListener, ContainerL
 	
 		@Override
 		public void mouseReleased(MouseEvent e) {
+			ShrinkSlot.hideAllInsertHints();
 			if (dialog == null)
 				return;
-			ShrinkSlot c = ShrinkSlot.getContainerUnderMouse(getLocationOnScreen(e));
+			ShrinkSlot c = ShrinkSlot.getSlotUnderMouse(getLocationOnScreen(e));
 			if (c != null) {
 				dialog.setVisible(false);
 				dialog.removeAll();
