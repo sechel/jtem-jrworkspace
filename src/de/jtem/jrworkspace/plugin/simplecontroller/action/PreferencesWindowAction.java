@@ -35,7 +35,6 @@ import static de.jtem.jrworkspace.plugin.simplecontroller.image.ImageHook.getIco
 import static java.awt.event.InputEvent.ALT_DOWN_MASK;
 import static java.awt.event.KeyEvent.VK_P;
 
-import java.awt.Dimension;
 import java.awt.event.ActionEvent;
 
 import javax.swing.AbstractAction;
@@ -51,15 +50,12 @@ public class PreferencesWindowAction extends AbstractAction {
 		preferencesWindow = null;
 
 	public PreferencesWindowAction(PreferencesWindow win) {
+		preferencesWindow = win;
 		putValue(NAME, "Preferences");
 		putValue(LONG_DESCRIPTION, "Configure jRWorkspace Preferences");
 		putValue(SMALL_ICON, getIcon("prefs.png"));
 		putValue(ACCELERATOR_KEY, KeyStroke.getKeyStroke(VK_P, ALT_DOWN_MASK));
 		putValue(MNEMONIC_KEY, VK_P);
-		
-		preferencesWindow = win;
-		preferencesWindow.setSize(600, 500);
-		preferencesWindow.setMinimumSize(new Dimension(400, 400));
 	}
 	
 	

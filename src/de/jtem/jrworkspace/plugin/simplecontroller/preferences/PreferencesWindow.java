@@ -35,6 +35,7 @@ import static javax.swing.JSplitPane.HORIZONTAL_SPLIT;
 
 import java.awt.BorderLayout;
 import java.awt.Component;
+import java.awt.Dimension;
 import java.awt.Frame;
 import java.awt.GridLayout;
 import java.awt.Image;
@@ -85,6 +86,8 @@ public class PreferencesWindow extends JDialog implements TreeSelectionListener 
 	
 	public PreferencesWindow(Frame parent) {
 		super(parent);
+		setSize(600, 500);
+		setMinimumSize(new Dimension(400, 400));
 		ImageHook.setIconImage(this, dialogIcon);
 		setTitle("jRWorkspace Preferences");
 		makeLayout();
