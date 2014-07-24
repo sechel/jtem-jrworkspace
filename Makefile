@@ -13,10 +13,10 @@ DOCDIR=doc
 #the snippets for the webpage are put here
 WEBDIR=web
 #the package summary file (source)
-PACKAGEHTML=src/de/jtem/jrworkspace/plugin/package.html
+PACKAGEHTML=src/de/jtem/$(NAME)/plugin/package.html
 #the html page to read the websnippets of 
 #(usually the processed PACKAGEHTML: package-summary.html) 
-PACKAGESUMHTML=doc/de/jtem/jrworkspace/plugin/package-summary.html
+PACKAGESUMHTML=$(DOCDIR)/de/jtem/$(NAME)/plugin/package-summary.html
 
 #location of the web site, may be empty
 SERVER=gauss.math.tu-berlin.de
@@ -280,11 +280,14 @@ $(RELDIR)/$(NAME)-api.tgz:  $(DOCDIR)
 #Manifest
 $(RELDIR)/manifest.txt: $(RELDIR)/current.txt
 	@if [ ! -d $(RELDIR) ]; then mkdir $(RELDIR); fi
+	@echo "Built-By: ${USER}" >> $(RELDIR)/manifest.txt
 	@echo "Implementation-Title: $(NAME)" > $(RELDIR)/manifest.txt
 	@echo "Implementation-Version: "`cat $(RELDIR)/current.txt` >> $(RELDIR)/manifest.txt
 	@echo "Implementation-Vendor: jTEM ($(JTEMURL))" >> $(RELDIR)/manifest.txt
 	@echo "Implementation-URL: $(JTEMURL)/downloads/$(NAME).jar" >> $(RELDIR)/manifest.txt
-	
+	@echo "Permissions: all-permissions" >> $(RELDIR)/manifest.txt
+	@echo "Codebase: *.math.tu-berlin.de" >> $(RELDIR)/manifest.txt
+		
 #release date
 .PHONY: $(RELDIR)/current.txt
 $(RELDIR)/current.txt:

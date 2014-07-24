@@ -1,4 +1,5 @@
 package de.jtem.jrworkspace.plugin.simplecontroller.widget;
+
 import java.awt.BorderLayout;
 import java.awt.Color;
 import java.awt.Component;

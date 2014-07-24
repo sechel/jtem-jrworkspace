@@ -30,6 +30,7 @@ OF SUCH DAMAGE.
 **/
 
 package de.jtem.jrworkspace.plugin.sidecontainer.widget;
+
 import java.awt.Dimension;
 import java.awt.Point;
 

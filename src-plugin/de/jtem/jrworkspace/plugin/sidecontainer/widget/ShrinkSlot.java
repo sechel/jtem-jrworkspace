@@ -57,7 +57,8 @@ public abstract class ShrinkSlot extends JPanel {
      * @param onScreen
      * @return
      */
-    public static ShrinkSlot getContainerUnderMouse(Point onScreen) {
+    public static ShrinkSlot getSlotUnderMouse(Point onScreen) {
+    	ShrinkSlot result = null;
     	for (ShrinkSlot c : instances) {
     		if (!c.isShowing()) continue;
     		Point l = c.getLocationOnScreen();
@@ -65,10 +66,10 @@ public abstract class ShrinkSlot extends JPanel {
     		if (l.x < onScreen.x && onScreen.x < l.x + size.width &&
     			l.y < onScreen.y && onScreen.y < l.y + size.height
     		) {
-    			return c;
+    			result = c;
     		}
     	}
-    	return null;
+    	return result;
     }
 	
     

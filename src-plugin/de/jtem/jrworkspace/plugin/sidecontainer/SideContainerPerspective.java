@@ -41,9 +41,7 @@ import static javax.swing.SwingUtilities.isDescendingFrom;
 
 import java.awt.BorderLayout;
 import java.awt.Component;
-import java.awt.Container;
-import java.awt.Dimension;
-import java.awt.Insets;
+import java.awt.LayoutManager;
 import java.awt.event.ActionEvent;
 import java.awt.event.ActionListener;
 import java.awt.event.InputEvent;
@@ -75,6 +73,8 @@ public abstract class SideContainerPerspective extends Plugin implements Perspec
 	private JPanel
 		centerPanel = new JPanel(),
 		content = new JPanel();
+	private LayoutManager
+		layout = new SideContainerLayout(leftSlot, rightSlot, centerPanel);
 	private JMenu
 		panelsMenu = new JMenu("Panels"),
 		containersMenu = new JMenu("Side Panels");
@@ -104,7 +104,7 @@ public abstract class SideContainerPerspective extends Plugin implements Perspec
 		
 		centerPanel.setLayout(new BorderLayout());
 		centerPanel.add(getContentPanel(), CENTER);
-		mainPanel.setLayout(new ShrinkLayout());
+		mainPanel.setLayout(layout);
 		mainPanel.add(centerPanel, CENTER);
 		
 		panelsMenu.setIcon(ImageHook.getIcon("menu.png"));
@@ -121,88 +121,6 @@ public abstract class SideContainerPerspective extends Plugin implements Perspec
 		showTopSlotItem.setAccelerator(getKeyStroke(KeyEvent.VK_UP, InputEvent.ALT_MASK | InputEvent.SHIFT_MASK));
 		showBottomSlotItem.setAccelerator(getKeyStroke(KeyEvent.VK_DOWN, InputEvent.ALT_MASK | InputEvent.SHIFT_MASK));
 	}
-	
-	
-	
-	/**
-	 * This layout honors the preferred size as well as 
-	 * the minimum size of the shrink slots 
-	 * @author Stefan Sechelmann
-	 */
-	private class ShrinkLayout extends BorderLayout {
-
-		private static final long 
-			serialVersionUID = 1L;
-
-		@Override
-		public Dimension preferredLayoutSize(Container target) {
-			layoutContainer(target);
-			Dimension size = new Dimension();
-			if (target.isAncestorOf(leftSlot)) {
-				size.width += leftSlot.getSize().width;
-			}
-			if (target.isAncestorOf(rightSlot)) {
-				size.width += rightSlot.getSize().width;
-			}
-			size.width += centerPanel.getPreferredSize().width;
-			size.height = centerPanel.getPreferredSize().height;
-			return size;
-		}
-		
-		
-		@Override
-		public Dimension minimumLayoutSize(Container target) {
-			layoutContainer(target);
-			Dimension size = new Dimension();
-			if (target.isAncestorOf(leftSlot)) {
-				size.width += leftSlot.getMinimumSize().width;
-			}
-			if (target.isAncestorOf(rightSlot)) {
-				size.width += rightSlot.getMinimumSize().width;
-			}
-			size.width += centerPanel.getMinimumSize().width;
-			size.height = centerPanel.getMinimumSize().height;
-			return size;
-		}
-		
-		
-		@Override
-		public void layoutContainer(Container target) {
-			synchronized (target.getTreeLock()) {
-				Insets insets = target.getInsets();
-				int top = insets.top;
-				int bottom = target.getHeight() - insets.bottom;
-				int left = insets.left;
-				int right = target.getWidth() - insets.right;
-
-				if (target.isAncestorOf(rightSlot)) {
-					int rightWidth = rightSlot.getPreferredSize().width;
-					if (rightWidth < rightSlot.getMinimumSize().width) {
-						rightWidth = rightSlot.getMinimumSize().width;
-					}
-					rightSlot.setSize(rightWidth, bottom - top);
-					rightSlot.setBounds(right - rightWidth, top, rightWidth, bottom - top);
-					right -= rightWidth + getHgap();
-				}
-
-				if (target.isAncestorOf(leftSlot)) {
-					int leftWidth = leftSlot.getPreferredSize().width;
-					if (leftWidth < leftSlot.getMinimumSize().width) {
-						leftWidth = leftSlot.getMinimumSize().width;
-					}
-					leftSlot.setSize(leftWidth, bottom - top);
-					leftSlot.setBounds(left, top, leftWidth, bottom - top);
-					left += leftWidth + getHgap();
-				}
-
-				centerPanel.setSize(right - left, bottom - top);
-				centerPanel.setBounds(left, top, right - left, bottom - top);
-			}
-		}
-		
-	}
-	
-	
 	
 	private void updateStates() {
 		if (hidePanels) {
